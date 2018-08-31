@@ -102,13 +102,13 @@ if($ou ne ''){
 }
 my $cmd="";
 if($vorname eq '' && $nachname eq ''){
-  $cmd="samba-tool user add ".$username." ".$password." --profile-path='".$profile."' --must-change-at-next-login".$partou;
+  $cmd="samba-tool user create ".$username." ".$password." --profile-path='".$profile."' --must-change-at-next-login".$partou;
   system($cmd);
   $extendedinfo=0;
 }else{
   #username wird bei cn verwendet, das ist auch bei uid
   $initials = substr($vorname, 0, 1).substr($nachname, 0, 1);
-  $cmd="samba-tool user add ".$username." ".$password." --use-username-as-cn --profile-path='".$profile."' --surname='".$nachname."' --initials='".$initials."' --given-name='".$vorname."' --mail-address='".$email."' --must-change-at-next-login".$partou;
+  $cmd="samba-tool user create ".$username." ".$password." --use-username-as-cn --profile-path='".$profile."' --surname='".$nachname."' --initials='".$initials."' --given-name='".$vorname."' --mail-address='".$email."' --must-change-at-next-login".$partou;
   system($cmd);
   $extendedinfo=1;
 }
