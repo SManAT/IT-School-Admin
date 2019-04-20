@@ -27,7 +27,7 @@ Data::Dumper File::Spec::Unix File::Find::Rule Log::Log4perl
 It creates tarballs from `/etc/samba/`, `/var/lib/samba/private` and `/var/lib/samba/sysvol`.
 
 `restore_Rechte.pl` is a Perl script, that will *chown* home directories after a backup.
-Imaging that file structure after a backup. You can also use it within a *profile* folder, if you
+You can also use it within a *profile* folder, if you
 are using roaming profiles. Therefor also directories like moser.V2, moser.V4 etc
 will be reanamed.
 The script also deletes the files ntuser\.(dat|ini|pol)+, which will be created at next login.
@@ -35,6 +35,8 @@ The rights are
 - 770 for profile directories
 - 2770 for user directories
 - and each file within theses directories 770
+
+Imagin that file structure after a backup.
 
 name        | owner          
 ------------ | -------------
@@ -48,7 +50,7 @@ name        | owner
 ------------ | -------------
 /home/moser       | moser\:users
 /home/sepp        | sepp\:users
-/home/mozart      | mozart\:users
+/PDC/mozart.V6    | mozart.V6\:users
 
 ## Samba4/Usermanagement
 
