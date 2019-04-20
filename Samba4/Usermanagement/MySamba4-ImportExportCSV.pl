@@ -89,6 +89,8 @@ sub ProcessEntry{
   my $email = shift;
   my $gruppen = shift;
   my $ou = shift;
+
+
   if(UserExists($username) eq 0){
     printf "Vorname: %-10s Nachname: %s\n", $vorname, $nachname;
     print "--------------------------------------------\n";
@@ -123,6 +125,10 @@ if(($csv ne '')&&($import==0)){
 if(($import==0)&&($export==0)){
   pod2usage(-verbose=>99, -sections=>"SYNOPSIS|DESCRIPTION");
 }
+if(($csv eq '')&&($import==1)){
+  pod2usage(-verbose=>99, -sections=>"SYNOPSIS|DESCRIPTION");
+}
+
 
 if(($csv ne '')&&($import==1)){
     FileExists($csv);

@@ -100,6 +100,8 @@ if($ou ne ''){
     exit -1;
   }
 }
+
+
 my $cmd="";
 if($vorname eq '' && $nachname eq ''){
   $cmd="samba-tool user create ".$username." ".$password." --profile-path='".$profile."' --must-change-at-next-login".$partou;
