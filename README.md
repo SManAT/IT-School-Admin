@@ -52,6 +52,13 @@ name        | owner
 /home/sepp        | sepp\:users
 /PDC/mozart.V6    | mozart.V6\:users
 
+## Samba4/LDIF
+`getPolicies.sh` is a bash script, that loads from the subdir *private* (which is the
+`/var/lib/samba/private directory`) alle GPO entries from the database. The LDIF entries will
+then be saved in the file *Policies.ldif*.
+In case of a backup, you can use these Ldif File to update your LDAP Tree. After that,
+you can copy back your GPO's from your backup to `/var/lib/samba/sysvol/....`  
+
 ## Samba4/Usermanagement
 
 ## System
