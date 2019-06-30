@@ -1,11 +1,6 @@
 
 # Samba4-Admin
 Provides some (that is what i think) usefull scripts for managing a Samba4 Server.
-Data available in these subfolders
-- Usermanagement
-- System
-- Backup
-
 
 # Prerequisites
 The most Tools are written in Perl, so you had to install some libraries. Here are the steps
@@ -54,16 +49,16 @@ name        | owner
 
 ## Samba4/LDIF
 `getPolicies.sh` is a bash script, that loads from the subdir *private* (which is the
-`/var/lib/samba/private directory`) alle GPO entries from the database. The LDIF entries will
+`/var/lib/samba/private directory`) all GPO entries from the database. The LDIF entries will
 then be saved in the file *Policies.ldif*.
 In case of a backup, you can use these Ldif File to update your LDAP Tree. After that,
 you can copy back your GPO's from your backup to `/var/lib/samba/sysvol/....`  
 
 ## Samba4/DNS
 hier you have a script to inject static IP adresses into the LDAP Tree.
-First, modify the Administrator Password inside *staticIP.exp* (its an expect file!, apt install expect).
-Second, modify *staticIP.cfg* with all your static IP's.
-Last, execute *./staticIP.exp*
+- First, modify the Administrator Password inside *staticIP.exp* (its an expect file!, apt install expect).
+- Second, modify *staticIP.cfg* with all your static IP's.
+- Last, execute *./staticIP.exp*
 
 
 ## Samba4/Usermanagement
