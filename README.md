@@ -59,6 +59,13 @@ then be saved in the file *Policies.ldif*.
 In case of a backup, you can use these Ldif File to update your LDAP Tree. After that,
 you can copy back your GPO's from your backup to `/var/lib/samba/sysvol/....`  
 
+## Samba4/DNS
+hier you have a script to inject static IP adresses into the LDAP Tree.
+First, modify the Administrator Password inside *staticIP.exp* (its an expect file!, apt install expect).
+Second, modify *staticIP.cfg* with all your static IP's.
+Last, execute *./staticIP.exp*
+
+
 ## Samba4/Usermanagement
 
 ## System

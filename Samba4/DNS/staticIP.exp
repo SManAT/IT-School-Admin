@@ -1,0 +1,22 @@
+#!/usr/bin/expect
+
+set pass "mypassword"
+
+set f [open "staticIP.cfg"]
+set cmds [split [read $f] "\n"]
+close $f
+
+foreach cmd $cmds {
+    #Argument Expansion
+    spawn {*}$cmd
+
+    # Look for passwod prompt
+    expect "*?assword*:"
+    # Send password aka $password
+    send -- "$pass\r"
+    # send blank line (\r) to make sure we get back to gui
+    send -- "\r"
+}
+
+expect eof
+#close
