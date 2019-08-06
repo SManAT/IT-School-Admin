@@ -1,0 +1,64 @@
+#!/bin/bash
+#Mag Stefan Hagmann 2019
+
+# Set me first #
+# Where is the Image stored? #
+IMAGENAME=IMAGE
+DIRECTORY=/home/$IMAGENAME
+
+# Output position of countdown #
+ROW=2
+COL=2
+
+########################################################################
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# load the setting for clonezilla live.
+. /etc/ocs/ocs-live.conf
+# Load language files. For English, use "en_US.UTF-8". For Chinese, use "zh_TW.UTF-8"
+ask_and_load_lang_set en_US.UTF-8
+export LANG=de_DE.UTF-8
+
+# 1. Configure network, NO NEED
+#dhclient -v eth0
+
+# 2. Mount the clonezilla image home. Available types, NO NEED
+# local_dev, ssh_server, samba_server, nfs_server
+#prep-ocsroot -t nfs_server
+
+
+countdown() {
+  msg="Starting to clone Image from ${1} ... "
+  clear
+  #display at row col
+  tput cup $ROW $COL
+  echo -n "$msg"
+  l=${#msg}
+  l=$(( l+$COL ))
+  for i in {8..1}
+  do
+    tput cup $ROW $l
+    echo -n "$i"
+    sleep 1
+  done
+}
+
+#MAIN Program ##########################################################
+
+#Symbolic Link to mounted Dir
+#     Source                                     Link
+ln -s /usr/lib/live/mount/medium/home/$IMAGENAME /home/partimag/$IMAGENAME
+
+if [ -d "/home/partimag/$IMAGENAME" ]; then
+  countdown "/home/partimag/$IMAGENAME"
+  ocs-sr -g auto -e1 auto -e2 -r -j2 -scr -p poweroff restoredisk $IMAGENAME sda
+else
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "Fail to find the Clonezilla image home $ocsroot!"
+    echo "Program terminated!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+fi
