@@ -1,0 +1,6 @@
+version: 1
+
+mysql:
+   username: root
+   passwd: gurke
+   server: 192.168.4.4
