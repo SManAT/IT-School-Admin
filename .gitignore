@@ -3,3 +3,6 @@ __pycache__/
 *$py.class
 
 DB_BACKUP/**
+*.tar.bz2
+
+Samba4/Backup/Backup/policy/**
