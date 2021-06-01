@@ -14,6 +14,7 @@ class MySQLBackup():
             print(self.config)
             # ensure BackupPath exists
             self.checkBackupPath()
+            self.backupDB()
         except Exception as ex:
             print(ex)
 
@@ -38,6 +39,8 @@ class MySQLBackup():
 
     def backupDB(self):
         """ Backup all Databases in a Directory with Logrotate """
+        runner = CmdRunner()  
+        #mysql - u root - p mysqlmaster - e 'show databases' - s - -skip-column-names
 
 
 if __name__ == "__main__":
