@@ -1,6 +1,8 @@
 import yaml
 import os
 from pathlib import Path
+from libs.CmdRunner import CmdRunner
+import inspect
 
 
 class MySQLBackup():
@@ -8,10 +10,15 @@ class MySQLBackup():
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
+                
+        info = ("MySQLBackup\n"
+        "(c) Mag. Stefan Hagmann 2021\n"
+        "this tool is creating mysqldumps of all databases\n"
+        "=================================================\n\n") 
+        print(info)
 
         try:
             self.config = self.load_yml()
-            print(self.config)
             # ensure BackupPath exists
             self.checkBackupPath()
             self.backupDB()
@@ -33,14 +40,20 @@ class MySQLBackup():
         if './' == part1 or '../' == part2:
             # relative
             path = os.path.join(self.rootDir, path)
-        print(path)
         if os.path.isdir(path) is False:
             os.makedirs(path)
 
     def backupDB(self):
         """ Backup all Databases in a Directory with Logrotate """
         runner = CmdRunner()  
-        #mysql - u root - p mysqlmaster - e 'show databases' - s - -skip-column-names
+        cmd = "mysql --defaults-extra-file=mysqldump.cnf -e 'show databases' -s --skip-column-names"
+        runner.runCmd(cmd)
+        errors = runner.getStderr()
+        if errors:
+            print(errors)
+        databases = runner.getLines()
+        for db in databases:
+            print(db)
 
 
 if __name__ == "__main__":
