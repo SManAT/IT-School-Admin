@@ -1,3 +1,7 @@
 [mysql]
 user=root
 password=mysqlmaster
+
+[mysqldump]
+user=root
+password=mysqlmaster
