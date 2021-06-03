@@ -1,7 +1,5 @@
 version: 1
 
-mysql:
-   server: 192.168.4.4
 misc:
    # where to store the Backups, for realtive path start with ./ or ../
    backupPath: ./DB_BACKUP
