@@ -2,8 +2,8 @@
 # IT-School-Admin
 Provides some (that is what i think) usefull scripts for managing Linux Server.
 
-* [Prerequisites, is what you need](doc/Prerequisites.md)
-* [Samba4 stuff](doc/Samba4.md)
-* [MySQL stuff](doc/MySQL.md)
+* [Prerequisites, is what you need](docs/Prerequisites.md)
+* [Samba4 stuff](docs/Samba4.md)
+* [MySQL stuff](docs/MySQL.md)
 
 ## System
