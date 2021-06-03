@@ -2,7 +2,7 @@
 `restore_Rechte.pl` is a Perl script, that will *chown* home directories after a backup.
 You can also use it within a *profile* folder, if you
 are using roaming profiles. Therefor also directories like moser.V2, moser.V4 etc
-will be reanamed.
+will be renamed.
 The script also deletes the files ntuser\.(dat|ini|pol)+, which will be created at next login.
 The rights are
 - 770 for profile directories
