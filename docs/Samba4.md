@@ -40,9 +40,10 @@ hier you have a script to inject static IP adresses into the LDAP Tree.
 
 
 ## Samba4/Usermanagement
-Here are some PerlScripts to manage Users within Samba4.  
+Here are some PerlScripts to manage Users within Samba4. First, check the config File `config.ini` to meet your environment.  
 `MySamba4-AddGroup.pl`  
 `MySamba4-DelUser.pl`  
 `MySamba4-RenameUsers.pl`  
 `MySamba4-ImportExportCSV.pl`  
 The most scripts are self explaining.
+`MySamba4-ImportExportCSV.pl` is for me the most important script. You can create users on the fly. For that, fill in the users in a csv file. An example is `import.csv`.
