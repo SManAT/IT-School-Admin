@@ -8,3 +8,6 @@ backupPath: ./DB_BACKUP
 # how many Backups schould be in the rotate Process
 versions: 2
 ```
+The backup will be a Tarball of all databases.
+
+## MySQL/Restore
