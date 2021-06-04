@@ -27,7 +27,7 @@ class MySQLBackup():
         "(c) Mag. Stefan Hagmann 2021\n"
         "this tool is creating mysqldumps of all MySQL databases\n"
         "  - will keep last %s Versions of Backups\n"
-        "=======================================================\n" % versions) 
+        "-------------------------------------------------------\n" % versions) 
         print(info)
 
         try:
@@ -54,6 +54,8 @@ class MySQLBackup():
         if os.path.isdir(path) is False:
             os.makedirs(path)
             
+        path = re.sub('\.\/', '', path)
+        path = re.sub('\.\.\/', '', path)
         self.backup_path = path
             
         # create dump-YYYY-MM-DD directory

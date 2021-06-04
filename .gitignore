@@ -5,8 +5,10 @@ __pycache__/
 DB_BACKUP/**
 *.tar.bz2
 *.tar.bzip2
+*.sql
 
 .project
 .pydevproject
+
 
 Samba4/Backup/Backup/policy/**
