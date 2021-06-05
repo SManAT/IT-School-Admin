@@ -32,7 +32,6 @@ class MySQLBackup():
                 "------------------------------------------------------------------\n" % self.backup_path)
         print(info)
 
-
     def load_yml(self):
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
@@ -57,7 +56,7 @@ class MySQLBackup():
     def search_files(self, directory, pattern):
         """ search for pattern in directory recursive """
         data = []
-        for dirpath, dirnames, files in os.walk(directory):  #noqa
+        for dirpath, dirnames, files in os.walk(directory):  # noqa
             for f in fnmatch.filter(files, pattern):
                 data.append(os.path.join(dirpath, f))
         return data
@@ -109,7 +108,6 @@ class MySQLBackup():
 
         self.startBackup(backuptar)
 
-
     def startBackup(self, tarball):
         """ will start the restoring of the backup """
         print("\nStart restoring of backup %s" % os.path.basename(tarball))
@@ -126,7 +124,7 @@ class MySQLBackup():
                 self.doit(tarball)
             else:
                 print("-exit -")
-                
+
     def doMySQL(self, cmd):
         """ do a MysQL native command """
         cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
@@ -137,7 +135,7 @@ class MySQLBackup():
     def doit(self, tarball):
         """ really restore data """
 
-        #create full path
+        # create full path
         fullpath = re.sub('\.tar\.bzip2', '', tarball)  # noqa
         topath = Path(fullpath).parent.absolute()
         # untar Backup
@@ -155,7 +153,7 @@ class MySQLBackup():
         if self.debug is False:
             for f in files:
                 print("Importing %s ..." % os.path.basename(f))
-                filename, file_extension = os.path.splitext(os.path.basename(f))  #noqa
+                filename, file_extension = os.path.splitext(os.path.basename(f))  # noqa
                 dbname = filename
 
                 # first drop DB
@@ -166,10 +164,11 @@ class MySQLBackup():
 
                 sleep(0.5)
                 # now import new one
-                cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (dbname, f)
+                cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (
+                    dbname, f)
                 os.system(cmd)
 
-        #change to InnoDB
+        # change to InnoDB
         #self.doMySQL("ALTER TABLE mysql.db ENGINE=InnoDB;")
         #self.doMySQL("ALTER TABLE mysql.columns_priv ENGINE=InnoDB;")
 
@@ -197,37 +196,34 @@ class MySQLBackup():
 
         for u in self.Users:
             print("Creating User: %s" % u.get_username())
-            
+
             # delete user if exists
-            self.doMySQL("DROP USER IF EXISTS \"%s\"@\"%s\";" % (u.get_username(), u.get_hosts()))
-            
-            self.doMySQL("CREATE USER \"%s\"@\"%s\" IDENTIFIED BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
-            self.doMySQL("ALTER USER \"%s\"@\"%s\" IDENTIFIED WITH mysql_native_password BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
+            self.doMySQL("DROP USER IF EXISTS \"%s\"@\"%s\";" %
+                         (u.get_username(), u.get_hosts()))
+
+            self.doMySQL("CREATE USER \"%s\"@\"%s\" IDENTIFIED BY \"%s\";" %
+                         (u.get_username(), u.get_hosts(), u.get_pwd()))
+            self.doMySQL("ALTER USER \"%s\"@\"%s\" IDENTIFIED WITH mysql_native_password BY \"%s\";" %
+                         (u.get_username(), u.get_hosts(), u.get_pwd()))
 
             for p in u.get_privileges():
                 # replace ' with "
                 p = re.sub('\'', '"', p)  # noqa
                 self.doMySQL(p)
-            
-            self.doMySQL("FLUSH PRIVILEGES;") 
-            
-                
-        
-            
-        
+
+            self.doMySQL("FLUSH PRIVILEGES;")
+
 
 if __name__ == "__main__":
-    start_time = datetime.now() 
-    
-    backup = MySQLBackup()    
+    start_time = datetime.now()
+
+    backup = MySQLBackup()
     backup.restoreDB()
-    
-    time_elapsed = datetime.now() - start_time 
+
+    time_elapsed = datetime.now() - start_time
     print("\nMySQL Restore finished ...")
     print('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
 
-    
-    
 
 """
 --single-transaction uses a consistent read and guarantees that data seen by mysqldump does not change.
