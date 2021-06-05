@@ -148,11 +148,23 @@ class MySQLBackup():
         files = self.search_files(fullpath, "*.sql")
         for f in files:
             print("Importing %s ..." % os.path.basename(f))
+            filename, file_extension = os.path.splitext(os.path.basename(f))
+            dbname = filename
             
-            mysql -uroot -e "create database mydatabase;"
+            # first drop DB
+            cmd = "DROP DATABASE IF EXISTS %s;" % dbname
+            cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
+            os.system(cmd)
+
+            # create DB new
+            cmd = "CREATE DATABASE %s;" % dbname
+            cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
+            os.system(cmd)
             
-            cmd = "mysql --defaults-extra-file=mysqldump.cnf < %s" % (f)
-            print(cmd)
+            sleep(0.5)
+            # now import new one
+            cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (dbname, f)
+            os.system(cmd)
         
         
         

@@ -75,7 +75,7 @@ class MySQLBackup():
     def backupDB(self):
         """ Backup all Databases in a Directory with Logrotate """
         runner = CmdRunner()  
-        cmd = "mysql --defaults-extra-file=mysqldump.cnf -e 'show databases' -s --skip-column-names"
+        cmd = "mysql --defaults-extra-file=mysql.cnf -e 'show databases' -s --skip-column-names"
         runner.runCmd(cmd)
         errors = runner.getStderr()
         if errors:
@@ -84,11 +84,11 @@ class MySQLBackup():
         
         path = os.path.join(self.backup_path, self.thisbackup_path)
         
-        unwanted_db = {"sys", "information_schema"}
+        unwanted_db = {"sys", "information_schema", "mysql", "performance_schema"}
         databases = [ele for ele in databases if ele not in unwanted_db]
         for db in databases:
             if db.strip() is not "":
-                cmd = "mysqldump --defaults-extra-file=mysqldump.cnf --single-transaction %s > %s/%s.sql" % (db, path, db)
+                cmd = "mysqldump --defaults-extra-file=mysql.cnf --single-transaction %s > %s/%s.sql" % (db, path, db)
                 # print("%s\n" % cmd)
                 if self.debug is False:
                     print("Backup DB: %s" % db)
