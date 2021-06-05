@@ -131,6 +131,8 @@ class MySQLBackup():
         """ do a MysQL native command """
         cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
         os.system(cmd)
+        if self.debug is True:
+            print(cmd)
 
     def doit(self, tarball):
         """ really restore data """
@@ -168,8 +170,8 @@ class MySQLBackup():
                 os.system(cmd)
 
         #change to InnoDB
-        self.doMySQL("ALTER TABLE mysql.db ENGINE=InnoDB;")
-        self.doMySQL("ALTER TABLE mysql.columns_priv ENGINE=InnoDB;")
+        #self.doMySQL("ALTER TABLE mysql.db ENGINE=InnoDB;")
+        #self.doMySQL("ALTER TABLE mysql.columns_priv ENGINE=InnoDB;")
 
         # restoring User Privileges
         # read yaml File
@@ -195,15 +197,19 @@ class MySQLBackup():
 
         for u in self.Users:
             print("Creating User: %s" % u.get_username())
-      
+            
+            # delete user if exists
+            self.doMySQL("DROP USER IF EXISTS \"%s\"@\"%s\";" % (u.get_username(), u.get_hosts()))
+            
             self.doMySQL("CREATE USER \"%s\"@\"%s\" IDENTIFIED BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
-
             self.doMySQL("ALTER USER \"%s\"@\"%s\" IDENTIFIED WITH mysql_native_password BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
 
             for p in u.get_privileges():
+                # replace ' with "
+                p = re.sub('\'', '"', p)  # noqa
                 self.doMySQL(p)
             
-            self.doMySQL("FLUSH PRIVILEGES;")
+            self.doMySQL("FLUSH PRIVILEGES;") 
             
                 
         
