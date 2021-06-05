@@ -1,14 +1,10 @@
 import yaml
 import os
 from pathlib import Path
-from libs.CmdRunner import CmdRunner
-from datetime import date, datetime
+from datetime import datetime
 from time import sleep
-import sys
 import fnmatch
 import re
-import timeit
-import time
 from User import User
 
 
@@ -48,19 +44,19 @@ class MySQLBackup():
         # relative path?
         part1 = path[:2]
         part2 = path[:3]
-        if './' == part1 or '../' == part2:
+        if part1 == './' or part2 == '../':
             # relative
-            path = os.path.join(self.rootDir, path)  
-        
+            path = os.path.join(self.rootDir, path)
+
         path = re.sub('\.\/', '', path)  # noqa
         path = re.sub('\.\.\/', '', path)  # noqa
- 
+
         self.backup_path = path
-           
+
     def search_files(self, directory, pattern):
         """ search for pattern in directory recursive """
         data = []
-        for dirpath, dirnames, files in os.walk(directory):
+        for dirpath, dirnames, files in os.walk(directory):  #noqa
             for f in fnmatch.filter(files, pattern):
                 data.append(os.path.join(dirpath, f))
         return data
@@ -71,9 +67,9 @@ class MySQLBackup():
         while valid is False:
             valid = True
             try:
-                question="Select Tarball Number: "
-                number=int(input(question).strip())
-                
+                question = "Select Tarball Number: "
+                number = int(input(question).strip())
+
                 if number not in range(1, maxvalue+1):
                     print("\nPlease select a valid Backup (1..%s)!" % max)
                     valid = False
@@ -81,7 +77,7 @@ class MySQLBackup():
                 print("\nThat is not a number!")
                 valid = False
         return number
-    
+
     def restoreDB(self):
         """ will restore the DB """
         files = self.search_files(self.backup_path, "*.tar.bzip2")
@@ -101,16 +97,16 @@ class MySQLBackup():
         for f in data:
             print("(%s) %s" % (index, os.path.basename(f[0])))
             tars.append([index, f[0]])
-            index+=1
+            index += 1
         if self.debug is False:
             number = self.repeat_question(index-1)
-        
+
         if self.debug is True:
-            backup = tars[0][1]
+            backuptar = tars[0][1]
         else:
-            backup = tars[int(number-1)][1]
-            
-        self.startBackup(backup)
+            backuptar = tars[int(number-1)][1]
+
+        self.startBackup(backuptar)
 
         
     def startBackup(self, tarball):
@@ -150,7 +146,7 @@ class MySQLBackup():
         if self.debug is False:
             for f in files:
                 print("Importing %s ..." % os.path.basename(f))
-                filename, file_extension = os.path.splitext(os.path.basename(f))
+                filename, file_extension = os.path.splitext(os.path.basename(f))  #noqa
                 dbname = filename
                 
                 # first drop DB
@@ -174,7 +170,7 @@ class MySQLBackup():
         with open(path, 'rt') as f:
             users = yaml.safe_load(f.read())
         
-        self.Users = [] 
+        self.Users = []  
         for block in users.values():
             u = User()
             

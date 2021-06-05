@@ -6,16 +6,10 @@
 
 extension-pkg-whitelist=PyQt5, cv2, numpy
 
-ignored-modules = cv2
-
-generated-members = cv2.*
 
 # Add files or directories to the blacklist. They should be base names, not paths.
 ignore=__init__.py
 
-# Add files or directories matching the regex patterns to the blacklist. The
-# regex matches against base names, not paths.
-ignore-patterns=Testings.py
 
 disable=bare-except,
     locally-disabled,
@@ -39,6 +33,8 @@ disable=bare-except,
     too-many-statements,
     too-few-public-methods,
     too-many-arguments,
-    wrong-import-position
+    wrong-import-position,
+    attribute-defined-outside-init,
+    anomalous-backslash-in-string
     
 

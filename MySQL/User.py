@@ -22,8 +22,8 @@ class User():
         self.__username = value
 
 
-    def set_hosts(self, value):
-        self.__hosts = value
+    def set_hosts(self, value): 
+        self.__hosts = value 
 
 
     def set_pwd(self, value):
