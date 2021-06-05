@@ -9,28 +9,29 @@ from User import User
 
 
 class MySQLBackup():
-    
+    """ class to Backup MySQL """
+
     prefix = "mysql-backup-"
     debug = True
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
-        
-        self.config = self.load_yml()    
+
+        self.config = self.load_yml()
         try:
             # ensure BackupPath exists
             self.checkBackupPath()
         except Exception as ex:
             print(ex)
-        
+
         info = ("MySQLRestore\n"
-        "(c) Mag. Stefan Hagmann 2021\n"
-        "this tool is restoring MySQL databases, from MySQLBackup Tarballs\n"
-        "restoring from %s\n"
-        "------------------------------------------------------------------\n" % self.backup_path) 
+                "(c) Mag. Stefan Hagmann 2021\n"
+                "this tool is restoring MySQL databases, from MySQLBackup Tarballs\n"
+                "restoring from %s\n"
+                "------------------------------------------------------------------\n" % self.backup_path)
         print(info)
-        
+
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
@@ -60,7 +61,7 @@ class MySQLBackup():
             for f in fnmatch.filter(files, pattern):
                 data.append(os.path.join(dirpath, f))
         return data
-    
+
     def repeat_question(self, maxvalue):
         """ ask until it meets the requirements """
         valid = False
@@ -81,16 +82,16 @@ class MySQLBackup():
     def restoreDB(self):
         """ will restore the DB """
         files = self.search_files(self.backup_path, "*.tar.bzip2")
-        data=[]
+        data = []
         for f in files:
             # extract dates
             p = re.compile("\d{4}-\d{1,2}-\d{1,2}")  # noqa
-            erg = p.findall(f) 
+            erg = p.findall(f)
             if erg:
                 data.append([f, erg[0]])
         # sort with key, take the date as key
         data.sort(key=lambda the_file: the_file[1])
-        
+
         print("Which backup schould be restored?")
         tars = []
         index = 1
@@ -108,72 +109,74 @@ class MySQLBackup():
 
         self.startBackup(backuptar)
 
-        
+
     def startBackup(self, tarball):
         """ will start the restoring of the backup """
         print("\nStart restoring of backup %s" % os.path.basename(tarball))
         print("Existing datbases will be overwritten!")
-        question="Are you sure (y): "
-        
+        question = "Are you sure (y): "
+
+        # without question
         if self.debug is True:
             self.doit(tarball)
 
         if self.debug is False:
-            answer=input(question).strip()
+            answer = input(question).strip()
             if answer.lower() in "y":
                 self.doit(tarball)
             else:
                 print("-exit -")
-            
+
     def doit(self, tarball):
         """ really restore data """
-        
+
         #create full path
         fullpath = re.sub('\.tar\.bzip2', '', tarball)  # noqa
-        
+        topath = Path(fullpath).parent.absolute()
         # untar Backup
         print("\nExtracting tarball ... in progress ...")
-        
+
         if os.path.isdir(fullpath) is False:
-            cmd = "tar xfj %s" % tarball
+            cmd = "tar xfj %s -C %s" % (tarball, topath)
+            print(cmd)
             os.system(cmd)
             print("done ...")
         else:
             print("Tarball is already extracted ... skipping ...")
-        
+
         files = self.search_files(fullpath, "*.sql")
-        
+
         if self.debug is False:
             for f in files:
                 print("Importing %s ..." % os.path.basename(f))
                 filename, file_extension = os.path.splitext(os.path.basename(f))  #noqa
                 dbname = filename
-                
+
                 # first drop DB
                 cmd = "DROP DATABASE IF EXISTS %s;" % dbname
                 cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
                 os.system(cmd)
-    
+
                 # create DB new
                 cmd = "CREATE DATABASE %s;" % dbname
                 cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
                 os.system(cmd)
-                
+
                 sleep(0.5)
                 # now import new one
                 cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (dbname, f)
                 os.system(cmd)
-        
+
         # restoring User Privileges
         # read yaml File
         path = os.path.join(fullpath, 'users.yaml')
         with open(path, 'rt') as f:
             users = yaml.safe_load(f.read())
-        
-        self.Users = []  
+
+        self.Users = []
         for block in users.values():
             u = User()
-            
+
             for k, v in block.items():
                 if k in "username":
                     u.set_username(v)
@@ -187,9 +190,20 @@ class MySQLBackup():
             self.Users.append(u)
             
         for u in self.Users:
-            print(u)
-                    
+            cmd = "CREATE USER '%s'@'%s' IDENTIFIED BY '%s';" % (u.get_username(), u.get_hosts(), u.get_pwd())
+            print(cmd)
+
                 
+            cmd = "ALTER USER '%s'@'%s' IDENTIFIED WITH mysql_native_password BY '%s';" % (u.get_username(), u.get_hosts(), u.get_pwd())
+            print(cmd)
+            
+            kk = u.get_privileges()
+            for p in u.get_privileges():
+                cmd = "%s" % p
+                print(cmd)
+            
+            cmd = "FLUSH PRIVILEGES;"
+            print(cmd)
                 
         
             
