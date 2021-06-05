@@ -9,6 +9,7 @@ import fnmatch
 import re
 import timeit
 import time
+from User import User
 
 
 class MySQLBackup():
@@ -67,9 +68,9 @@ class MySQLBackup():
         if os.path.isdir(path) is False:
             os.makedirs(path)
         else:
-            print("Das Backup %s gibt es bereits" % path)
-            print("-exit-")
             if self.debug is False:
+                print("Das Backup %s gibt es bereits" % path)
+                print("-exit-")
                 sys.exit()
 
     def backupDB(self):
@@ -96,8 +97,77 @@ class MySQLBackup():
         
         if self.debug is False:
             print("-done-\n")
-        
+            
+        self.backupUsers()
         self.createTAR()
+        
+    def backupUsers(self):
+        """ backup Users and Privileges to a yaml file """
+        self.Users = []
+        
+        runner = CmdRunner()  
+        cmd = "mysql --defaults-extra-file=mysql.cnf -e 'SELECT host,user,authentication_string FROM mysql.user;'"
+        runner.runCmd(cmd)
+        errors = runner.getStderr()
+        if errors:
+            print(errors)
+        userdata = runner.getLines()
+        # remove first line
+        userdata.pop(0)
+        
+        for line in userdata:
+            if line:
+                parts = line.split()
+                username = parts[1]
+                if username not in ["root", "debian-sys-maint","mysql.sys", "mysql.session"]:
+                    u = User()
+                    u.set_hosts(parts[0])
+                    u.set_username(parts[1])
+                    u.set_pwd(parts[2])
+                    
+                    self.Users.append(u)
+                    
+
+                    
+        # now get Privileges
+        for u in self.Users:
+            # all hosts
+            cmd = "mysql --defaults-extra-file=mysql.cnf -e \"SHOW GRANTS FOR '%s'@'%s';\"" % (u.get_username(), "%")
+            runner.runCmd(cmd)
+            errors = runner.getStderr()
+            userdata = runner.getLines()
+
+            for line in userdata:
+                if "error" not in line.lower():
+                    if len(line)>0:
+                        u.add_privilege(line)
+                
+            # localhost
+            cmd = "mysql --defaults-extra-file=mysql.cnf -e \"SHOW GRANTS FOR '%s'@'localhost';\"" % (u.get_username())
+            runner.runCmd(cmd)
+            errors = runner.getStderr()
+            userdata = runner.getLines()
+
+            for line in userdata:
+                if "error" not in line.lower():
+                    if len(line)>0:
+                        u.add_privilege(line)
+            
+        # create yAMl File
+        dict_file = {}
+        for u in self.Users:
+            data = {}
+            data['privs'] = u.get_privileges()
+            data['username'] = u.get_username()
+            data['hosts'] = u.get_hosts()
+            data['pwd'] = u.get_pwd()            
+            
+            dict_file[u.get_username()] = data
+
+        path = os.path.join(self.backup_path, self.thisbackup_path, 'users.yaml')
+        with open(path, 'w') as file:
+            documents = yaml.dump(dict_file, file)
+
         
     def createTAR(self):
         """ create Tarballs """

@@ -1,6 +1,7 @@
 ## MySQL
 ## MySQL/Backup
 `MySQLBackup.py` will help you to create mysqldumps of all of your databases.  
+It works with MySQL 5.7>.  
 You configure the behavor in `config.yaml`
 ```yaml
 # where to store the Backups, for realtive path start with ./ or ../
