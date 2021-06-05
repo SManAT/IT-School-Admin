@@ -195,6 +195,9 @@ class MySQLBackup():
 
         for u in self.Users:
             print("Creating User: %s" % u.get_username())
+
+            mysql_upgrade -u root -p --force
+mysqlcheck -u root -p --auto-repair --optimize --all-databases
             
             self.doMySQL("CREATE USER \"%s\"@\"%s\" IDENTIFIED BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
 
