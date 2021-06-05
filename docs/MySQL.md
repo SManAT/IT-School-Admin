@@ -17,5 +17,5 @@ You will get a Backup in a ***.tar.bzip2** file.
 
 ## MySQL/Restore
 Just run `MySQLRestore.py`.  
-It will also restore the users and their privileges.  
+The script will also restore the users and their privileges.  
 Be aware, that all **databases** and **users** with same name are going to be dropped first!
