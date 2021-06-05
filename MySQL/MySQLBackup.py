@@ -3,33 +3,32 @@ import os
 from pathlib import Path
 from libs.CmdRunner import CmdRunner
 from datetime import date, datetime
-from time import sleep
 import sys
 import fnmatch
 import re
-import timeit
-import time
+
 from User import User
 
 
 class MySQLBackup():
-    
+    """ Mysql Backup """
+
     prefix = "mysql-backup-"
     debug = False
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
-        
+
         self.config = self.load_yml()    
         versions = self.config['misc']['versions']
-        
+
         info = ("MySQLBackup\n"
-        "(c) Mag. Stefan Hagmann 2021\n"
-        "this tool is creating mysqldumps of all MySQL databases\n"
-        "  - will keep last %s Versions of Backups\n"
-        "-------------------------------------------------------\n" % versions) 
-        print(info)
+                "(c) Mag. Stefan Hagmann 2021\n"
+                "this tool is creating mysqldumps of all MySQL databases\n"
+                "  - will keep last %s Versions of Backups\n"
+                "-------------------------------------------------------\n" % versions)
+        print(info) 
 
         try:
             # ensure BackupPath exists
@@ -49,7 +48,7 @@ class MySQLBackup():
         # relative path?
         part1 = path[:2]
         part2 = path[:3]
-        if './' == part1 or '../' == part2:
+        if part1 == './' or part2 == '../':
             # relative
             path = os.path.join(self.rootDir, path)
         if os.path.isdir(path) is False:
@@ -82,29 +81,29 @@ class MySQLBackup():
         if errors:
             print(errors)
         databases = runner.getLines()
-        
+
         path = os.path.join(self.backup_path, self.thisbackup_path)
-        
+
         unwanted_db = {"sys", "information_schema", "mysql", "performance_schema"}
         databases = [ele for ele in databases if ele not in unwanted_db]
         for db in databases:
-            if db.strip() is not "":
+            if len(db.strip()) > 0:
                 cmd = "mysqldump --defaults-extra-file=mysql.cnf --single-transaction %s > %s/%s.sql" % (db, path, db)
                 # print("%s\n" % cmd)
                 if self.debug is False:
                     print("Backup DB: %s" % db)
                     os.system(cmd)
-        
+
         if self.debug is False:
             print("-done-\n")
-            
+
         self.backupUsers()
         self.createTAR()
-        
+
     def backupUsers(self):
         """ backup Users and Privileges to a yaml file """
         self.Users = []
-        
+
         runner = CmdRunner()  
         cmd = "mysql --defaults-extra-file=mysql.cnf -e 'SELECT host,user,authentication_string FROM mysql.user;'"
         runner.runCmd(cmd)
@@ -114,19 +113,19 @@ class MySQLBackup():
         userdata = runner.getLines()
         # remove first line
         userdata.pop(0)
-        
+
         for line in userdata:
             if line:
                 parts = line.split()
                 username = parts[1]
-                if username not in ["root", "debian-sys-maint","mysql.sys", "mysql.session"]:
+                if username not in ["root", "debian-sys-maint", "mysql.sys", "mysql.session"]:
                     u = User()
                     u.set_hosts(parts[0])
                     u.set_username(parts[1])
                     u.set_pwd(parts[2])
-                    
+
                     self.Users.append(u)
-                    
+
         # now get Privileges
         for u in self.Users:
             # all hosts
@@ -168,7 +167,7 @@ class MySQLBackup():
 
         path = os.path.join(self.backup_path, self.thisbackup_path, 'users.yaml')
         with open(path, 'w') as file:
-            documents = yaml.dump(dict_file, file)
+            documents = yaml.dump(dict_file, file)  #noqa
 
         
     def createTAR(self):
@@ -202,13 +201,13 @@ class MySQLBackup():
                 data.append([f, erg[0]])
         # keep versions
         versions = self.config['misc']['versions']
-        
+
         # sort with key, take the date as key
         data.sort(key=lambda the_file: the_file[1])
-        
+
         while(len(data) >= int(versions)+1):
             # delete oldest backup Versions
-            cmd = "rm %s" % data[0][0]            
+            cmd = "rm %s" % data[0][0]
             if self.debug is False:
                 os.system(cmd)
                 # remove first element
@@ -220,32 +219,20 @@ class MySQLBackup():
     def search_files(self, directory, pattern):
         """ search for pattern in directory recursive """
         data = []
-        for dirpath, dirnames, files in os.walk(directory):
+        for dirpath, dirnames, files in os.walk(directory):  #noqa
             for f in fnmatch.filter(files, pattern):
                 data.append(os.path.join(dirpath, f))
         return data
 
-            
-            
-
 
 if __name__ == "__main__":
-    start_time = datetime.now() 
-    
-    backup = MySQLBackup()    
+    start_time = datetime.now()
+
+    backup = MySQLBackup()
     backup.backupDB()
     backup.cleanUpBackups()
-    
+
     time_elapsed = datetime.now() - start_time 
     print("MySQL Backup finished ...")
     print('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
 
-    
-    
-
-"""
---single-transaction uses a consistent read and guarantees that data seen by mysqldump does not change.
-
-IMPORT
-mysql -u root -p -e'flush privileges;'
-"""

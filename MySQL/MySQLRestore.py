@@ -126,6 +126,11 @@ class MySQLBackup():
                 self.doit(tarball)
             else:
                 print("-exit -")
+                
+    def doMySQL(self, cmd):
+        """ do a MysQL native command """
+        cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
+        os.system(cmd)
 
     def doit(self, tarball):
         """ really restore data """
@@ -138,7 +143,6 @@ class MySQLBackup():
 
         if os.path.isdir(fullpath) is False:
             cmd = "tar xfj %s -C %s" % (tarball, topath)
-            print(cmd)
             os.system(cmd)
             print("done ...")
         else:
@@ -153,19 +157,19 @@ class MySQLBackup():
                 dbname = filename
 
                 # first drop DB
-                cmd = "DROP DATABASE IF EXISTS %s;" % dbname
-                cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
-                os.system(cmd)
+                self.doMySQL("DROP DATABASE IF EXISTS %s;" % dbname)
 
                 # create DB new
-                cmd = "CREATE DATABASE %s;" % dbname
-                cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
-                os.system(cmd)
+                self.doMySQL("CREATE DATABASE %s;" % dbname)
 
                 sleep(0.5)
                 # now import new one
                 cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (dbname, f)
                 os.system(cmd)
+
+        #change to InnoDB
+        self.doMySQL("ALTER TABLE mysql.db ENGINE=InnoDB;")
+        self.doMySQL("ALTER TABLE mysql.columns_priv ENGINE=InnoDB;")
 
         # restoring User Privileges
         # read yaml File
@@ -184,26 +188,23 @@ class MySQLBackup():
                     u.set_hosts(v)
                 if k in "pwd":
                     u.set_pwd(v)
-                    
+
                 if k in "privs":
                     u.set_privileges(v)
             self.Users.append(u)
-            
-        for u in self.Users:
-            cmd = "CREATE USER '%s'@'%s' IDENTIFIED BY '%s';" % (u.get_username(), u.get_hosts(), u.get_pwd())
-            print(cmd)
 
-                
-            cmd = "ALTER USER '%s'@'%s' IDENTIFIED WITH mysql_native_password BY '%s';" % (u.get_username(), u.get_hosts(), u.get_pwd())
-            print(cmd)
+        for u in self.Users:
+            print("Creating User: %s" % u.get_username())
             
-            kk = u.get_privileges()
+            self.doMySQL("CREATE USER \"%s\"@\"%s\" IDENTIFIED BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
+
+            self.doMySQL("ALTER USER \"%s\"@\"%s\" IDENTIFIED WITH mysql_native_password BY \"%s\";" % (u.get_username(), u.get_hosts(), u.get_pwd()))
+
             for p in u.get_privileges():
-                cmd = "%s" % p
-                print(cmd)
+                self.doMySQL(p)
             
-            cmd = "FLUSH PRIVILEGES;"
-            print(cmd)
+            self.doMySQL("FLUSH PRIVILEGES;")
+            
                 
         
             
