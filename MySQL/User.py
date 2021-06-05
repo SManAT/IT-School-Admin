@@ -1,16 +1,3 @@
-import yaml
-import os
-from pathlib import Path
-from libs.CmdRunner import CmdRunner
-from datetime import date, datetime
-from time import sleep
-import sys
-import fnmatch
-import re
-import timeit
-import time
-
-
 class User():
     """ Data Wrapper """
     def __init__(self):
@@ -48,13 +35,21 @@ class User():
     def get_privileges(self):
         return self.privileges
     
+    def set_privileges(self, value):
+        self.privileges = value
+    
     def print_privileges(self):
         for line in self.privileges:
             print(line)
 
         
     def __str__(self):
-        return("%s; %s; %s" % (self.get_username(), self.get_hosts(), self.get_pwd()))
+        msg = "Username: %s\nHosts: %s\nPwd: %s\n" % (self.get_username(), self.get_hosts(), self.get_pwd())
+        msg += "Privilegs:\n"
+        for p in self.get_privileges():
+            msg += p+"\n"
+                                    
+        return msg
 
     
     

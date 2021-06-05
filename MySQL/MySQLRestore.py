@@ -9,6 +9,7 @@ import fnmatch
 import re
 import timeit
 import time
+from User import User
 
 
 class MySQLBackup():
@@ -51,8 +52,8 @@ class MySQLBackup():
             # relative
             path = os.path.join(self.rootDir, path)  
         
-        path = re.sub('\.\/', '', path)
-        path = re.sub('\.\.\/', '', path)     
+        path = re.sub('\.\/', '', path)  # noqa
+        path = re.sub('\.\.\/', '', path)  # noqa
  
         self.backup_path = path
            
@@ -64,7 +65,7 @@ class MySQLBackup():
                 data.append(os.path.join(dirpath, f))
         return data
     
-    def repeat_question(self, max):
+    def repeat_question(self, maxvalue):
         """ ask until it meets the requirements """
         valid = False
         while valid is False:
@@ -73,7 +74,7 @@ class MySQLBackup():
                 question="Select Tarball Number: "
                 number=int(input(question).strip())
                 
-                if number not in range(1, max+1):
+                if number not in range(1, maxvalue+1):
                     print("\nPlease select a valid Backup (1..%s)!" % max)
                     valid = False
             except ValueError:
@@ -87,7 +88,7 @@ class MySQLBackup():
         data=[]
         for f in files:
             # extract dates
-            p = re.compile("\d{4}-\d{1,2}-\d{1,2}")
+            p = re.compile("\d{4}-\d{1,2}-\d{1,2}")  # noqa
             erg = p.findall(f) 
             if erg:
                 data.append([f, erg[0]])
@@ -132,8 +133,7 @@ class MySQLBackup():
         """ really restore data """
         
         #create full path
-        fullpath = re.sub('\.tar\.bzip2', '', tarball)
-        print(fullpath)
+        fullpath = re.sub('\.tar\.bzip2', '', tarball)  # noqa
         
         # untar Backup
         print("\nExtracting tarball ... in progress ...")
@@ -146,27 +146,55 @@ class MySQLBackup():
             print("Tarball is already extracted ... skipping ...")
         
         files = self.search_files(fullpath, "*.sql")
-        for f in files:
-            print("Importing %s ..." % os.path.basename(f))
-            filename, file_extension = os.path.splitext(os.path.basename(f))
-            dbname = filename
-            
-            # first drop DB
-            cmd = "DROP DATABASE IF EXISTS %s;" % dbname
-            cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
-            os.system(cmd)
-
-            # create DB new
-            cmd = "CREATE DATABASE %s;" % dbname
-            cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
-            os.system(cmd)
-            
-            sleep(0.5)
-            # now import new one
-            cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (dbname, f)
-            os.system(cmd)
         
+        if self.debug is False:
+            for f in files:
+                print("Importing %s ..." % os.path.basename(f))
+                filename, file_extension = os.path.splitext(os.path.basename(f))
+                dbname = filename
+                
+                # first drop DB
+                cmd = "DROP DATABASE IF EXISTS %s;" % dbname
+                cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
+                os.system(cmd)
+    
+                # create DB new
+                cmd = "CREATE DATABASE %s;" % dbname
+                cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
+                os.system(cmd)
+                
+                sleep(0.5)
+                # now import new one
+                cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (dbname, f)
+                os.system(cmd)
         
+        # restoring User Privileges
+        # read yaml File
+        path = os.path.join(fullpath, 'users.yaml')
+        with open(path, 'rt') as f:
+            users = yaml.safe_load(f.read())
+        
+        self.Users = [] 
+        for block in users.values():
+            u = User()
+            
+            for k, v in block.items():
+                if k in "username":
+                    u.set_username(v)
+                if k in "hosts":
+                    u.set_hosts(v)
+                if k in "pwd":
+                    u.set_pwd(v)
+                    
+                if k in "privs":
+                    u.set_privileges(v)
+            self.Users.append(u)
+            
+        for u in self.Users:
+            print(u)
+                    
+                
+                
         
             
         

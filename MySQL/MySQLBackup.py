@@ -127,8 +127,6 @@ class MySQLBackup():
                     
                     self.Users.append(u)
                     
-
-                    
         # now get Privileges
         for u in self.Users:
             # all hosts
