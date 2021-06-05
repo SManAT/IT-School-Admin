@@ -134,6 +134,8 @@ class MySQLBackup():
             runner.runCmd(cmd)
             errors = runner.getStderr()
             userdata = runner.getLines()
+            # remove first element, only info
+            userdata.pop(0)
 
             for line in userdata:
                 if "error" not in line.lower():
@@ -145,6 +147,8 @@ class MySQLBackup():
             runner.runCmd(cmd)
             errors = runner.getStderr()
             userdata = runner.getLines()
+            # remove first element, only info
+            userdata.pop(0)
 
             for line in userdata:
                 if "error" not in line.lower():
