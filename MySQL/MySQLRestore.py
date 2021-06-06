@@ -5,14 +5,15 @@ from datetime import datetime
 from time import sleep
 import fnmatch
 import re
-from User import User
+import sys
+from MySQL.libs.User import User
 
 
 class MySQLBackup():
     """ class to Backup MySQL """
 
     prefix = "mysql-backup-"
-    debug = True
+    debug = False
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
@@ -51,6 +52,9 @@ class MySQLBackup():
         path = re.sub('\.\/', '', path)  # noqa
         path = re.sub('\.\.\/', '', path)  # noqa
 
+        if os.path.isdir(path) is False:
+            os.makedirs(path)
+
         self.backup_path = path
 
     def search_files(self, directory, pattern):
@@ -67,7 +71,7 @@ class MySQLBackup():
         while valid is False:
             valid = True
             try:
-                question = "Select Tarball Number: "
+                question = "\nSelect Tarball Number: "
                 number = int(input(question).strip())
 
                 if number not in range(1, maxvalue+1):
@@ -78,9 +82,19 @@ class MySQLBackup():
                 valid = False
         return number
 
+    def exitScript(self, value):
+        """ stop it """
+        print("No Backups in %s found!" % value)
+        print("-exit-")
+        sys.exit()
+
     def restoreDB(self):
         """ will restore the DB """
         files = self.search_files(self.backup_path, "*.tar.bzip2")
+
+        if len(files) == 0:
+            self.exitScript(self.backup_path)
+
         data = []
         for f in files:
             # extract dates
@@ -137,7 +151,7 @@ class MySQLBackup():
 
         # create full path
         fullpath = re.sub('\.tar\.bzip2', '', tarball)  # noqa
-        topath = Path(fullpath).parent.absolute()
+        topath = Path(fullpath).parent.parent.absolute()
         # untar Backup
         print("\nExtracting tarball ... in progress ...")
 
@@ -223,11 +237,3 @@ if __name__ == "__main__":
     time_elapsed = datetime.now() - start_time
     print("\nMySQL Restore finished ...")
     print('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
-
-
-"""
---single-transaction uses a consistent read and guarantees that data seen by mysqldump does not change.
-
-IMPORT
-mysql -u root -p -e'flush privileges;'
-"""

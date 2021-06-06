@@ -1,7 +1,7 @@
 [mysql]
 user=root
-password=mysqlmaster
+password=<password>
 
 [mysqldump]
 user=root
-password=mysqlmaster
+password=<password>

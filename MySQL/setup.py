@@ -1,4 +1,4 @@
-__author__ = 'Stefan Hagmann'
+__author__ = 'Mag. Stefan Hagmann'
 
 from distutils.core import setup
 

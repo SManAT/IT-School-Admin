@@ -1,12 +1,13 @@
 import yaml
 import os
 from pathlib import Path
-from libs.CmdRunner import CmdRunner
 from datetime import date, datetime
 import sys
 import fnmatch
 import re
-from User import User
+from MySQL.libs.User import User
+from MySQL.libs.CmdRunner import CmdRunner
+
 
 
 class MySQLBackup():
@@ -53,8 +54,8 @@ class MySQLBackup():
         if os.path.isdir(path) is False:
             os.makedirs(path)
 
-        path = re.sub('\.\/', '', path)
-        path = re.sub('\.\.\/', '', path)
+        path = re.sub('\.\/', '', path)  # noqa
+        path = re.sub('\.\.\/', '', path)  # noqa
         self.backup_path = path
 
         # create dump-YYYY-MM-DD directory
@@ -67,13 +68,12 @@ class MySQLBackup():
         self.tarball = "%s.tar.bzip2" % os.path.join(self.backup_path, self.thisbackup_path)
         if os.path.isfile(self.tarball) is True:
             self.exitScript(self.tarball)
-            
+
         path = os.path.join(path, self.thisbackup_path)
         if os.path.isdir(path) is False:
-            os.makedirs(path)            
+            os.makedirs(path)
         else:
             self.exitScript(path)
-            
 
     def exitScript(self, value):
         """ stop it """
@@ -81,8 +81,7 @@ class MySQLBackup():
             print("Das Backup %s gibt es bereits" % value)
             print("-exit-")
             sys.exit()
-        
-        
+
     def backupDB(self):
         """ Backup all Databases in a Directory with Logrotate """
         runner = CmdRunner()
@@ -200,7 +199,7 @@ class MySQLBackup():
             # delete Backup Dir
             cmd = "rm -r %s" % os.path.join(self.backup_path,
                                             self.thisbackup_path)
-            
+
             os.system(cmd)
             print("-done-\n")
 
@@ -212,7 +211,7 @@ class MySQLBackup():
         files = self.search_files(self.backup_path, "*.tar.bzip2")
         for f in files:
             # extract dates
-            p = re.compile("\d{4}-\d{1,2}-\d{1,2}")
+            p = re.compile("\d{4}-\d{1,2}-\d{1,2}")  # noqa
             erg = p.findall(f)
             if erg:
                 data.append([f, erg[0]])
@@ -222,7 +221,7 @@ class MySQLBackup():
         # sort with key, take the date as key
         data.sort(key=lambda the_file: the_file[1])
 
-        while(len(data) >= int(versions) + 1):
+        while(len(data) >= (int(versions) + 1)):
             # delete oldest backup Versions
             cmd = "rm %s" % data[0][0]
             if self.debug is False:
