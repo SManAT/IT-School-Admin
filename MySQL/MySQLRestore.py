@@ -6,7 +6,7 @@ from time import sleep
 import fnmatch
 import re
 import sys
-from MySQL.libs.User import User
+from libs.User import User
 
 
 class MySQLBackup():

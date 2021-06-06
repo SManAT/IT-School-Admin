@@ -5,9 +5,8 @@ from datetime import date, datetime
 import sys
 import fnmatch
 import re
-from MySQL.libs.User import User
-from MySQL.libs.CmdRunner import CmdRunner
-
+from libs.User import User
+from libs.CmdRunner import CmdRunner
 
 
 class MySQLBackup():
@@ -65,7 +64,8 @@ class MySQLBackup():
             self.prefix, today.strftime("%Y-%m-%d"))
 
         # is there a today backup?
-        self.tarball = "%s.tar.bzip2" % os.path.join(self.backup_path, self.thisbackup_path)
+        self.tarball = "%s.tar.bzip2" % os.path.join(
+            self.backup_path, self.thisbackup_path)
         if os.path.isfile(self.tarball) is True:
             self.exitScript(self.tarball)
 
