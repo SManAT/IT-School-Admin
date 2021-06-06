@@ -1,6 +1,7 @@
 ## MySQL
 It works with MySQL 5.7>.  
-The **Username** and **Password** for mysql ares stored in `mysql.cnf`.    
+The **Username** and **Password** for mysql ares stored in `mysql.cnf`.  
+Be sure to give `mysql.cnf` 400 rights, because there is listed a cleartext password!  
 You configure the behavor in `config.yaml`
 ```yaml
 # where to store the Backups, for realtive path start with ./ or ../
