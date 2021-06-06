@@ -105,7 +105,7 @@ class MySQLBackup():
         # sort with key, take the date as key
         data.sort(key=lambda the_file: the_file[1])
 
-        print("Which backup schould be restored?")
+        print("Which backup should be restored?")
         tars = []
         index = 1
         for f in data:
@@ -156,7 +156,7 @@ class MySQLBackup():
         print("\nExtracting tarball ... in progress ...")
 
         if os.path.isdir(fullpath) is False:
-            cmd = "tar xfj %s -C %s" % (tarball, topath)
+            cmd = "cd %s && tar xfj %s" % (topath, tarball)
             os.system(cmd)
             print("done ...")
         else:
