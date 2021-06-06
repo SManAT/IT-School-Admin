@@ -63,15 +63,26 @@ class MySQLBackup():
         self.thisbackup_path = "%s%s" % (
             self.prefix, today.strftime("%Y-%m-%d"))
 
+        # is there a today backup?
+        self.tarball = "%s.tar.bzip2" % os.path.join(self.backup_path, self.thisbackup_path)
+        if os.path.isfile(self.tarball) is True:
+            self.exitScript(self.tarball)
+            
         path = os.path.join(path, self.thisbackup_path)
         if os.path.isdir(path) is False:
-            os.makedirs(path)
+            os.makedirs(path)            
         else:
-            if self.debug is False:
-                print("Das Backup %s gibt es bereits" % path)
-                print("-exit-")
-                sys.exit()
+            self.exitScript(path)
+            
 
+    def exitScript(self, value):
+        """ stop it """
+        if self.debug is False:
+            print("Das Backup %s gibt es bereits" % value)
+            print("-exit-")
+            sys.exit()
+        
+        
     def backupDB(self):
         """ Backup all Databases in a Directory with Logrotate """
         runner = CmdRunner()
@@ -179,18 +190,17 @@ class MySQLBackup():
         if self.debug is False:
             print("Creating Tarball ...")
 
-        tarball = "%s.tar.bzip2" % os.path.join(
-            self.backup_path, self.thisbackup_path)
-        cd_cmd = "cd %s" % self.backup_path
+        full_path = os.path.join(self.backup_path, self.thisbackup_path)
         cmd = "tar cjf %s --acls --xattrs --warning=no-file-ignored %s" % (
-            tarball, self.thisbackup_path)
+            self.tarball, full_path)
 
         if self.debug is False:
             # tar it
-            os.system("%s && %s > /dev/null 2>&1" % (cd_cmd, cmd))
+            os.system("%s > /dev/null 2>&1" % (cmd))
             # delete Backup Dir
             cmd = "rm -r %s" % os.path.join(self.backup_path,
                                             self.thisbackup_path)
+            
             os.system(cmd)
             print("-done-\n")
 
