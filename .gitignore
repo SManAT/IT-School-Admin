@@ -6,10 +6,9 @@ DB_BACKUP/**
 *.tar.bz2
 *.tar.bzip2
 *.sql
-*.cnf
 users.yaml
-*/mysql.cnf
 
 .project
 .pydevproject
 
+MySQL/mysql.cnf
