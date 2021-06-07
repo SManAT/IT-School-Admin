@@ -19,6 +19,7 @@ class MySQLBackup():
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
+        self.extrafile = os.path.join(self.rootDir, 'mysql.cnf')
 
         self.config = self.load_yml()
         versions = self.config['misc']['versions']
@@ -86,7 +87,7 @@ class MySQLBackup():
     def backupDB(self):
         """ Backup all Databases in a Directory with Logrotate """
         runner = CmdRunner()
-        cmd = "mysql --defaults-extra-file=mysql.cnf -e 'show databases' -s --skip-column-names"
+        cmd = "mysql --defaults-extra-file=%s -e 'show databases' -s --skip-column-names" % self.extrafile
         runner.runCmd(cmd)
         errors = runner.getStderr()
         if errors:
@@ -100,8 +101,8 @@ class MySQLBackup():
         databases = [ele for ele in databases if ele not in unwanted_db]
         for db in databases:
             if len(db.strip()) > 0:
-                cmd = "mysqldump --defaults-extra-file=mysql.cnf --single-transaction %s > %s/%s.sql" % (
-                    db, path, db)
+                cmd = "mysqldump --defaults-extra-file=%s --single-transaction %s > %s/%s.sql" % (
+                    self.extrafile, db, path, db)
                 # print("%s\n" % cmd)
                 if self.debug is False:
                     print("Backup DB: %s" % db)
@@ -109,8 +110,8 @@ class MySQLBackup():
 
         if self.debug is False:
             print("-done-\n")
-
-        self.backupUsers()
+        if self.debug is False:
+            self.backupUsers()
         self.createTAR()
 
     def backupUsers(self):
@@ -118,7 +119,7 @@ class MySQLBackup():
         self.Users = []
 
         runner = CmdRunner()
-        cmd = "mysql --defaults-extra-file=mysql.cnf -e 'SELECT host,user,authentication_string FROM mysql.user;'"
+        cmd = "mysql --defaults-extra-file=%s -e 'SELECT host,user,authentication_string FROM mysql.user;'" % self.extrafile
         runner.runCmd(cmd)
         errors = runner.getStderr()
         if errors:
@@ -142,8 +143,8 @@ class MySQLBackup():
         # now get Privileges
         for u in self.Users:
             # all hosts
-            cmd = "mysql --defaults-extra-file=mysql.cnf -e \"SHOW GRANTS FOR '%s'@'%s';\"" % (
-                u.get_username(), "%")
+            cmd = "mysql --defaults-extra-file=%s -e \"SHOW GRANTS FOR '%s'@'%s';\"" % (
+                self.extrafile, u.get_username(), "%")
             runner.runCmd(cmd)
             errors = runner.getStderr()
             userdata = runner.getLines()
@@ -156,8 +157,8 @@ class MySQLBackup():
                         u.add_privilege(line)
 
             # localhost
-            cmd = "mysql --defaults-extra-file=mysql.cnf -e \"SHOW GRANTS FOR '%s'@'localhost';\"" % (
-                u.get_username())
+            cmd = "mysql --defaults-extra-file=%s -e \"SHOW GRANTS FOR '%s'@'localhost';\"" % (
+                self.extrafile, u.get_username())
             runner.runCmd(cmd)
             errors = runner.getStderr()
             userdata = runner.getLines()
@@ -190,8 +191,11 @@ class MySQLBackup():
         if self.debug is False:
             print("Creating Tarball ...")
 
+        # store relative Path
+        # tar -cjf site1.tar.bz2 -C /var/www/site1 .
+        # -C = change to that directory, dont miss . at the end!
         full_path = os.path.join(self.backup_path, self.thisbackup_path)
-        cmd = "tar cjf %s --acls --xattrs --warning=no-file-ignored %s" % (
+        cmd = "tar -cjf %s --warning=no-file-ignored -C %s ." % (
             self.tarball, full_path)
 
         if self.debug is False:

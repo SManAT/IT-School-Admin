@@ -18,6 +18,7 @@ class MySQLBackup():
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
+        self.extrafile = os.path.join(self.rootDir, 'mysql.cnf')
 
         self.config = self.load_yml()
         try:
@@ -141,7 +142,7 @@ class MySQLBackup():
 
     def doMySQL(self, cmd):
         """ do a MysQL native command """
-        cmd = "mysql --defaults-extra-file=mysql.cnf -e '%s'" % cmd
+        cmd = "mysql --defaults-extra-file=%s -e '%s'" % (self.extrafile, cmd)
         os.system(cmd)
         if self.debug is True:
             print(cmd)
@@ -151,12 +152,16 @@ class MySQLBackup():
 
         # create full path
         fullpath = re.sub('\.tar\.bzip2', '', tarball)  # noqa
-        topath = Path(fullpath).parent.parent.absolute()
+        topath = Path(fullpath).absolute()
         # untar Backup
         print("\nExtracting tarball ... in progress ...")
 
         if os.path.isdir(fullpath) is False:
-            cmd = "cd %s && tar xfj %s" % (topath, tarball)
+            #tar -xf $HOME/etc.backup.tar -C /tmp/data
+            #-C extract to Dir
+            os.system("mkdir -p %s" % fullpath)
+
+            cmd = "tar xfj %s -C %s" % (tarball, topath)
             os.system(cmd)
             print("done ...")
         else:
@@ -178,8 +183,8 @@ class MySQLBackup():
 
                 sleep(0.5)
                 # now import new one
-                cmd = "mysql --defaults-extra-file=mysql.cnf %s < %s" % (
-                    dbname, f)
+                cmd = "mysql --defaults-extra-file=%s %s < %s" % (
+                    self.extrafile, dbname, f)
                 os.system(cmd)
 
         # change to InnoDB
