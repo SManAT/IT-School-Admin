@@ -1,6 +1,6 @@
 #!/bin/bash
 # Set the name of the local user that will have the key mapped to
-USERNAME="username"
+USERNAME="ansible"
 
 cat > openssl.conf << EOL
 distinguished_name = req_distinguished_name
