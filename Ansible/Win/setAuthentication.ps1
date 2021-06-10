@@ -2,15 +2,14 @@
 # be sure to have certificate.pem file in same directory
 
 $certname = "ansible_certificate.pem"
-$username = "username"
+$username = "ansible"
 $pwd = "plaintext"
 
 Set-Item -Path WSMan:\localhost\Service\Auth\Certificate -Value $true
 
 ## Import Certificate ###################################################################
 
-$cert = New-Object -TypeName
-System.Security.Cryptography.X509Certificates.X509Certificate2
+$cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2
 $cert.Import("$certname")
 
 $store_name = [System.Security.Cryptography.X509Certificates.StoreName]::Root
