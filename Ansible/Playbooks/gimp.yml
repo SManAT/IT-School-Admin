@@ -1,0 +1,18 @@
+---
+- name: Set Gimp on Windows
+
+  vars:
+    version: 2.10.24
+    download_path: C:\Users\schule\Desktop\Downloads
+  
+  tasks:
+  - name: Create directory structure
+    ansible.windows.win_file:
+      path: {{download_path}}
+      state: directory
+
+  - name: Download Gimp to specified path only if modified
+    ansible.windows.win_get_url:
+      url: 'https://download.gimp.org/pub/gimp/v2.10/windows/gimp-{{version}}-setup.exe'
+      dest: '{{download_path}}\gimp-{{version}}-setup.exe'
+      force: no

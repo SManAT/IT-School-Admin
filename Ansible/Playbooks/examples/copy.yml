@@ -1,0 +1,8 @@
+---
+- hosts: win
+  tasks:
+  - name: Copy File
+    win_copy:
+      src: C:\output.pdf
+      dest: C:\ansible_examples\    
+      remote_src: yes
