@@ -1,5 +1,6 @@
 ---
 - name: Set Gimp on Windows
+  hosts: windows
 
   vars:
     version: 2.10.24
