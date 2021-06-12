@@ -8,7 +8,7 @@
   tasks:
   - name: Create directory structure
     ansible.windows.win_file:
-      path: {{download_path}}
+      path: '{{download_path}}'
       state: directory
 
   - name: Download Gimp to specified path only if modified

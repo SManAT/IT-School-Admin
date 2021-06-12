@@ -13,3 +13,4 @@ users.yaml
 .pydevproject
 
 MySQL/mysql.cnf
+*.odt#
