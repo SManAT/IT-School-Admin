@@ -1,0 +1,13 @@
+# see https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
+windows:
+  hosts:
+    # hostname allowed?
+    192.168.1.101:
+  vars:
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    ansible_port: 5985
+
+    ansible_winrm_transport: certificate
+    ansible_winrm_cert_pem: /home/schule/Schreibtisch/IT-School-Admin/Ansible/Linux/ansible_certificate.pem
+    ansible_winrm_cert_key_pem: /home/schule/Schreibtisch/IT-School-Admin/Ansible/Linux/ansible_certificate_key.pem

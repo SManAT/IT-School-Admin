@@ -1,0 +1,10 @@
+# see https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
+windows:
+  hosts:
+    # hostname allowed?
+    192.168.1.101:
+  vars:
+    ansible_user: ansible
+    ansible_password: schule
+    ansible_connection: winrm
+    ansible_winrm_transport: credssp

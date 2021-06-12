@@ -1,0 +1,5 @@
+# show config
+winrm get winrm/config
+
+# show Listener config
+winrm e winrm/config/Listener
