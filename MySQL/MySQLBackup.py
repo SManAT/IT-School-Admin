@@ -245,7 +245,8 @@ class MySQLBackup():
         # sort with key, take the date as key
         data.sort(key=lambda the_file: the_file[1])
 
-        while(len(data) >= (int(versions) + 1)):
+        limit = int(versions) + 1
+        while len(data) >= limit:
             # delete oldest backup Versions
             cmd = "rm %s" % data[0][0]
             if self.debug is False:

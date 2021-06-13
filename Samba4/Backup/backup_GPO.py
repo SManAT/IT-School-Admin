@@ -23,13 +23,14 @@ import sys
 import re
 import yaml
 from pathlib import Path
-from datetime import date
+from datetime import date, datetime
 from lib.CmdRunner import CmdRunner
+from lib.RotateBackup import RotateBackup
 
 
 class BackupGPOs():
     """ Group Policy Backup """
-    debug = True
+    debug = False
     prefix = "GPO-"
 
     def __init__(self):
@@ -37,7 +38,7 @@ class BackupGPOs():
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
 
         self.config = self.load_yml()
-        versions = self.config['misc']['versions']
+        versions = self.config['samba']['versions']
         info = ("BackupGPOs\n"
                 "(c) Mag. Stefan Hagmann 2021\n"
                 "will create a Backup from GPO's via samba-tool\n"
@@ -60,7 +61,7 @@ class BackupGPOs():
 
     def checkBackupPath(self):
         """ check if BackupPath exists """
-        path = self.config['misc']['backupPath']
+        path = self.config['samba']['backupPath']
         # relative path?
         part1 = path[:2]
         part2 = path[:3]
@@ -105,7 +106,29 @@ class BackupGPOs():
         ids = self.getGPOIDs()
         # backup
         self.backupIDs(ids)
+        self.createTAR()
 
+    def createTAR(self):
+        """ create Tarballs """
+        if self.debug is False:
+            print("Creating Tarball ...")
+
+        # store relative Path
+        # tar -cjf site1.tar.bz2 -C /var/www/site1 .
+        # -C = change to that directory, dont miss . at the end!
+        full_path = os.path.join(self.backup_path, self.thisbackup_path)
+        cmd = "tar -cjf %s --warning=no-file-ignored -C %s ." % (
+            self.tarball, full_path)
+
+        if self.debug is False:
+            # tar it
+            os.system("%s > /dev/null 2>&1" % (cmd))
+            # delete Backup Dir
+            cmd = "rm -r %s" % os.path.join(self.backup_path,
+                                            self.thisbackup_path)
+
+            os.system(cmd)
+            print("-done-\n")
 
     def extractID(self, line):
         """
@@ -141,6 +164,19 @@ class BackupGPOs():
             cmd = "samba-tool gpo backup %s --tmpdir %s" % (line, path)
             os.system(cmd)
 
+    def cleanUpBackups(self):
+        """Rotate Backups to keep #versions"""
+        versions = self.config['samba']['versions']
+        rotateTool = RotateBackup(versions, self.backup_path, self.debug)
+        rotateTool.cleanUp()
+
 if __name__ == "__main__":
+    start_time = datetime.now()
+
     backup = BackupGPOs()
     backup.start()
+    backup.cleanUpBackups()
+
+    time_elapsed = datetime.now() - start_time
+    print("Backup of GPO's finished ...")
+    print('Time elapsed (hh:mm:ss.ms) {}'.format(time_elapsed))
