@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IniFile>
+	<Section name="General">
+		<Parameter>
+			<Key>Version</Key>
+			<Value>0</Value>
+		</Parameter>
+	</Section>
+</IniFile>

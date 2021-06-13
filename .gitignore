@@ -3,6 +3,7 @@ __pycache__/
 *$py.class
 
 DB_BACKUP/**
+SAMBA_BACKUP/**
 *.tar.bz2
 *.tar.bzip2
 *.sql
