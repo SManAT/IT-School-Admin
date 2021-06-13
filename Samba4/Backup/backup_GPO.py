@@ -18,61 +18,129 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os, sys, re
+import os
+import sys
+import re
+import yaml
 from pathlib import Path
-
-rootPath = os.path.abspath(os.path.join(os.path.dirname(Path(__file__))))
-libPath = os.path.join(rootPath, "./libs")
-# add to PYTHON Path
-sys.path.insert(0, libPath)
+from datetime import date
 from lib.CmdRunner import CmdRunner
 
 
-def extractID(line):
-    """ 
-    get the GPO ID from line, e.g. {6AC1786C-016F-11D2-945F-00C04FB984F9} 
-    """ 
-    try:
-        if "GPO" in line:
-            
-            p = re.compile(r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}')
-            found = re.findall(p, line)
-            return "{%s}" % found[0]
-    except Exception:
-        return None
+class BackupGPOs():
+    """ Group Policy Backup """
+    debug = True
+    prefix = "GPO-"
 
-def getGPOIDs():
-    cmdRunner = CmdRunner()
-    cmdRunner.runCmd("samba-tool gpo listall")
-    response = cmdRunner.getLines()
-    ids = []
-    for line in response:
-        i = extractID(line)
-        if i:
-            ids.append(i)
-    return ids
+    def __init__(self):
+        self.rootDir = Path(__file__).parent
+        self.configFile = os.path.join(self.rootDir, 'config.yaml')
 
-def backupIDs(ids, path):
-    """ Backup all IDS to this Directory """
-    for line in ids:
-        os.system("samba-tool gpo backup %s --tmpdir %s" % (line, path))   
+        self.config = self.load_yml()
+        versions = self.config['misc']['versions']
+        info = ("BackupGPOs\n"
+                "(c) Mag. Stefan Hagmann 2021\n"
+                "will create a Backup from GPO's via samba-tool\n"
+                "  - will keep last %s Versions of Backups\n"
+                "  - run as root!\n"
+                "-------------------------------------------------------\n" % versions)
+        print(info)
+
+        try:
+            # ensure BackupPath exists
+            self.checkBackupPath()
+        except Exception as ex:
+            print(ex)
+
+    def load_yml(self):
+        """ Load the yaml file config.yaml """
+        with open(self.configFile, 'rt') as f:
+            yml = yaml.safe_load(f.read())
+        return yml
+
+    def checkBackupPath(self):
+        """ check if BackupPath exists """
+        path = self.config['misc']['backupPath']
+        # relative path?
+        part1 = path[:2]
+        part2 = path[:3]
+        if part1 == './' or part2 == '../':
+            # relative
+            path = os.path.join(self.rootDir, path)
+        if os.path.isdir(path) is False:
+            os.makedirs(path)
+
+        path = re.sub('\.\/', '', path)  # noqa
+        path = re.sub('\.\.\/', '', path)  # noqa
+        self.backup_path = path
+
+        # create dump-YYYY-MM-DD directory
+        today = date.today()
+
+        self.thisbackup_path = "%s%s" % (
+            self.prefix, today.strftime("%Y-%m-%d"))
+
+        # is there a today backup?
+        self.tarball = "%s.tar.bzip2" % os.path.join(
+            self.backup_path, self.thisbackup_path)
+        if os.path.isfile(self.tarball) is True:
+            self.exitScript(self.tarball)
+
+        path = os.path.join(path, self.thisbackup_path)
+        if os.path.isdir(path) is False:
+            os.makedirs(path)
+        else:
+            self.exitScript(path)
+
+    def exitScript(self, value):
+        """ stop it """
+        if self.debug is False:
+            print("Das Backup %s gibt es bereits" % value)
+            print("-exit-")
+            sys.exit()
+
+    def start(self):
+        """ will do the backup """
+        # get all GPO IDs
+        ids = self.getGPOIDs()
+        # backup
+        self.backupIDs(ids)
+
+
+    def extractID(self, line):
+        """
+        get the GPO ID from line, e.g. {6AC1786C-016F-11D2-945F-00C04FB984F9}
+        """
+        try:
+            if "GPO" in line:
+                p = re.compile(r'[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}')
+                found = re.findall(p, line)
+                return "{%s}" % found[0]
+        except Exception:
+            return None
+
+    def getGPOIDs(self):
+        cmdRunner = CmdRunner()
+        cmdRunner.runCmd("samba-tool gpo listall")
+        response = cmdRunner.getLines()
+        if cmdRunner.getStderr():
+            print(cmdRunner.getStderr())
+        ids = []
+        for line in response:
+            print(line)
+            i = self.extractID(line)
+            if i:
+                ids.append(i)
+        print("GPO's extracted ...")
+        return ids
+
+    def backupIDs(self, ids):
+        """ Backup all IDS to this Directory """
+        path = os.path.join(self.backup_path, self.thisbackup_path)
+        for line in ids:
+            cmd = "samba-tool gpo backup %s --tmpdir %s" % (line, path)
+            os.system(cmd)
 
 if __name__ == "__main__":
-    path = "./Backup/"
-    
-    # cleanup
-    os.system("rm -r %s > /dev/null 2>&1" % path)
-    os.system("mkdir -p %s" % path)
-    # get all GPO IDs
-    ids = getGPOIDs()
-    # backup
-    backupIDs(ids, path)
-    
-    print("GPO's Backup complete ... here the are ...")
-    os.system("ls -a %s/policy/" % path)
-    
-        
-        
- 
-        
-
+    backup = BackupGPOs()
+    backup.start()

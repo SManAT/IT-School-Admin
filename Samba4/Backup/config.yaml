@@ -1,0 +1,8 @@
+version: 1
+
+misc:
+   # where to store the Backups, for realtive path start with ./ or ../
+   backupPath: ./SAMBA_BACKUP
+   # how many Backups schould be in the rotate Process
+   versions: 2
+
