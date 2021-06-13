@@ -35,7 +35,11 @@ you can copy back your GPO's from your backup to `/var/lib/samba/sysvol/....`
 ## Samba4/DNS
 hier you have a script to inject static IP adresses into the LDAP Tree.
 - First, modify the Administrator Password inside `staticIP.exp` (its an expect file!, `apt install expect`).
-- Second, modify `staticIP.cfg` with all your static IP's.
+- Second, modify `staticIP.cfg` with all your static IP's. E.g.
+```bash
+samba-tool dns add 10.0.10.4 0.10.in-addr.arpa 3.10 PTR printer -UAdministrator
+```
+
 - Last, execute `./staticIP.exp`
 
 
