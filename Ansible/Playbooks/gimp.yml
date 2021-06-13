@@ -12,8 +12,13 @@
       path: '{{download_path}}'
       state: directory
 
-  - name: Download Gimp to specified path only if modified
+  - name: Download Gimp to specified if not exists
     ansible.windows.win_get_url:
       url: 'https://download.gimp.org/pub/gimp/v2.10/windows/gimp-{{version}}-setup.exe'
       dest: '{{download_path}}\gimp-{{version}}-setup.exe'
       force: no
+
+  - name: Installing Gimp
+    win_command: start /wait gimp-{{version}}-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+
+
