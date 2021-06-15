@@ -19,6 +19,6 @@
       force: no
 
   - name: Installing Gimp
-    win_command: cmd.exe /c start /wait gimp-{{version}}-setup.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
+    win_command: cmd.exe /c start /wait gimp-{{version}}-setup.exe /ALLUSERS /SP- /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 
 

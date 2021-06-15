@@ -24,8 +24,7 @@ import re
 import fnmatch
 
 from pathlib import Path
-from datetime import timedelta, date, datetime
-from lib.CmdRunner import CmdRunner
+from datetime import date, datetime
 from lib.RotateBackup import RotateBackup
 import yaml
 
@@ -81,7 +80,6 @@ class BackupSamba4():
 
         self.thisbackup_path = "%s%s" % (self.prefix, today.strftime("%Y-%m-%d"))
 
-        
         path = os.path.join(path, self.thisbackup_path)
         if os.path.isdir(path) is False:
             os.makedirs(path)
@@ -98,7 +96,7 @@ class BackupSamba4():
     def search_files(self, directory, pattern):
         """ search for pattern in directory recursive """
         data = []
-        for dirpath, dirnames, files in os.walk(directory):
+        for dirpath, dirnames, files in os.walk(directory):  # noqa
             for f in fnmatch.filter(files, pattern):
                 data.append(os.path.join(dirpath, f))
         return data
@@ -108,8 +106,9 @@ class BackupSamba4():
         files = self.search_files(path, "*.ldb.bak")
         for f in files:
             fpath = os.path.join(path, f)
-            print("Removing %s" % fpath)
             os.system("rm %s" % fpath)
+            if self.debug is True:
+                print("Removing %s" % fpath)
 
     def backupTdb(self, path):
         """
@@ -137,26 +136,35 @@ class BackupSamba4():
         full_path = path
         cmd = "tar -cjf %s --acls --xattrs --exclude=\*.ldb --exclude=\*.bak-offline --warning=no-file-ignored --transform 's/.ldb.bak$/.ldb/' -C %s ." % (
             self.tarball, full_path)
+
         if self.debug is True:
             print(cmd)
 
         if self.debug is False:
             # tar it
-            os.system("%s > /dev/null 2>&1" % (cmd))
+            # os.system("%s > /dev/null 2>&1" % (cmd))
+            os.system("%s" % (cmd))
+            print("created %s" % self.tarball)
             print("-done-\n")
 
     def backupSamba(self):
         """ backup Samba Config """
-        """
-        global TO
-        x = date.today()
-        datestr = x.strftime(DATE_FORMAT)
-        targetpath = os.path.join(TO, "samba-%s.tar.bz2" % (datestr))
-        cmd = "tar cjf %s --acls --xattrs --warning=no-file-ignored %s" % (targetpath, SAMBA_PATH)
-        os.system("%s > /dev/null 2>&1" % cmd)
-        """
-        pass
-    
+        self.tarball = "%s.tar.bzip2" % os.path.join(
+            self.backup_path, self.thisbackup_path, "samba")
+        if os.path.isfile(self.tarball) is True:
+            self.exitScript(self.tarball)
+
+        full_path = os.path.join("/etc/samba/")
+        cmd = "tar -cjf %s --acls --xattrs --exclude=\*.ldb --exclude=\*.bak-offline --warning=no-file-ignored --transform 's/.ldb.bak$/.ldb/' -C %s ." % (
+            self.tarball, full_path)
+
+        if self.debug is False:
+            # tar it
+            # os.system("%s > /dev/null 2>&1" % (cmd))
+            os.system("%s" % (cmd))
+            print("created %s" % self.tarball)
+            print("-done-\n")
+
     def doBackup(self):
         """ backup all Dirs """
         samba_lib_path = self.config['samba']['SAMBA_LIB']
@@ -168,23 +176,22 @@ class BackupSamba4():
             print("Backup directory %s" % path)
             # remove *.bak Files
             self.removeBackFiles(path)
+
             # backup all tdb
             print(">  Creating Database Backup Files ...")
             self.backupTdb(path)
+
             # create Tar Balls
             print(">  Creating Tar Balls of Databases ...")
             self.createTAR(path, directory)
+
             # remove *.bak Files that where used for backup
             print(">  Removing Database Bak Files ...")
             self.removeBackFiles(path)
 
-        
-
         # bis da her gehts
         print("\n>  Backup /etc/samba/ ...")
         self.backupSamba()
-
-        #self.deleteBackupDir()
 
     def cleanUpBackups(self):
         """Rotate Backups to keep #versions"""
@@ -192,12 +199,6 @@ class BackupSamba4():
         rotateTool = RotateBackup(versions, self.backup_path, self.debug)
         rotateTool.cleanUp()
 
-
-    def deleteBackupDir(self):
-        # delete Backup Dir
-        cmd = "rm -r %s" % os.path.join(self.backup_path,
-                                        self.thisbackup_path)
-        os.system(cmd)
 
 if __name__ == "__main__":
     start_time = datetime.now()

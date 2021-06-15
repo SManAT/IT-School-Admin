@@ -9,12 +9,14 @@ class RotateBackup():
         self.path = path
         self.debug = debug
 
-    def cleanUp(self, ):
+    def cleanUpGPO(self):
         """ keep versions of backups in path """
         print("Cleaning in progress")
         data = []
         # search backups
-        files = self.search_files(self.path, "*.tar.bzip2")
+        path_abs = os.path.abspath(self.path)
+        files = self.search_files(path_abs, "GPO*.tar.bzip2")
+
         for f in files:
             # extract dates
             p = re.compile("\d{4}-\d{1,2}-\d{1,2}")  # noqa
@@ -27,8 +29,37 @@ class RotateBackup():
 
         limit = int(self.versions) + 1
         while len(data) >= limit:
-            # delete oldest backup Versions
+            # delete oldest directory  Versions
             cmd = "rm %s" % data[0][0]
+            if self.debug is False:
+                os.system(cmd)
+                # remove first element
+                data.pop(0)
+
+        if self.debug is False:
+            print("-done-\n")
+
+    def cleanUp(self):
+        """ keep versions of backups in path """
+        print("Cleaning in progress")
+        data = []
+        # get all Subdirs
+        subfolders = [f.path for f in os.scandir(self.path) if f.is_dir()]
+
+        for d in subfolders:
+            # extract dates
+            p = re.compile("\d{4}-\d{1,2}-\d{1,2}")  # noqa
+            erg = p.findall(d)
+            if erg:
+                data.append([d, erg[0]])
+
+        # sort with key, take the date as key
+        data.sort(key=lambda the_file: the_file[1])
+
+        limit = int(self.versions) + 1
+        while len(data) >= limit:
+            # delete oldest directory  Versions
+            cmd = "rm -r %s" % data[0][0]
             if self.debug is False:
                 os.system(cmd)
                 # remove first element
@@ -44,3 +75,4 @@ class RotateBackup():
             for f in fnmatch.filter(files, pattern):
                 data.append(os.path.join(dirpath, f))
         return data
+        

@@ -167,8 +167,9 @@ class BackupGPOs():
     def cleanUpBackups(self):
         """Rotate Backups to keep #versions"""
         versions = self.config['samba']['versions']
-        rotateTool = RotateBackup(versions, self.backup_path, self.debug)
-        rotateTool.cleanUp()
+        path = os.path.join(self.rootDir, self.backup_path)
+        rotateTool = RotateBackup(versions, path, self.debug)
+        rotateTool.cleanUpGPO()
 
 if __name__ == "__main__":
     start_time = datetime.now()
