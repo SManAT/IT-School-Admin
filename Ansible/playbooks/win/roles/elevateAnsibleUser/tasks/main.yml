@@ -1,0 +1,20 @@
+---
+# tasks file for roles/win/elevateAnsibleUser
+- name: Grant the ansible user the SeTcbPrivilege Right
+  ansible.windows.win_user_right:
+    name: SeTcbPrivilege
+    users: '{{ansible_user}}'
+    action: add
+
+- name: turn UAC off
+  win_regedit:
+    path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system
+    name: EnableLUA
+    data: 0
+    type: dword
+    state: present
+  register: uac_result
+
+- name: Reboot after disabling UAC
+  win_reboot:
+  when: uac_result is changed

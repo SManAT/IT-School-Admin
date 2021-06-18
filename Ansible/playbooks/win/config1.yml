@@ -1,0 +1,5 @@
+# Playbook to configure multiple roles
+- name: Configure Win Client
+  hosts: windows
+  roles:
+    - elevateAnsibleUser
