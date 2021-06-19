@@ -3,3 +3,4 @@
   hosts: windows
   roles:
     - elevateAnsibleUser
+    - chocolaty
