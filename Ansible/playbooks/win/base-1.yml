@@ -4,3 +4,4 @@
   roles:
     - elevateAnsibleUser
     - chocolaty
+    - node_yarn_sass

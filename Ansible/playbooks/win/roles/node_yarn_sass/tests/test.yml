@@ -2,4 +2,4 @@
 - hosts: localhost
   remote_user: root
   roles:
-    - Roles/chocolaty
+    - ./roles/node_yarn_sass
