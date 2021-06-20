@@ -1,2 +1,12 @@
 ---
-# tasks file for ./roles/node_yarn_sass
+- name: Install node.js
+  win_chocolatey:
+    name: git
+    state: present
+
+- name: Set an environment variable for all users
+  ansible.windows.win_environment:
+    state: present
+    name: TestVariable
+    value: Test value
+    level: machine
