@@ -3,15 +3,15 @@ import getopt
 import os
 
 """
-    A class used to extract the Install Path of some programs on windows
+A class used to extract the Install Path of some programs on windows
 
-    ...
+...
 
-    Attributes
-    ----------
-    name : str
-        the name of the executeable program, e.g. yarn.cmd
-    """
+Attributes
+----------
+name : str
+    the name of the executeable program, e.g. yarn.cmd
+"""
 
 
 def print_help(fname):
@@ -35,7 +35,18 @@ def main(argv):
             sys.exit()
         elif opt in ("-n", "--name"):
             search_name = arg
-    print("Searching for %s" % search_name)
+            doTheJob(search_name)
+
+    print_help(fname)
+    sys.exit()
+
+
+def doTheJob(name):
+    """ Search on the system for name """
+    # print("Searching for %s" % name)
+    cmd = "where.exe %s" % name
+    os.system(cmd)
+    sys.exit()
 
 
 if __name__ == "__main__":
