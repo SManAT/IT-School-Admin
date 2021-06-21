@@ -1,7 +1,10 @@
-# Playbook to configure multiple roles
-- name: Configure Win Client
+# Playbook for Basic Setup
+# Ansible WinRM Account must be on the client
+- name: Configure Basic Windows Client
   hosts: windows
   roles:
     - elevateAnsibleUser
+    - createUsers
     - chocolaty
     - node_yarn_sass
+    - git

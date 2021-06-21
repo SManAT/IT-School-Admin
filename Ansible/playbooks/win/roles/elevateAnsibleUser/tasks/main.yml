@@ -1,9 +1,8 @@
 ---
-# tasks file for roles/win/elevateAnsibleUser
 - name: Grant the ansible user the SeTcbPrivilege Right
   ansible.windows.win_user_right:
     name: SeTcbPrivilege
-    users: '{{ansible_user}}'
+    users: "{{ansible_user}}"
     action: add
 
 - name: turn UAC off
