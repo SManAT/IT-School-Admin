@@ -16,7 +16,7 @@ import os
 
 def print_help(fname):
     """ just a simple help output """
-    print("%s -name <name of executeable>" % fname)
+    print("%s -n, --name <name of executeable>" % fname)
 
 
 def main(argv):
