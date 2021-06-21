@@ -1,0 +1,10 @@
+---
+- name: Ensure standard user is present
+  ansible.windows.win_user:
+    name: student
+    password: ""
+    state: present
+    password_never_expires: true
+    user_cannot_change_password: true
+    groups:
+      - Users

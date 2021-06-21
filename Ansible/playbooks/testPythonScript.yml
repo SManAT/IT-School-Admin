@@ -2,11 +2,12 @@
 - name: Python Test
   hosts: windows
   tasks:
-  - name: Copy and Execute the script
-    script: ./scripts/getInstallPath.py
-    args: "yarn.cmd"
-    register: python_result
+    - name: Copy and Execute the script
+      script: ./win/scripts/getInstallPath.py
+      args:
+        name: 'yarn.cmd'
+      register: python_result
 
-  - name: Get stdout or stderr from the output
-    debug:
-      var: python_result.stdout
+    - name: Get stdout or stderr from the output
+      debug:
+        var: python_result.stdout

@@ -1,0 +1,10 @@
+---
+- name: Set Gimp on Windows
+  hosts: windows
+
+  tasks:
+    - name: run jello script.
+      win_shell: where.exe yarn
+      register: answer
+    - debug:
+        msg: "{{ answer.stdout }}"
