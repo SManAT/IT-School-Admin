@@ -1,6 +1,9 @@
 # Playbook to configure multiple roles
 - name: Configure Win Client
   hosts: windows
+  vars_files:
+    #- ./vars/vault.yml
+    - ./vars/vars.yml
   roles:
     - elevateAnsibleUser
     - chocolaty
