@@ -1,13 +1,5 @@
-# Playbook for Basic Setup
-# Ansible WinRM Account must be on the client
-- name: Configure Basic Windows Client
+- name: Install software for coding fun
   hosts: windows
-  vars_files:
-    #- ./vars/vault.yml
-    - ./vars/vars.yml
   roles:
-    - elevateAnsibleUser
-    - createUsers
-    - chocolaty
     - node_yarn_sass
     - git
