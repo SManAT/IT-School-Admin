@@ -1,0 +1,4 @@
+---
+# Install all provided packages
+- import_playbook: package-1.yml
+
