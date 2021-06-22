@@ -1,0 +1,14 @@
+---
+admins:
+  - name: agoofy
+    password: schule
+    groups:
+      - \.\\Administrators
+
+  - name: bgoofy
+    password: schule
+    groups:
+      - \.\\Administrators
+
+# normal users
+users:

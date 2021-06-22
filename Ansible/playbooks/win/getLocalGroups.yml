@@ -1,0 +1,10 @@
+- name: Get all Local Windows Groups
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Collecting
+      win_command: powershell.exe "Get-LocalGroup | Select Name"
+      register: admin_group
+
+    - debug:
+        var: admin_group.stdout_lines

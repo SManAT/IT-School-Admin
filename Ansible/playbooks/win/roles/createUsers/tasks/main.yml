@@ -1,10 +1,21 @@
 ---
-- name: Ensure standard user is present
+# Admin Users --------------------------------
+- name: Create Admin Users
   ansible.windows.win_user:
-    name: student
-    password: ""
+    name: '{{ item.0.name }}'
+    password: '{{ item.0.password }}'
     state: present
     password_never_expires: true
-    user_cannot_change_password: true
-    groups:
-      - Users
+    # user_cannot_change_password: true
+    groups: '{{ item.1 }}'
+  loop: "{{ admins|subelements('groups') }}"
+  loop_control:
+    label: '{{ item.0.name }}'
+
+- name: Debug
+  debug:
+    msg: '{{ item.0.name }}, {{ item.0.password }}, {{ item.1 }}'
+  loop: "{{ admins|subelements('groups') }}"
+  loop_control:
+    label: '{{ item.0.name }}'
+# Users --------------------------------------

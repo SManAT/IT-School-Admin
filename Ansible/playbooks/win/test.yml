@@ -1,0 +1,6 @@
+- name: Testing
+  # hosts: localhost
+  hosts: windows
+  gather_facts: false
+  roles:
+    - createUsers
