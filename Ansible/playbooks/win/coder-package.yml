@@ -3,3 +3,5 @@
   roles:
     - node_yarn_sass
     - git
+    - netbeans
+    - vscodium

@@ -4,15 +4,10 @@ Create Standard Users on Win Client
 
 ## Role Variables
 
+../../vars/global_vars.yml
 defaults/main.yml
 
-## Example Playbook
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+if global_vars.yml are not present, main.yml variables will be used.
 
 ## License
 
@@ -20,4 +15,4 @@ BSD
 
 ## Author Information
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Mag. Stefan Hagmann, see https://github.com/SManAT/IT-School-Admin

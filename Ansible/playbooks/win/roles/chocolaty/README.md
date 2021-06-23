@@ -1,3 +1,11 @@
 # Role Name
 
-Check if cohocolaty is installed on system
+Check if cocolaty is installed on system
+
+## License
+
+BSD
+
+## Author Information
+
+Mag. Stefan Hagmann, see https://github.com/SManAT/IT-School-Admin
