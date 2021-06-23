@@ -1,16 +1,28 @@
 ---
+# Admin Users --------------------------------
+# use global vars or local vars
 - set_fact:
     pwd: '{{ item.0.password if ((global_admin_password is not defined) or (global_admin_password|length == 0)) else global_admin_password }}'
   loop: "{{ admins|subelements('groups') }}"
   loop_control:
     label: '{{ item.0.name }}'
 
-- name: Debug
-  debug:
-    msg:
-      - '{{ item.0.name }}, {{ item.0.password }}, {{ item.1 }}'
-      - 'Password: {{ pwd }}'
-
+- name: Create Admin Users
+  ansible.windows.win_user:
+    name: '{{ item.0.name }}'
+    password: '{{ pwd }}'
+    state: present
+    password_never_expires: true
+    # user_cannot_change_password: true
+    groups: '{{ item.1 }}'
   loop: "{{ admins|subelements('groups') }}"
   loop_control:
     label: '{{ item.0.name }}'
+
+- name: Debug
+  debug:
+    msg: '{{ item.0.name }}, {{ pwd }}, {{ item.1 }}'
+  loop: "{{ admins|subelements('groups') }}"
+  loop_control:
+    label: '{{ item.0.name }}'
+# Users --------------------------------------

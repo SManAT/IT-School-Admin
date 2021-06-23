@@ -2,4 +2,5 @@
 # if a variable is commented out, the variable from role will
 # be used
 
-global_admin_password: Gschule
+# Admin Password on client
+# global_admin_password: gurke
