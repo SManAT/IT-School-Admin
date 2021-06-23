@@ -1,0 +1,5 @@
+# here you can define global variables
+# if a variable is commented out, the variable from role will
+# be used
+
+global_admin_password: Gschule
