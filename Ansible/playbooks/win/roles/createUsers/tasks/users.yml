@@ -1,0 +1,16 @@
+---
+# Users --------------------------------------
+- set_fact:
+    pwd: '{{ item.0.password if ((global_user_password is not defined) or (global_user_password|length == 0)) else global_user_password }}'
+
+- name: Create normal Users
+  ansible.windows.win_user:
+    name: '{{ item.0.name }}'
+    password: '{{ pwd }}'
+    state: present
+    password_never_expires: true
+    groups: '{{ item.1 }}'
+
+- name: Debug
+  debug:
+    msg: 'User: {{ item.0.name }} > Group: {{ item.1 }}'

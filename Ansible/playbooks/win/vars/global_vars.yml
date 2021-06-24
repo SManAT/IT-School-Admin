@@ -3,4 +3,5 @@
 # be used
 
 # Admin Password on client
-# global_admin_password: gurke
+global_admin_password: schule
+global_user_password: schule

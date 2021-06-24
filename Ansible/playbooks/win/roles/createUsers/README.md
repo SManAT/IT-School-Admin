@@ -9,6 +9,13 @@ defaults/main.yml
 
 if global_vars.yml are not present, main.yml variables will be used.
 
+### Global variables are
+
+- global_admin_password
+  self explaining
+- global_user_password
+  default password for all users
+
 ## License
 
 BSD

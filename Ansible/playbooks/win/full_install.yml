@@ -1,4 +1,5 @@
 ---
 # Install all provided packages
-- import_playbook: package-1.yml
-
+- import_playbook: base-package.yml
+- import_playbook: school-package.yml
+- import_playbook: coder-package.yml

@@ -11,4 +11,4 @@ admins:
     groups:
       - Administratoren
 # normal users
-users:
+users: []
