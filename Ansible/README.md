@@ -6,8 +6,8 @@ Use the force, Luke!
 
 ## What it is
 
-Will provide automatic install case for Windows Clients with the power of Red Hat's ![Ansible](https://www.ansible.com/).  
-The playbooks are grouped by _packages_, in Order to simplify customization.
+Will provide automatic install case for Windows Clients with the power of Red Hat's [Ansible](https://www.ansible.com/){:target="_blank"}.  
+The playbooks are grouped by \_packages_, in Order to simplify customization.
 
 (see image)
 
@@ -15,4 +15,4 @@ The playbooks are grouped by _packages_, in Order to simplify customization.
 
 ## Where to find other roles?
 
-see ![Ansible Galaxy](https://galaxy.ansible.com/)
+see [Ansible Galaxy](https://galaxy.ansible.com/){:target="\_blank"}
