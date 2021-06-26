@@ -15,4 +15,4 @@ The playbooks are grouped by _packages_, in Order to simplify customization.
 
 ## Where to find other roles?
 
-see [Ansible Galaxy](https://galaxy.ansible.com/)
+see ![Ansible Galaxy](https://galaxy.ansible.com/)
