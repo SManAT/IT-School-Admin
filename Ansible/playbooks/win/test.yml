@@ -5,4 +5,4 @@
   vars_files:
     - ./vars/global_vars.yml
   roles:
-    - createUsers
+    - node_yarn_sass

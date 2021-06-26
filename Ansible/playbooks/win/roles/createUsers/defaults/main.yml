@@ -11,4 +11,8 @@ admins:
     groups:
       - Administratoren
 # normal users
-users: []
+users:
+  - name: student
+    password:
+    groups:
+      - Benutzer
