@@ -2,7 +2,5 @@
 
 Musterlösung zu Ansible für Schulen
 
-## Ansible Galaxy
-
 Use the force, Luke!  
-![Galaxy](https://github.com/OSOS-Austria/Ansible/blob/main/img/AnsiblePower.png)
+![Galaxy](https://github.com/SManAT/IT-School-Admin/blob/master/Ansible/img/AnsiblePower.png)
