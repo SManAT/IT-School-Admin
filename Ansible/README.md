@@ -6,7 +6,7 @@ Use the force, Luke!
 
 ## What it is
 
-Will provide automatic install case for Windows Clients with the power of Red Hat's [Ansible](https://www.ansible.com/).  
+Will provide automatic install case for Windows Clients with the power of Red Hat's ![Ansible](https://www.ansible.com/).  
 The playbooks are grouped by _packages_, in Order to simplify customization.
 
 (see image)
