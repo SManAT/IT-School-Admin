@@ -1,12 +1,20 @@
 ---
 - name: Install node.js
   win_chocolatey:
-    name: git
+    name: nodejs
     state: present
 
-- name: Set an environment variable for all users
-  ansible.windows.win_environment:
-    state: present
-    name: TestVariable
-    value: Test value
-    level: machine
+# Copy and execute
+- name: Get install path for Environment path
+  script: ./files/getInstallPath.py --name {{ var_npm }}
+  register: python_result
+
+- name: Get stdout or stderr from the output
+  debug:
+    var: python_result.stdout
+#- name: Set an environment variable for all users
+#  ansible.windows.win_environment:
+#    state: present
+#    name: TestVariable
+#    value: Test value
+#    level: machine
