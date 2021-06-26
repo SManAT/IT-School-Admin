@@ -1,9 +1,8 @@
-# IT-School-Admin
+# Ansible
 
-Provides some (that is what i think) usefull scripts for managing Linux Server.
+Musterlösung zu Ansible für Schulen
 
-- [Prerequisites, is what you need](Prerequisites.md)dsf
-- [Ansible](Ansible/README.md)
-- [Samba4 stuff](Samba4/README.md)
-- [MySQL stuff](MySQL/README.md)
-- [Common system stuff](System/README.md)
+## Ansible Galaxy
+
+Use the force, Luke!  
+![Galaxy](https://github.com/OSOS-Austria/Ansible/blob/main/img/AnsiblePower.png)
