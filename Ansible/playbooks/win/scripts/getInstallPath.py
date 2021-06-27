@@ -1,6 +1,7 @@
 import sys
 import getopt
 import os
+import re
 import subprocess
 
 """
@@ -61,6 +62,8 @@ def runCmd(cmd):
     for line in iter(proc.stdout.readline, b''):
         stdout += line.decode()
     proc.communicate()
+    # trim string (linebreak from win)
+    stdout = re.sub(r"[\r\n]*", "", stdout)
     return stdout
 
 
