@@ -1,6 +1,8 @@
 import sys
 import getopt
 import os
+import subprocess
+import json
 
 """
 A class used to extract the Install Path of some programs on windows
@@ -12,6 +14,9 @@ Attributes
 name : str
     the name of the executeable program, e.g. yarn.cmd
 """
+
+stderr = ""
+stdout = ""
 
 
 def print_help(fname):
@@ -41,11 +46,38 @@ def main(argv):
     sys.exit()
 
 
+def runCmd(cmd):
+    ''' runs a command '''
+    global stderr, stdout
+    proc = subprocess.Popen(cmd,
+                            shell=True,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            bufsize=0,
+                            preexec_fn=None)
+    for line in iter(proc.stderr.readline, b''):
+        stderr += line.decode()
+
+    for line in iter(proc.stdout.readline, b''):
+        stdout += line.decode()
+    proc.communicate()
+
+    return stdout.replace("\r\n", "")
+
+
 def doTheJob(name):
+    global json
     """ Search on the system for name """
     # print("Searching for %s" % name)
     cmd = "where.exe %s" % name
-    os.system(cmd)
+    output = runCmd(cmd)
+
+    data = {
+        "response": output
+    }
+    # return json
+    print(json.dumps(data))
     sys.exit()
 
 
