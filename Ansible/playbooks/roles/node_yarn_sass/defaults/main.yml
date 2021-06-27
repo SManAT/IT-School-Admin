@@ -1,2 +1,7 @@
 ---
 var_npm: 'npm.cmd'
+var_yarn: 'yarn.cmd'
+var_sass: 'sass.cmd'
+
+# Install Path for all Users
+npm_path: 'C:\npm\'

@@ -1,25 +1,10 @@
 ---
-- name: Install node.js
-  win_chocolatey:
-    name: nodejs
-    state: present
+# Node.js ------------------------------------------------------
+#- name: Install node.js
+#  include_tasks: nodejs.yml
 
-# Copy and execute
-- name: Get install path for Environment path
-  script: ./files/getInstallPath.py --name {{ var_npm }}
-  register: python_result
+#- name: Install yarn
+#  include_tasks: yarn.yml
 
-- name: Set response from python script as fact
-  set_fact:
-    response: '{{ item }}'
-  with_items: '{{ (python_result.stdout | from_json).response }}'
-
-- name: Get stdout or stderr from the output
-  debug:
-    msg:
-      - '{{ response }}'
-
-- name: Ensure that path is on the global PATH
-  win_path:
-    elements:
-      - '{{ response }}'
+- name: Install sass
+  include_tasks: sass.yml
