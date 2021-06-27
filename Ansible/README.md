@@ -19,6 +19,8 @@ apt install python3 python3-pip
 pip3 install ansible pywinrm requests-credssp jmespath
 ```
 
+see also **install/Linux/setup.py**
+
 ## How to use?
 
 ## Where to find other roles?
