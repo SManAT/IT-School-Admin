@@ -76,7 +76,6 @@ def doTheJob(name):
     data = {
         "response": output
     }
-    # return json
     print(json.dumps(data))
     sys.exit()
 
