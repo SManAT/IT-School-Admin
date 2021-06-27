@@ -57,7 +57,7 @@ def searchFile(name):
         os.environ["ProgramFiles(x86)"],
         os.environ["LOCALAPPDATA"]
     ]
-    exclude = ["Temp\\", "npm\\node_modules\\"]
+    exclude = ["Temp\\", "node_modules\\"]
     abort = False
     for p in locations:
         if abort is True:
