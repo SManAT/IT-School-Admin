@@ -39,7 +39,7 @@ def main(argv):
             doTheJob(search_name)
 
     # trim string (linebreak from win)
-    output = re.sub(r"[\r\n]*", "", myString)
+    fname = re.sub(r"[\r\n]*", "", fname)
     print_help(fname)
     sys.exit()
 
