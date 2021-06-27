@@ -1,8 +1,8 @@
 import sys
 import getopt
 import os
-import subprocess
 import json
+from pathlib import Path
 
 """
 A class used to extract the Install Path of some programs on windows
@@ -50,32 +50,37 @@ def main(argv):
     sys.exit(1)
 
 
-def runCmd(cmd):
-    ''' runs a command '''
-    global stderr, stdout
-    proc = subprocess.Popen(cmd,
-                            shell=True,
-                            stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            bufsize=0,
-                            preexec_fn=None)
-    for line in iter(proc.stderr.readline, b''):
-        stderr += line.decode()
-
-    for line in iter(proc.stdout.readline, b''):
-        stdout += line.decode()
-    proc.communicate()
-
-    return stdout.replace("\r\n", "")
+def searchFile(name):
+    locations = [
+        os.environ["APPDATA"],
+        os.environ["ProgramFiles"],
+        os.environ["ProgramFiles(x86)"]
+        os.environ["LOCALAPPDATA"],
+    ]
+    exclude = ["Temp\\", "npm\\node_modules\\"]
+    abort = False
+    for p in locations:
+        if abort is True:
+            break
+        for root, dirs, files in os.walk(p):
+            # exclude some patterns
+            direxcluded = False
+            for test in exclude:
+                if test.lower() in root.lower():
+                    direxcluded = True
+            if direxcluded is False:
+                for file in files:
+                    if file.lower() == name.lower():
+                        ffound = os.path.join(root, str(file))
+                        abort = True
+                        break
+    return ffound
 
 
 def doTheJob(name):
     global json
     """ Search on the system for name """
-    # print("Searching for %s" % name)
-    cmd = "where.exe %s" % name
-    output = runCmd(cmd)
+    output = searchFile(name)
 
     data = {
         "response": output
