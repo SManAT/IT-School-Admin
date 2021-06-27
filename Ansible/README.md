@@ -14,10 +14,10 @@ The playbooks are grouped by \_packages\_, in Order to simplify customization.
 
 ## Linux Side
 
-´´´ bash
+```bash
 apt install python3 python3-pip
 pip3 install ansible pywinrm requests-credssp jmespath
-´´´
+```
 
 ## How to use?
 
