@@ -1,6 +1,7 @@
 import sys
 import getopt
 import os
+import re
 
 """
 A class used to extract the Install Path of some programs on windows
@@ -37,6 +38,8 @@ def main(argv):
             search_name = arg
             doTheJob(search_name)
 
+    # trim string (linebreak from win)
+    output = re.sub(r"[\r\n]*", "", myString)
     print_help(fname)
     sys.exit()
 
