@@ -74,7 +74,8 @@ def searchFile(name):
                         ffound = os.path.join(root, str(file))
                         abort = True
                         break
-    return ffound
+    # just the path
+    return os.path.dirname(ffound)
 
 
 def doTheJob(name):
