@@ -43,7 +43,11 @@ def main(argv):
             doTheJob(search_name)
 
     print_help(fname)
-    sys.exit()
+    print(json.dumps({
+        "failed": True,
+        "msg": "No arguments provided!"
+    }))
+    sys.exit(1)
 
 
 def runCmd(cmd):

@@ -9,9 +9,17 @@
   script: ./files/getInstallPath.py --name {{ var_npm }}
   register: python_result
 
+- name: Set ARresponse from python script
+  set_fact:
+    response: '{{ item }}'
+  with_items: '{{ (python_result.stdout | from_json).response }}'
+
 - name: Get stdout or stderr from the output
   debug:
-    var: '{{ python_result }}'
+    # var: '{{ (python_result.stdout | from_json).response }}'
+    msg:
+      - '{{ python_result.stdout | from_json }}'
+      - '{{ response }}'
 #- name: Set an environment variable for all users
 #  ansible.windows.win_environment:
 #    state: present
