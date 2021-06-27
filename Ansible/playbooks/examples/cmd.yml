@@ -1,8 +1,0 @@
----
-- hosts: win 
-  tasks:
-    - name: run an executable using win_command
-      win_command: whoami.exe
-
-    - name: run a cmd command
-      win_command: cmd.exe /c mkdir C:\test
