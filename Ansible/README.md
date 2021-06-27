@@ -1,4 +1,4 @@
-# Ansible fro schools
+# Ansible for schools
 
 ![Galaxy](https://github.com/SManAT/IT-School-Admin/blob/master/Ansible/img/AnsiblePower.png)
 
