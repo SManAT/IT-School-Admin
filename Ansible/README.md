@@ -22,8 +22,9 @@ see also **install/Linux/setup.py**
 
 ## Windows Side
 
-see [Ansible - Winrm Guide](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html)  
-Configure Ansible Listener
+see [Ansible - Winrm Guide](https://docs.ansible.com/ansible/latest/user_guide/windows_winrm.html)
+
+### Configure Ansible Listener
 
 ```ps
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -35,7 +36,7 @@ $file = "$env:temp\ConfigureRemotingForAnsible.ps1"
 powershell.exe -ExecutionPolicy ByPass -File $file -EnableCredSSP -Verbose
 ```
 
-now set the authentication method
+### Set the authentication method
 
 ```ps
 Set-Item -Path WSMan:\localhost\Service\Auth\credSSP -Value $true
