@@ -1,0 +1,5 @@
+---
+- name: Install VsCodium Open Source
+  win_chocolatey:
+    name: vscodium
+    state: present

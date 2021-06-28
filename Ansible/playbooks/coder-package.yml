@@ -2,6 +2,6 @@
   hosts: windows
   roles:
     - node_yarn_sass
-    - netbeans
     - vscodium
-    - mysqlworckbench
+    - netbeans
+    - mysqlworkbench

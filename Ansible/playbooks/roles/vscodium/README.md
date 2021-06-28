@@ -1,7 +1,6 @@
 # Role Name
 
-Installs node.js, yarn and sass on client.  
-Set's also the environment variables for all users.
+Installs Vscodium on a Win Client
 
 ## License
 
