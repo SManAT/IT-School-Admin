@@ -1,25 +1,20 @@
 ---
+- name: Create directory structure
+  ansible.windows.win_file:
+    path: '{{ npm_path }}'
+    state: directory
+
+- name: Configure npm prefix path
+  ansible.windows.win_shell: npm config set prefix {{ npm_path }}
+
 - name: Install yarn
-  win_chocolatey:
-    name: yarn
-    state: present
-
-# Copy and execute
-- name: Get install path for Environment path
-  script: ./files/getInstallPath.py --name {{ var_yarn }}
-  register: python_result
-
-- name: Set response from python script as fact
-  set_fact:
-    response: '{{ item }}'
-  with_items: '{{ (python_result.stdout | from_json).response }}'
+  ansible.windows.win_shell: npm install --global yarn
 
 - name: Get stdout or stderr from the output
   debug:
     msg:
-      - '{{ response }}'
-
+      - '{{ npm_path }}{{ var_yarn }}'
 - name: Ensure that path is on the global PATH
   win_path:
     elements:
-      - '{{ response }}'
+      - '{{ npm_path }}'

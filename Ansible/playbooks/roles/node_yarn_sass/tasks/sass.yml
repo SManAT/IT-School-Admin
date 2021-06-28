@@ -1,28 +1,20 @@
 ---
+- name: Create directory structure
+  ansible.windows.win_file:
+    path: '{{ npm_path }}'
+    state: directory
 
-mkdir
-npm config set prefix Path
-install -g 
+- name: Configure npm prefix path
+  ansible.windows.win_shell: npm config set prefix {{ npm_path }}
 
 - name: Install sass
   ansible.windows.win_shell: npm install --global sass
 
-# Copy and execute
-- name: Get install path for Environment path
-  script: ./files/getInstallPath.py --name {{ var_sass }}
-  register: python_result
-
-- name: Set response from python script as fact
-  set_fact:
-    response: '{{ item }}'
-  with_items: '{{ (python_result.stdout | from_json).response }}'
-
 - name: Get stdout or stderr from the output
   debug:
     msg:
-      - '{{ response }}'
-
+      - '{{ npm_path }}{{ var_sass }}'
 - name: Ensure that path is on the global PATH
   win_path:
     elements:
-      - '{{ response }}'
+      - '{{ npm_path }}'

@@ -1,10 +1,10 @@
 ---
 # Node.js ------------------------------------------------------
-#- name: Install node.js
-#  include_tasks: nodejs.yml
+- name: Install node.js
+  include_tasks: nodejs.yml
 
-#- name: Install yarn
-#  include_tasks: yarn.yml
+- name: Install yarn
+  include_tasks: yarn.yml
 
 - name: Install sass
   include_tasks: sass.yml
