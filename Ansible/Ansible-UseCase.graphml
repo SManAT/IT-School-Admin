@@ -117,11 +117,14 @@ with CredSSP</y:NodeLabel>
     <node id="n7">
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="51.23366400000003" width="250.87200000000018" x="583.364" y="319.07735296392616"/>
+          <y:Geometry height="88.45811199999997" width="250.87200000000018" x="583.364" y="319.07735296392616"/>
           <y:Fill color="#FFCC99" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="t" textColor="#000000" verticalTextPosition="bottom" visible="true" width="112.71484375" x="69.07857812500015" xml:space="preserve" y="4.0">coder-package.yml</y:NodeLabel>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="b" textColor="#000000" verticalTextPosition="bottom" visible="true" width="99.390625" x="75.74068750000015" xml:space="preserve" y="28.532492125000033">- node_yarn_sass</y:NodeLabel>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="62.8046875" horizontalTextPosition="center" iconTextGap="4" modelName="internal" modelPosition="b" textColor="#000000" verticalTextPosition="bottom" visible="true" width="100.697265625" x="75.08736718750015" xml:space="preserve" y="21.65342449999997">- node_yarn_sass
+- vscodium
+- netbeans
+- mysqlworkbench</y:NodeLabel>
           <y:Shape type="rectangle"/>
         </y:ShapeNode>
       </data>
@@ -218,7 +221,7 @@ also set on the global PATH environment</y:NodeLabel>
     <edge id="e7" source="n0" target="n7">
       <data key="d10">
         <y:SplineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-24.415185404047115"/>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-42.1543383071717"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
         </y:SplineEdge>
