@@ -1,0 +1,6 @@
+---
+
+  pip3 install psutil gputil tabulate
+- name: Print all available facts
+  ansible.builtin.debug:
+    var: ansible_facts

@@ -12,7 +12,10 @@ if __name__ == '__main__':
             'ansible',
             'pywinrm',
             'requests-credssp',
-            'jmespath'
+            'jmespath',
+            'psutil',
+            'gputil',
+            'tabulate'
         ],
         python_requires='>=3.8',
     )

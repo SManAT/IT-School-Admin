@@ -1,8 +1,8 @@
 - name: Testing
   # hosts: localhost
   hosts: windows
-  gather_facts: false
+  gather_facts: true
   vars_files:
     - ./vars/global_vars.yml
   roles:
-    - netbeans
+    - collect
