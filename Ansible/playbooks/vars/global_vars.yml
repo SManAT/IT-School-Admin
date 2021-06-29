@@ -5,3 +5,6 @@
 # Admin Password on client
 global_admin_password: schule
 global_user_password: schule
+
+# NPM Install Path for all Users
+global_npm_path: 'C:\npm\'

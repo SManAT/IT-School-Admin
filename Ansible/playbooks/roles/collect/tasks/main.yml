@@ -1,6 +1,14 @@
 ---
+- name: Install needed modules
+  pip:
+    name:
+      - psutil 
+      - gputil 
+      - tabulate 
+      - wmi
 
-  pip3 install psutil gputil tabulate
+ run python collect data
+ 
 - name: Print all available facts
   ansible.builtin.debug:
     var: ansible_facts

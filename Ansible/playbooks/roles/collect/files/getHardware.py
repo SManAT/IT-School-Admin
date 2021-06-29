@@ -2,17 +2,11 @@ from tabulate import tabulate
 import GPUtil
 import psutil
 import platform
+import wmi
 from datetime import datetime
 
 """
-A class used to collect Hardware Informations via Python
-
-...
-
-Attributes
-----------
-name : str
-    the name of the executeable program, e.g. yarn.cmd
+A class used to collect Hardware Informations via Python, many ways
 """
 
 
@@ -39,6 +33,17 @@ def getSystem():
     print(f"Version: {uname.version}")
     print(f"Machine: {uname.machine}")
     print(f"Processor: {uname.processor}")
+
+    print("WMI ========================================")
+    c = wmi.WMI()
+    my_system = c.Win32_ComputerSystem()[0]
+
+    print(f"Manufacturer: {my_system.Manufacturer}")
+    print(f"Model: {my_system. Model}")
+    print(f"Name: {my_system.Name}")
+    print(f"NumberOfProcessors: {my_system.NumberOfProcessors}")
+    print(f"SystemType: {my_system.SystemType}")
+    print(f"SystemFamily: {my_system.SystemFamily}")
 
 
 def getCPU():
