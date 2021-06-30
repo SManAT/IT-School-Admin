@@ -59,7 +59,7 @@ Global variables are taken from _vars/global_vars.yml_. If they are not defined,
 
 ## some usefull roles
 
-- collect
+- collect  
   Collect some data from Client, e.g.
 
 ```bash
@@ -72,11 +72,11 @@ SystemFamily: Latitude
 
 ## base-package.yml
 
-- elevateAnsibleUser
+- elevateAnsibleUser  
   Elevates the User to Administrator and hides the user from Login Screen.
-- createUsers
+- createUsers  
   Create Administrators and some default Users.
-- chocolaty
+- chocolaty  
   Be sure chocolaty is on client.
 
 ## coder-package
