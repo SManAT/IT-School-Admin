@@ -79,9 +79,9 @@ SystemFamily: Latitude
 - **chocolaty**  
   Be sure chocolaty is on client.
 
-## coder-package
+## coder-package.yml
 
-- node_yarn_sass
-  - vscodium
-  - netbeans
-  - mysqlworkbench
+- **node_yarn_sass**
+- **vscodium**
+- **netbeans**
+- **mysqlworkbench**
