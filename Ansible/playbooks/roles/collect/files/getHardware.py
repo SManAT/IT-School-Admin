@@ -3,14 +3,13 @@ import GPUtil
 import psutil
 import platform
 import wmi
-from datetime import datetime
 
 """
 A class used to collect Hardware Informations via Python, many ways
 """
 
 
-def get_size(bytes, suffix="B"):
+def get_size(bb, suffix="B"):
     """
     Scale bytes to its proper format
     e.g:
@@ -19,9 +18,9 @@ def get_size(bytes, suffix="B"):
     """
     factor = 1024
     for unit in ["", "K", "M", "G", "T", "P"]:
-        if bytes < factor:
-            return f"{bytes:.2f}{unit}{suffix}"
-        bytes /= factor
+        if bb < factor:
+            return f"{bb:.2f}{unit}{suffix}"
+        bb /= factor
 
 
 def getSystem():

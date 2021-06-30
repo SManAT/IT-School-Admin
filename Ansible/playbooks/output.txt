@@ -1,0 +1,86 @@
+======================================== System Information ====================================
+System: Windows                                                                                 
+Node Name: DESKTOP-VFEQ5BI                                                                      
+Release: 10                                                                                     
+Version: 10.0.19041                                                                             
+Machine: AMD64                                                                                  
+Processor: Intel64 Family 6 Model 142 Stepping 12, GenuineIntel                                 
+WMI ========================================                                                    
+Manufacturer: Dell Inc.                                                                         
+Model: Latitude 5310                                                                            
+Name: DESKTOP-VFEQ5BI                                                                           
+NumberOfProcessors: 1                                                                           
+SystemType: x64-based PC                                                                        
+SystemFamily: Latitude                                                                          
+======================================== CPU Info ========================================      
+Physical cores: 4                                                                               
+Total cores: 8                                                                                  
+Max Frequency: 2112.00Mhz                                                                       
+Min Frequency: 0.00Mhz                                                                          
+Current Frequency: 1609.00Mhz                                                                   
+CPU Usage Per Core:                                                                             
+Core 0: 26.9%                                                                                   
+Core 1: 22.7%                                                                                   
+Core 2: 48.8%                                                                                   
+Core 3: 18.2%                                                                                   
+Core 4: 12.1%                                                                                   
+Core 5: 7.6%                                                                                    
+Core 6: 9.1%                                                                                    
+Core 7: 16.7%                                                                                   
+Total CPU Usage: 23.3%                                                                          
+======================================== Memory Information ====================================
+Total: 7.73GB                                                                                   
+Available: 2.84GB                                                                               
+Used: 4.89GB                                                                                    
+Percentage: 63.3%                                                                               
+==================== SWAP ====================                                                  
+Total: 10.98GB                                                                                  
+Free: 4.36GB                                                                                    
+Used: 6.62GB                                                                                    
+Percentage: 60.3%                                                                               
+======================================== Disk Information ======================================
+Partitions and Usage:                                                                           
+=== Device: C:\ ===                                                                             
+  Mountpoint: C:\                                                                               
+  File system type: NTFS                                                                        
+  Total Size: 235.62GB                                                                          
+  Used: 221.65GB                                                                                
+  Free: 13.97GB                                                                                 
+  Percentage: 94.1%                                                                             
+Total read: 99.49GB                                                                             
+Total write: 36.56GB                                                                            
+======================================== Network Information ===================================
+=== Interface: Ethernet ===                                                                     
+=== Interface: Ethernet ===                                                                     
+  IP Address: 169.254.71.48                                                                     
+  Netmask: 255.255.0.0                                                                          
+  Broadcast IP: None                                                                            
+=== Interface: Ethernet ===                                                                     
+=== Interface: LAN-Verbindung* 1 ===                                                            
+=== Interface: LAN-Verbindung* 1 ===                                                            
+  IP Address: 169.254.236.11                                                                    
+  Netmask: 255.255.0.0                                                                          
+  Broadcast IP: None                                                                            
+=== Interface: LAN-Verbindung* 1 ===                                                            
+=== Interface: LAN-Verbindung* 2 ===                                                            
+=== Interface: LAN-Verbindung* 2 ===                                                            
+  IP Address: 169.254.80.10                                                                     
+  Netmask: 255.255.0.0                                                                          
+  Broadcast IP: None                                                                            
+=== Interface: LAN-Verbindung* 2 ===                                                            
+=== Interface: WLAN ===                                                                         
+=== Interface: WLAN ===                                                                         
+  IP Address: 10.0.0.11                                                                         
+  Netmask: 255.255.255.0                                                                        
+  Broadcast IP: None                                                                            
+=== Interface: WLAN ===                                                                         
+=== Interface: Loopback Pseudo-Interface 1 ===                                                  
+  IP Address: 127.0.0.1                                                                         
+  Netmask: 255.0.0.0                                                                            
+  Broadcast IP: None                                                                            
+=== Interface: Loopback Pseudo-Interface 1 ===                                                  
+Total Bytes Sent: 325.56MB                                                                      
+Total Bytes Received: 2.47GB                                                                    
+======================================== GPU Details ========================================   
+id    name    load    free memory    used memory    total memory    temperature    uuid         
+----  ------  ------  -------------  -------------  --------------  -------------  ------       

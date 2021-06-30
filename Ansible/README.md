@@ -52,3 +52,36 @@ That's it!
 ## Where to find other roles?
 
 see [Ansible Galaxy](https://galaxy.ansible.com/)
+
+# List of roles
+
+Global variables are taken from _vars/global_vars.yml_. If they are not defined, role variables will be used.
+
+## some usefull roles
+
+- collect
+  Collect some data from Client, e.g.
+
+```bash
+Manufacturer: Dell Inc.
+Model: Latitude 5310
+Name: DESKTOP-VFEQ5BI
+SystemType: x64-based PC
+SystemFamily: Latitude
+```
+
+## base-package.yml
+
+- elevateAnsibleUser
+  Elevates the User to Administrator and hides the user from Login Screen.
+- createUsers
+  Create Administrators and some default Users.
+- chocolaty
+  Be sure chocolaty is on client.
+
+## coder-package
+
+- node_yarn_sass
+  - vscodium
+  - netbeans
+  - mysqlworkbench
