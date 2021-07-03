@@ -11,5 +11,6 @@ global_npm_path: 'C:\npm\'
 
 # MySQL Data to collect dynamic inventory
 mysql_server: 10.0.10.4
-mysql_user: itadmin
+mysql_user: admintools
 mysql_password: XYZ123
+mysql_database: admintools
