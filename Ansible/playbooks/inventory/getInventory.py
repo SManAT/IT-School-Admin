@@ -3,8 +3,6 @@
 '''
 Dynamic inventory script for Ansible, in Python
 '''
-import os
-import sys
 import argparse
 import json
 
@@ -12,9 +10,9 @@ import json
 class Inventory(object):
     """ creates the dynamic inventory """
 
-    def __init__(self, argv):
+    def __init__(self):
         self.inventory = {}
-        self.target = self.read_cli_args(argv)
+        self.target = self.read_cli_args()
 
     def example_inventory(self):
         return {
@@ -36,19 +34,8 @@ class Inventory(object):
     def getInventoryMySQL(self):
         pass
 
-    def print_help(self, fname):
-        """ just a simple help output """
-        print()
-        print("Usage: ")
-        print("\t%s\t -u <username> -p <password>" % fname)
-        print("\t\t\tget all hosts")
-        print("\t%s\t-g, --group <name of hosts group> -u <username> -p <password>" % fname)
-        print("\t\t\tget hosts in group")
-
-    def read_cli_args(self, argv):
+    def read_cli_args(self):
         """ Read the command line args passed to the script """
-        fname = os.path.basename(__file__)
-
         # see https://www.golinuxcloud.com/python-argparse/
         parser = argparse.ArgumentParser()
         parser.add_argument('-u', '--user',
@@ -78,10 +65,10 @@ class Inventory(object):
         print(f'Group is "{args.group}"')
 
 
-def main(argv):
-    inventory = Inventory(argv)
+def main():
+    inventory = Inventory()
     inventory.getInventory()
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

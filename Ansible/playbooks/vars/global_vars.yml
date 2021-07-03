@@ -8,3 +8,8 @@ global_user_password: schule
 
 # NPM Install Path for all Users
 global_npm_path: 'C:\npm\'
+
+# MySQL Data to collect dynamic inventory
+mysql_server: 10.0.10.4
+mysql_user: itadmin
+mysql_password: XYZ123
