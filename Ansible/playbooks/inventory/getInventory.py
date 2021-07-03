@@ -16,22 +16,13 @@ class Inventory(object):
     pwd = ""
     db = ""
     target = ""
+    # Query erors?
+    _error = False
 
     def __init__(self):
         self.inventory = {}
         self.target = self.read_cli_args()
         self.conn = None
-
-    def example_inventory(self):
-        return {
-            'group': {
-                'hosts': ['192.168.28.71', '192.168.28.72'],
-            },
-        }
-
-    # Empty inventory for testing.
-    def empty_inventory(self):
-        return {'_meta': {'hostvars': {}}}
 
     def getInventory(self):
         """ collect the inventory for hosts in self.target """
@@ -58,19 +49,17 @@ class Inventory(object):
             print(e)
 
     def query(self, sql):
+        """ do a SQL Query """
         if self.conn is None:
             return None
+        self._error = False
         try:
             cursor = self.conn.cursor()
-            cursor.execute("SELECT * FROM books")
-            rows = cursor.fetchall()
-
-            print('Total Row(s):', cursor.rowcount)
-            for row in rows:
-                print(row)
+            cursor.execute(sql)
+            return cursor.fetchall()
         except Error as e:
             print(e)
-
+            self._error = True
         finally:
             cursor.close()
 
@@ -86,8 +75,30 @@ class Inventory(object):
         self.target = "all"
 
         self.connect(self.server, self.user, self.pwd, self.db)
-        self.query("SELECT * FROM mac")
+        result = self.query("SELECT * FROM admintools.mac")
+
+        if self._error is False:
+            if self.verbose is True:
+                print('Total Row(s):', len(result))
+                for row in result:
+                    print(row)
         self.close()
+
+        if self._error is False:
+            self.createInventory(result)
+        else:
+            self.empty_inventory()
+
+    def createInventory(self, data):
+        return {
+            'group': {
+                'hosts': ['192.168.28.71', '192.168.28.72'],
+            },
+        }
+
+    # Empty inventory for testing.
+    def empty_inventory(self):
+        return {'_meta': {'hostvars': {}}}
 
     def read_cli_args(self):
         """ Read the command line args passed to the script """
@@ -118,12 +129,16 @@ class Inventory(object):
                             type=str,
                             required=True
                             )
-
         parser.add_argument('-g', '--group',
                             default='all',
                             dest='group',
                             help='The group of hosts',
                             type=str
+                            )
+        parser.add_argument('-v', '--verbose',
+                            action='store_true',
+                            dest="verbose",
+                            help='Verbose Output'
                             )
 
         args = parser.parse_args()
@@ -132,6 +147,7 @@ class Inventory(object):
         self.user = args.user
         self.pwd = args.pwd
         self.db = args.db
+        self.verbose = args.verbose
         return args.group
 
 
