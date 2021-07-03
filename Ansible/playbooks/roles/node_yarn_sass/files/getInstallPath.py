@@ -1,8 +1,7 @@
 import sys
-import getopt
+import argparse
 import os
 import json
-from pathlib import Path
 
 """
 A class used to extract the Install Path of some programs on windows
@@ -19,35 +18,17 @@ stderr = ""
 stdout = ""
 
 
-def print_help(fname):
-    """ just a simple help output """
-    print("%s -n, --name <name of executeable>" % fname)
-
-
-def main(argv):
-    fname = os.path.basename(__file__)
-    search_name = ""
-    try:
-        # argv, shortopts, longopts
-        # : requires an argument
-        opts, args = getopt.getopt(argv, "hn:", ["name="])
-    except getopt.GetoptError:
-        print_help(fname)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print_help(fname)
-            sys.exit()
-        elif opt in ("-n", "--name"):
-            search_name = arg
-            doTheJob(search_name)
-
-    print_help(fname)
-    print(json.dumps({
-        "failed": True,
-        "msg": "No arguments provided!"
-    }))
-    sys.exit(1)
+def main():
+    # see https://www.golinuxcloud.com/python-argparse/
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-n', '--name',
+                        dest='search_name',
+                        help='The name of the File to be searched',
+                        type=str,
+                        required=True
+                        )
+    args = parser.parse_args()
+    doTheJob(args.search_name)
 
 
 def searchFile(name):
@@ -79,7 +60,6 @@ def searchFile(name):
 
 
 def doTheJob(name):
-    global json
     """ Search on the system for name """
     output = searchFile(name)
 
@@ -91,4 +71,4 @@ def doTheJob(name):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()
