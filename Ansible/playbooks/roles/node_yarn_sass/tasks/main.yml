@@ -8,3 +8,5 @@
 
 - name: Install sass
   include_tasks: sass.yml
+#- name: Test
+#  include_tasks: testPythonScript.yml

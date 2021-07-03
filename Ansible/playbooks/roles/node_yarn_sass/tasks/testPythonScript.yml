@@ -1,0 +1,15 @@
+---
+# Copy and execute
+- name: Get install path for Environment path
+  script: ./files/getInstallPath.py --name {{ var_npm }}
+  register: python_result
+
+- name: Set response from python script as fact
+  set_fact:
+    response: '{{ item }}'
+  with_items: '{{ (python_result.stdout | from_json).response }}'
+
+- name: Get stdout or stderr from the output
+  debug:
+    msg:
+      - '{{ response }}'

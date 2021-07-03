@@ -5,4 +5,5 @@
   vars_files:
     - ./vars/global_vars.yml
   roles:
-    - collect
+    # - collect
+    - node_yarn_sass
