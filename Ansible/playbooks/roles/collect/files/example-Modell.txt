@@ -1,0 +1,6 @@
+Manufacturer: Dell Inc.
+Model: Precision 7510
+Name: HIGHDELL-3
+SystemType: x64-based PC
+SystemFamily: Precision
+GPU: Quadro M1000M
