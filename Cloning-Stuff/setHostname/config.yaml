@@ -1,0 +1,6 @@
+version: 1
+
+config:
+   # where to store the Backups, for realtive path start with ./ or ../
+   
+
