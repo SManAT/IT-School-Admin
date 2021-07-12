@@ -22,7 +22,7 @@ from pathlib import Path
 
 import yaml
 import logging
-from logging.handlers import RotatingFileHandler
+from libs.LoggerConfiguration import configure_logging
 
 
 class setHostname():
@@ -34,41 +34,34 @@ class setHostname():
     - when finished, client will shut down
     """
 
-    debug = False
+    _debug = False
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
 
-        self.config = self.load_yml()
-        info = ("setHostname\n"
-                "(c) Mag. Stefan Hagmann 2021\n"
-                "-------------------------------------------------------\n")
-        print(info)
-
+        self.config = self._load_yml()
+        
+        self.logger = logging.getLogger('setHostname')
         self.start()
 
-    def config_logging(self):
-        self.logger = logging.getLogger("setHostname")
-        self.logger.setLevel(logging.INFO)
-        file_handler = RotatingFileHandler(
-            'setHostname.log', mode='a', maxBytes=1000000, backupCount=1, encoding='utf-8', delay=0)
-        formatter = logging.Formatter(
-            "%(asctime)s] [%(levelname)s,%(funcName)s():%(lineno)s] %(message)s")
-        file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
-
-    def load_yml(self):
+    def _load_yml(self):
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
             yml = yaml.safe_load(f.read())
         return yml
 
     def start(self):
-        self.logger.error("Test")
-        pass
+        self.logger.debug("debug")
+        self.logger.info("info")
+        self.logger.warning("warn")
+        self.logger.critical("critical")
+        self.logger.error("error")
+        self.logger.error("TEST")
 
 
 if __name__ == "__main__":
+    # load logging Config
+    configure_logging()
     sethostname = setHostname()
     sethostname.start()

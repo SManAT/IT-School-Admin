@@ -60,3 +60,21 @@
 16:35:13] [ERROR,start():62] Test
 16:35:28] [ERROR,start():62] Test
 16:35:28] [ERROR,start():62] Test
+2021-07-12 08:39:25,249] [ERROR,start():69] Test
+2021-07-12 08:39:25,250] [ERROR,start():69] Test
+2021-07-12 08:39:42,859] [INFO,start():69] Test
+2021-07-12 08:39:42,860] [INFO,start():69] Test
+2021-07-12 08:43:47,429] [INFO,start():79] Test
+2021-07-12 08:43:47,430] [INFO,start():79] Test
+2021-07-12 08:46:42,807] [INFO,start():116] Test
+2021-07-12 08:46:42,807] [INFO,start():116] Test
+09:12:53] [INFO,start():66] info
+09:12:53] [WARNING,start():67] warn
+09:12:53] [CRITICAL,start():68] critical
+09:12:53] [ERROR,start():69] error
+09:12:53] [ERROR,start():70] TEST
+09:12:53] [INFO,start():66] info
+09:12:53] [WARNING,start():67] warn
+09:12:53] [CRITICAL,start():68] critical
+09:12:53] [ERROR,start():69] error
+09:12:53] [ERROR,start():70] TEST
