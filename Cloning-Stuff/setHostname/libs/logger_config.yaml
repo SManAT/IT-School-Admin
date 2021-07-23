@@ -32,5 +32,6 @@ loggers:
     propagate: no
     
 root:
-  level: DEBUG
-  handlers: [console, debug_file_handler]
+  level: NOTSET
+  handlers: [console]
+  propogate: yes

@@ -19,9 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 from pathlib import Path
+import argparse
 
 import yaml
 import logging
+from cryptography.fernet import Fernet
 from libs.LoggerConfiguration import configure_logging
 
 
@@ -39,11 +41,11 @@ class setHostname():
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
-
-        self.config = self._load_yml()
-        
+        self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
         self.logger = logging.getLogger('setHostname')
-        self.start()
+
+        self.read_cli_args()
+        self.config = self._load_yml()
 
     def _load_yml(self):
         """ Load the yaml file config.yaml """
@@ -51,13 +53,63 @@ class setHostname():
             yml = yaml.safe_load(f.read())
         return yml
 
+    def read_cli_args(self):
+        """ Read the command line args passed to the script """
+        # see https://www.golinuxcloud.com/python-argparse/
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-c', '--createkey',
+                            default=False,
+                            action='store_true',
+                            dest="createkey",
+                            help='Create an encryption key'
+                            )
+        parser.add_argument('-e', '--encrypt',
+                            default=None,
+                            dest='estring',
+                            help='Encrypt this string',
+                            type=str,
+                            required=False
+                            )
+        args = parser.parse_args()
+
+        self.estring = args.estring
+        self.createkey = args.createkey
+
     def start(self):
-        self.logger.debug("debug")
-        self.logger.info("info")
-        self.logger.warning("warn")
-        self.logger.critical("critical")
-        self.logger.error("error")
-        self.logger.error("TEST")
+        if self.createkey is True:
+            # encrypt something
+            self.createKeyFile()
+        if self.estring is not None:
+            self.do_encrypt()
+
+        # TEsts
+        print(self.config)
+
+    def createKeyFile(self):
+        # Test if key.key is present
+        if (os.path.exists(self.keyFile) is False):
+            # create a key file
+            key = Fernet.generate_key()
+            file = open(self.keyFile, 'wb')
+            file.write(key)
+            file.close()
+            print("KeyFile created in %s" % self.keyFile)
+
+    def do_encrypt(self):
+        """ will encrypt a String """
+        # if not exists
+        self.createKeyFile()
+
+        # read Key File
+        file = open(self.keyFile, 'rb')
+        key = file.read()
+        file.close()
+
+        # encrypt
+        fernet = Fernet(key)
+        encMessage = fernet.encrypt(self.estring.encode())
+        print("%s: %s" % (self.estring, encMessage))
+        print("\nUse this hash in your config File for sensible data, e.g. passwords")
 
 
 if __name__ == "__main__":

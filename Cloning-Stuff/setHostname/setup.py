@@ -11,6 +11,8 @@ if __name__ == '__main__':
         install_requires=[
             'PyYAML',
             'mysql.connector',
+            'cryptography',
+            'argparse',
         ],
         python_requires='>=3.8',
     )
