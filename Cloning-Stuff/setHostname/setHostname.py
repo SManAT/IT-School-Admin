@@ -82,8 +82,9 @@ class setHostname():
         if self.estring is not None:
             self.do_encrypt()
 
-        # TEsts
+        # Tests
         print(self.config)
+        print(self.config["config"]["domain"])
 
     def createKeyFile(self):
         # Test if key.key is present
