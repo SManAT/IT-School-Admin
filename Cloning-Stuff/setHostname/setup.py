@@ -13,6 +13,7 @@ if __name__ == '__main__':
             'mysql.connector',
             'cryptography',
             'argparse',
+            'uuid',
         ],
         python_requires='>=3.8',
     )

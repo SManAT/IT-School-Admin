@@ -25,6 +25,7 @@ import yaml
 import logging
 from cryptography.fernet import Fernet
 from libs.LoggerConfiguration import configure_logging
+from libs.Worker import Worker
 
 
 class setHostname():
@@ -82,9 +83,13 @@ class setHostname():
         if self.estring is not None:
             self.do_encrypt()
 
+        # normal Operation
+        worker = Worker(self.config, self.rootDir)
+        worker.doTheJob()
+
         # Tests
-        print(self.config)
-        print(self.config["config"]["domain"])
+        # print(self.config)
+        # print(self.config["config"]["domain"])
 
     def createKeyFile(self):
         # Test if key.key is present
