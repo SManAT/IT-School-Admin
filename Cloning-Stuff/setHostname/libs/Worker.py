@@ -2,10 +2,10 @@ import logging
 import os
 import re
 import sys
-
+import time
 import psutil
-
 from libs.MySQL import MySQL
+from libs.Tools import Tools
 
 
 class Worker:
@@ -43,11 +43,73 @@ class Worker:
         if self.debug is False:
             time.sleep(10000)
 
-        self.doTheJob()
+        self.doTheRealJobNow()
 
-    def doTheJob(self):
+    def doTheRealJobNow(self):
         """ Main Method """
-        pass
+        tools = Tools()
+        # LockFile Status erfragen, falls es noch nicht existiert - 1
+        lock_status = tools.getLockFilestatus()
+        if self.debug:
+            lock_status = 4
+
+        lock_status = -1
+
+        # kein Lock File > Rename Computer and Reboot
+        if lock_status == -1:
+            tools.Rename("Rename.ps1")
+
+            #tools.setLockFileStatus(1, "Host Renamed")
+            # das Restart File kann man nicht löschen, da es während des Reboots aktiv sein muss!
+            # tools.Restart()
+
+        """
+        if (status == 1) {
+            this.JoinDomain("joinDomain.ps1")
+            this.appendLockFileStatus(2, "Joined Domain")
+            this.Restart()
+        }
+        if (status == 2) {
+            if (kmsON) {
+                // KMS Rearm Thing
+                this.KMS("KMSPart1.ps1")
+                logger.info("KMS Client REARM-----------------------------------")
+                this.appendLockFileStatus(3, "KMS Client rearmed")
+                this.Restart()
+            }
+        }
+        if (status == 3) {
+            if (kmsON) {
+                // KMS Rearm Thing
+                this.KMS("KMSPart2.ps1")
+                logger.info("KMS Client ATO-----------------------------------")
+                this.appendLockFileStatus(4, "KMS Client ato")
+                this.Restart()
+            }
+        }
+        if (status == 4) {
+            this.appendLockFileStatus(-2, "All done")
+            logger.info("")
+            logger.info("")
+            logger.info("############################################################")
+            logger.info("       we are finished, hostname, joined, rearm, ato")
+            logger.info("############################################################")
+            logger.info("")
+            logger.info("")
+
+            this.Shutdown()
+        }
+
+        //nichts zu tun
+        if (status == -2) {
+            logger.info("Host " + host.getName() + ":" + host.getMacListasString() + " bereits fertig bearbeitet!")
+            this.triggerCloseEvent()
+        }
+        //try to delete tmp Folder
+        if(this.debug == false){
+            FileTools.deleteDir(Paths.get(TMP_Dir).toFile())
+        }
+        """
 
     def getMAC(self):
         """ get MAC Adress from active interface """
@@ -113,9 +175,32 @@ class Worker:
             mac = None
         return mac
 
+    def decrypt(self):
+        """ decrypt a String """
+        # read Key File
+        file = open(self.keyFile, 'rb')
+        key = file.read()
+        file.close()
+
+        # encrypt
+        fernet = Fernet(key)
+        decMessage = fernet.decrypt(encMessage).decode()
+        print("%s: %s" % (self.estring, encMessage))
+        print("\nUse this hash in your config File for sensible data, e.g. passwords")
+
     def getHostname(self):
         """ load the HostName via MAC Adress from MySQL Database """
         mysql = MySQL()
+
+        server = self.config["config"]["mysql"]["server"]
+        user: self.config["config"]["mysql"]["user"]
+        password: self.config["config"]["mysql"]["password"]
+        database: self.config["config"]["mysql"]["database"]
+        mactable: self.config["config"]["mysql"]["mactable"]
+
+        # Tests
+        # print(self.config)
+        # print(self.config["config"]["domain"])
 
         # Test
         mysql.getHostData()

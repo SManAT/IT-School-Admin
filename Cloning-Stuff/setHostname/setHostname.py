@@ -87,10 +87,6 @@ class setHostname():
         worker = Worker(self.config, self.rootDir)
         worker.doTheJob()
 
-        # Tests
-        # print(self.config)
-        # print(self.config["config"]["domain"])
-
     def createKeyFile(self):
         # Test if key.key is present
         if (os.path.exists(self.keyFile) is False):
