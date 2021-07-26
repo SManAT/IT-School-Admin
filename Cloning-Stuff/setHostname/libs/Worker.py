@@ -1,5 +1,4 @@
 import logging
-import os
 import re
 import sys
 import time
@@ -17,7 +16,7 @@ class Worker:
         self.logger = logging.getLogger('Worker')
         self.config = config
         self.rootDir = rootDir
-        self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
+        
 
     def doTheJob(self):
         if self.debug is True:
@@ -47,7 +46,7 @@ class Worker:
 
     def doTheRealJobNow(self):
         """ Main Method """
-        tools = Tools()
+        tools = Tools(self.config, self.hostname)
         # LockFile Status erfragen, falls es noch nicht existiert - 1
         lock_status = tools.getLockFilestatus()
         if self.debug:
@@ -59,7 +58,7 @@ class Worker:
         if lock_status == -1:
             tools.Rename("Rename.ps1")
 
-            #tools.setLockFileStatus(1, "Host Renamed")
+            # tools.setLockFileStatus(1, "Host Renamed")
             # das Restart File kann man nicht löschen, da es während des Reboots aktiv sein muss!
             # tools.Restart()
 
@@ -175,19 +174,7 @@ class Worker:
             mac = None
         return mac
 
-    def decrypt(self):
-        """ decrypt a String """
-        # read Key File
-        file = open(self.keyFile, 'rb')
-        key = file.read()
-        file.close()
-
-        # encrypt
-        fernet = Fernet(key)
-        decMessage = fernet.decrypt(encMessage).decode()
-        print("%s: %s" % (self.estring, encMessage))
-        print("\nUse this hash in your config File for sensible data, e.g. passwords")
-
+    
     def getHostname(self):
         """ load the HostName via MAC Adress from MySQL Database """
         mysql = MySQL()

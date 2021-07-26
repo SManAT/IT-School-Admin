@@ -4,15 +4,15 @@ config:
   mysql:
     server: 192.168.1.100/24
     user: admintools
-    password: b'gAAAAABg-r6EHHIzxe_NkAJh99JHNF9sqTChMzEqwTACFN1JIcnXVQPmRfPWUAmQf-RcaB9JVXooG_5TybTyZH7a173alW12fw=='
+    password: gAAAAABg-r6EHHIzxe_NkAJh99JHNF9sqTChMzEqwTACFN1JIcnXVQPmRfPWUAmQf-RcaB9JVXooG_5TybTyZH7a173alW12fw==
     database: admintools
     mactable: mac
   domain:
     domainname: schule.local
     admin: SCHULE\\Administrator
-    passwd: b'gAAAAABg-r6nVT9sybCVtJ39F9B97bWCf1_QFodOYBuwmLK8rbsuG-kd1p0l-S30kntS7N-8LCQTTXjEoXIQAGHT2hBFMY-tsQ=='
+    passwd: gAAAAABg-r6nVT9sybCVtJ39F9B97bWCf1_QFodOYBuwmLK8rbsuG-kd1p0l-S30kntS7N-8LCQTTXjEoXIQAGHT2hBFMY-tsQ==
   local:
     admin: localhost\\kustos
-    passwd: b'gAAAAABg-r68DND-uVF_AIR2hupkd-8folIIq7Axk-xhrvpQwP99wbaoLFHWE5gROGltdFndSDz4jWk2ONIJfJY13UneQeLvQg=='
+    passwd: gAAAAABg-r68DND-uVF_AIR2hupkd-8folIIq7Axk-xhrvpQwP99wbaoLFHWE5gROGltdFndSDz4jWk2ONIJfJY13UneQeLvQg==
   kms: yes
   

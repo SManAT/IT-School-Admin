@@ -80,12 +80,13 @@ class setHostname():
         if self.createkey is True:
             # encrypt something
             self.createKeyFile()
-        if self.estring is not None:
+        elif self.estring is not None:
             self.do_encrypt()
 
-        # normal Operation
-        worker = Worker(self.config, self.rootDir)
-        worker.doTheJob()
+        else:
+            # normal Operation
+            worker = Worker(self.config, self.rootDir)
+            worker.doTheJob()
 
     def createKeyFile(self):
         # Test if key.key is present
@@ -110,7 +111,7 @@ class setHostname():
         # encrypt
         fernet = Fernet(key)
         encMessage = fernet.encrypt(self.estring.encode())
-        print("%s: %s" % (self.estring, encMessage))
+        print("%s: %s" % (self.estring, encMessage.decode()))
         print("\nUse this hash in your config File for sensible data, e.g. passwords")
 
 
