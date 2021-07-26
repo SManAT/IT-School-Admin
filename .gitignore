@@ -4,6 +4,7 @@ __pycache__/
 
 DB_BACKUP/**
 SAMBA_BACKUP/**
+.settings/**
 *.tar.bz2
 *.tar.bzip2
 *.sql
