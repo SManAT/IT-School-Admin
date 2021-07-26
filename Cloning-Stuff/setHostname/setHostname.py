@@ -26,6 +26,10 @@ import logging
 from cryptography.fernet import Fernet
 from libs.LoggerConfiguration import configure_logging
 from libs.Worker import Worker
+import signal
+import sys
+import atexit
+import shutil
 
 
 class setHostname():
@@ -43,10 +47,15 @@ class setHostname():
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
         self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
+        self.tmpPath = os.path.join(self.rootDir, 'tmp/')
         self.logger = logging.getLogger('setHostname')
+        
+        # catch terminating Signal
+        atexit.register(self.exit_handler)
 
         self.read_cli_args()
         self.config = self._load_yml()
+        
 
     def _load_yml(self):
         """ Load the yaml file config.yaml """
@@ -113,6 +122,14 @@ class setHostname():
         encMessage = fernet.encrypt(self.estring.encode())
         print("%s: %s" % (self.estring, encMessage.decode()))
         print("\nUse this hash in your config File for sensible data, e.g. passwords")
+        
+    def exit_handler(self):
+        """ do something on sys.exit() """
+        # be sure to delete tmp/ dir
+        try:
+            shutil.rmtree(self.tmpPath)
+        except OSError as e:
+            print("Error: %s : %s" % (self.tmpPath, e.strerror))
 
 
 if __name__ == "__main__":

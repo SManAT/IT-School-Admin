@@ -3,6 +3,7 @@ import logging
 import sys
 from cryptography.fernet import Fernet
 from pathlib import Path
+import signal
 
 
 class Tools:
@@ -14,6 +15,7 @@ class Tools:
         self.lockFile = os.path.join(self.rootDir, '.lock')
         self.scriptPath = os.path.join(self.rootDir, 'scripts/')
         self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
+        self.tmpPath = os.path.join(self.rootDir, 'tmp/')
         self.config = config
         self.hostname = hostname
         
@@ -25,6 +27,9 @@ class Tools:
         # encrypt
         self.fernet = Fernet(key)
         
+    def exit_handler(self):
+        print("EXIT Handler")
+
     def decrypt(self, encMessage):
         """ decrypt a String """
         return self.fernet.decrypt(str.encode(encMessage)).decode()
@@ -43,7 +48,7 @@ class Tools:
                 except Exception:
                     return -1
 
-    def loadScript(self, filename): 
+    def loadScript(self, filename):
         """ load a PS Script """
         path = os.path.join(self.scriptPath, filename)
         if (os.path.exists(path) is False):
@@ -71,20 +76,31 @@ class Tools:
             line = line.replace("{% password %}", domain_adminpasswd)
             line = line.replace("{% newhostname %}", self.hostname)
             line = line.replace("{% domain %}", self.config["config"]["domain"]["domainname"])
-        
             line = line.replace("{% localadmin %}", self.config["config"]["local"]["admin"])
             line = line.replace("{% localadminpasswd %}", local_adminpasswd)
             erg.append(line)
         return erg
+    
+    def createScript(self, lines, filename):
+        """ create a temporary PS Script """
+        # tmp exists
+        if (os.path.exists(self.tmpPath) is False):
+            os.mkdir(self.tmpPath)
+        
+        newfile = os.path.join(self.tmpPath, filename)
+        file = open(newfile, 'w')
+        for line in lines:
+            file.write(line)
+        file.close()
+        sys.exit()
 
     def Rename(self, filename):
         cmdarray = self.loadScript(filename)
-        print(cmdarray)
-        
         cmdarray = self.modifyScript(cmdarray)
         print(cmdarray)
+        self.createScript(cmdarray, filename)
         """
-        this.createScript(cmdarray, filename)
+        
         Path filepath = Paths.get(TMP_Dir + filename)
 
         if(FileTools.Exists(filepath) == false){
