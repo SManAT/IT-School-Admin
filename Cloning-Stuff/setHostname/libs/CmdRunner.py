@@ -1,4 +1,7 @@
 import subprocess
+from subprocess import CREATE_NEW_CONSOLE
+import sys
+import os
 
 
 class CmdRunner():
@@ -41,6 +44,36 @@ class CmdRunner():
         proc.communicate()
 
         self.pid = proc.pid
+
+    def runPSFile(self, filename):
+        cmd = "powershell.exe -NoProfile -ExecutionPolicy Bypass -File %s" % filename
+        print(cmd)
+        os.system(cmd)
+        """
+        ''' runs a PS File '''
+        self._stderr = ""
+        self._stdout = ""
+
+        proc = subprocess.Popen(["powershell.exe", '-ExecutionPolicy', 'RemoteSigned', filename],
+                                shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+
+        (output, err) = proc.communicate()
+        self._stderr = err
+        self._stdout = output
+        
+        # This makes the wait possible
+        proc.wait()
+
+        self.pid = proc.pid
+        """
+        
+    def runPSCommand(self, cmd):
+        """ runs a PS Command """
+        completed = subprocess.run(["powershell", "-Command", cmd], capture_output=True)
+        return completed
 
     def getPID(self):
         """ returns the running PID """

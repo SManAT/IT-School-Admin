@@ -3,13 +3,14 @@ import logging
 import sys
 from cryptography.fernet import Fernet
 from pathlib import Path
-import signal
+from libs.CmdRunner import CmdRunner
+import time
 
 
 class Tools:
     """ Stuff to Scripts, Filemanagement """
 
-    def __init__(self, config, hostname):
+    def __init__(self, config, hostname, debug):
         self.logger = logging.getLogger('Tools')
         self.rootDir = Path(__file__).parent.parent
         self.lockFile = os.path.join(self.rootDir, '.lock')
@@ -18,7 +19,8 @@ class Tools:
         self.tmpPath = os.path.join(self.rootDir, 'tmp/')
         self.config = config
         self.hostname = hostname
-        
+        self.debug = debug
+
         # Cryptographie
         file = open(self.keyFile, 'rb')
         key = file.read()
@@ -26,9 +28,6 @@ class Tools:
 
         # encrypt
         self.fernet = Fernet(key)
-        
-    def exit_handler(self):
-        print("EXIT Handler")
 
     def decrypt(self, encMessage):
         """ decrypt a String """
@@ -80,41 +79,39 @@ class Tools:
             line = line.replace("{% localadminpasswd %}", local_adminpasswd)
             erg.append(line)
         return erg
-    
+
     def createScript(self, lines, filename):
         """ create a temporary PS Script """
         # tmp exists
         if (os.path.exists(self.tmpPath) is False):
             os.mkdir(self.tmpPath)
-        
+
         newfile = os.path.join(self.tmpPath, filename)
         file = open(newfile, 'w')
         for line in lines:
             file.write(line)
         file.close()
-        sys.exit()
+
+    def rmFile(self, filename):
+        if (os.path.exists(filename) is True):
+            os.remove(filename)
 
     def Rename(self, filename):
         cmdarray = self.loadScript(filename)
         cmdarray = self.modifyScript(cmdarray)
-        print(cmdarray)
         self.createScript(cmdarray, filename)
-        """
-        
-        Path filepath = Paths.get(TMP_Dir + filename)
-
-        if(FileTools.Exists(filepath) == false){
-            logger.error("Script not found: " + filepath)
-            this.triggerCloseEvent()
-        }
-
-        //Do the JOB
-        logger.info("Renaming Host to " + host.getName())
-        if(this.debug == false){
-            aRuntime shell = new aRuntime()
-            shell.executePSScript(filepath, true)
-            // Delete tmp Script with passwords
-            FileTools.Delete(Paths.get(TMP_Dir + "Rename.ps1"))
-        }
-        logger.info("Host Renamed---------------------------------------------")
-        """
+        # test
+        self.debug = False
+        # Do the JOB
+        self.logger.info("Renaming Host to " + self.hostname)
+        if self.debug is False:
+            script = os.path.join(self.tmpPath, filename)
+            runner = CmdRunner()
+            runner.runPSFile(script)
+            errors = runner.getStderr()
+            if errors:
+                self.logger.error(errors)
+            # Delete tmp Script with passwords
+            time.sleep(10)
+            self.rmFile(script)
+        self.logger.info("Host Renamed---------------------------------------------")

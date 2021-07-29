@@ -5,6 +5,7 @@ __pycache__/
 DB_BACKUP/**
 SAMBA_BACKUP/**
 .settings/**
+build/
 *.tar.bz2
 *.tar.bzip2
 *.sql
@@ -16,3 +17,6 @@ users.yaml
 
 MySQL/mysql.cnf
 *.odt#
+
+Cloning-Stuff/setHostname/dist/**
+Cloning-Stuff/setHostname/build/**

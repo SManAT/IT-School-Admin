@@ -16,7 +16,6 @@ class Worker:
         self.logger = logging.getLogger('Worker')
         self.config = config
         self.rootDir = rootDir
-        
 
     def doTheJob(self):
         if self.debug is True:
@@ -46,7 +45,7 @@ class Worker:
 
     def doTheRealJobNow(self):
         """ Main Method """
-        tools = Tools(self.config, self.hostname)
+        tools = Tools(self.config, self.hostname, self.debug)
         # LockFile Status erfragen, falls es noch nicht existiert - 1
         lock_status = tools.getLockFilestatus()
         if self.debug:
@@ -174,7 +173,6 @@ class Worker:
             mac = None
         return mac
 
-    
     def getHostname(self):
         """ load the HostName via MAC Adress from MySQL Database """
         mysql = MySQL()
