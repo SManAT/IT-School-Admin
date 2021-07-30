@@ -1,6 +1,8 @@
 """
-cd_Freeze
+cx_Freeze
 see https://cx-freeze.readthedocs.io/en/latest/distutils.html
+Build a executeable App for everything.
+Windows: python setup_cx.py build_exe
 """
 import sys
 import os
@@ -15,10 +17,12 @@ __pyfile__ = "setHostname"
 
 # use relative paths
 include_files = ["config.yaml"]
-include_dirs = ["libs/", "scripts/"]
+include_dirs = ["scripts/"]
 includes = []
 excludes = []
 packages = []
+# add other dirs to search for custom modules
+path = ["libs"] + sys.path
 
 # base="Win32GUI" should be used only for Windows UIs
 if sys.platform == "win32":
@@ -37,6 +41,7 @@ setup(
         'include_files': include_files,
         'include_msvcr': True,
         'excludes': excludes,
+        'path': path
     }},
 )
 
@@ -52,8 +57,7 @@ for root, dirs, files in os.walk(searchPath):
     if root[len(searchPath):].count(os.sep) < depth:
         for dirpath in dirs:
             copyTo.append(os.path.join(searchPath, dirpath))
-# copy dirs
-print(copyTo)
+# copy additional dirs to lib/ folder
 for dirpath in copyTo:
     for incdir in include_dirs:
-        copy_tree(incdir, os.path.join(dirpath, incdir))
+        copy_tree(incdir, os.path.join(dirpath, "lib", incdir))

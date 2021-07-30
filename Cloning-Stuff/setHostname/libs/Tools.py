@@ -51,7 +51,7 @@ class Tools:
         """ load a PS Script """
         path = os.path.join(self.scriptPath, filename)
         if (os.path.exists(path) is False):
-            self.logger.error("Script scripts/%s does not exist -abort-" % filename)
+            self.logger.error("Script %s does not exist -abort-" % path)
             sys.exit()
         else:
             with open(path, 'r') as f:

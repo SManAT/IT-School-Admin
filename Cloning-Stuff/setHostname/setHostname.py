@@ -134,5 +134,5 @@ if __name__ == "__main__":
     # load logging Config
     configure_logging()
     sethostname = setHostname()
-    # sethostname.start()
-    print("Juhuuuuuu")
+    sethostname.start()
+
