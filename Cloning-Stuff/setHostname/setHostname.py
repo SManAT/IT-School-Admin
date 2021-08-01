@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
-from pathlib import Path
+from pathlib import Path 
 import argparse
 
 import yaml
@@ -58,7 +58,7 @@ class setHostname():
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
             yml = yaml.safe_load(f.read())
-        return yml
+        return yml 
 
     def read_cli_args(self):
         """ Read the command line args passed to the script """
