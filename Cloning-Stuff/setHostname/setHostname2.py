@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import os
 from pathlib import Path
+import argparse
 
 import yaml
 import logging
@@ -27,10 +28,17 @@ from libs.LoggerConfiguration import configure_logging
 from libs.Worker import Worker
 import atexit
 import shutil
-import click
 
 
 class setHostname():
+    """
+    After a fresh Cloning session, this tool will do
+    - rename to Hostname via MAC Address from a MySQL Database
+    - will join a defined domain
+    - will activate KMS and will contact it
+    - when finished, client will shut down
+    """
+
     _debug = False
 
     def __init__(self):
@@ -42,16 +50,57 @@ class setHostname():
 
         # catch terminating Signal
         atexit.register(self.exit_handler)
+
+        self.read_cli_args()
         self.config = self._load_yml()
 
     def _load_yml(self):
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
             yml = yaml.safe_load(f.read())
-        return yml
+        return yml 
 
-    def createKeyFile(self):
-        """ Create an encryption key """
+    def read_cli_args(self):
+        """ Read the command line args passed to the script """
+        # see https://www.golinuxcloud.com/python-argparse/
+        parser = argparse.ArgumentParser()
+        parser.add_argument('-c', '--createkey',
+                            default=False,
+                            action='store_true',
+                            dest="createkey",
+                            help='Create an encryption key'
+                            )
+        parser.add_argument('-e', '--encrypt',
+                            default=None,
+                            dest='estring',
+                            help='Encrypt this string',
+                            type=str,
+                            required=False
+                            )
+        args = parser.parse_args()
+
+        self.estring = args.estring
+        self.createkey = args.createkey
+
+    def start(self):
+        if self.createkey is True:
+            # encrypt something
+            self.createKeyFile()
+        elif self.estring is not None:
+            self.do_encrypt()
+
+        else:
+            # normal Operation
+            worker = Worker(self.config, self.rootDir)
+            worker.doTheJob()
+
+
+
+
+
+    @click.command()
+    @click.option('--createkey', default=False, help='Create an encryption key')
+    def createKeyFile(self, createkey):
         # Test if key.key is present
         if (os.path.exists(self.keyFile) is False):
             # create a key file
@@ -61,8 +110,8 @@ class setHostname():
             file.close()
             print("KeyFile created in %s" % self.keyFile)
 
-    def do_encrypt(self, estring):
-        """ Encrypt this string """
+    def do_encrypt(self):
+        """ will encrypt a String """
         # if not exists
         self.createKeyFile()
 
@@ -73,8 +122,8 @@ class setHostname():
 
         # encrypt
         fernet = Fernet(key)
-        encMessage = fernet.encrypt(estring.encode())
-        print("%s: %s" % (estring, encMessage.decode()))
+        encMessage = fernet.encrypt(self.estring.encode())
+        print("%s: %s" % (self.estring, encMessage.decode()))
         print("\nUse this hash in your config File for sensible data, e.g. passwords")
 
     def exit_handler(self):
@@ -87,29 +136,9 @@ class setHostname():
                 print("Error: %s : %s" % (self.tmpPath, e.strerror))
 
 
-@click.command()
-@click.option('-c', '--createkey', required=False, default=False, help='Create an encryption key')
-@click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
-def start(createkey, encrypt):
-    """
-    After a fresh Cloning session, this tool will do
-    - rename to Hostname via MAC Address from a MySQL Database
-    - will join a defined domain
-    - will activate KMS and will contact it
-    - when finished, client will shut down
-    """
-    sethostname = setHostname()
-    if createkey is True:
-        sethostname.createKeyFile()
-    elif encrypt is not None:
-        sethostname.do_encrypt(encrypt)
-    else:
-        # normal Operation
-        worker = Worker(sethostname.config, sethostname.rootDir)
-        worker.doTheJob()
-
-
 if __name__ == "__main__":
     # load logging Config
     configure_logging()
-    start()
+    sethostname = setHostname()
+    sethostname.start()
+

@@ -18,7 +18,7 @@ if __name__ == '__main__':
             'PyYAML',
             'mysql.connector',
             'cryptography',
-            'argparse',
+            'click',
             'psutil'
         ],
         python_requires='>=3.8',
