@@ -1,17 +1,13 @@
 version: 1
 
-samba:
-   # where to store the Backups, for realtive path start with ./ or ../
-   backupPath: ./SAMBA_BACKUP
-   
-   # how many Backups schould be in the rotate Process
-   versions: 2
-   
-   # Samba4 pathes Backup from where
-   SAMBA_LIB: /var/lib/samba/
-   SAMBA_PATH: /etc/samba/
-   
-   # SubDirectories to Backup within in SAMBA_LIB
-   SUB_DIRS: ["private", "sysvol", "bind-dns"]
+ad:
+  # OU Benutzer
+  OU_BENUTZER: OU=Benutzer,OU=Frauengasse,DC=schule,DC=local
+  # OU Lehrer
+  OU_LEHRER: OU=Lehrer
 
+  HOME_PATH: D:\PDC\homes
+  PROFILE_PATH: D:\PDC\profiles
 
+  #initial Passsword
+  INIT_PWD=Newton123

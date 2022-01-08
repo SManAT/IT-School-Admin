@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import click
+import yaml
 
 from pathlib import Path
 
@@ -45,6 +46,12 @@ class UsermanagementAD():
         except Exception as ex:
             print(ex)
 
+    def _load_yml(self):
+        """ Load the yaml file config.yaml """
+        with open(self.configFile, 'rt') as f:
+            yml = yaml.safe_load(f.read())
+        return yml
+
 
 @click.command()
 @click.option('-f', '--file', required=True, default=False, help='which file to use')
@@ -53,6 +60,8 @@ class UsermanagementAD():
 def start(file, importoption, exportoption):
     print(file, importoption, exportoption)
     if importoption is True:
+
+      ou_benutzer = self.config["ad"]["OU_BENUTZER"]
         pass
     elif exportoption is not None:
         pass
