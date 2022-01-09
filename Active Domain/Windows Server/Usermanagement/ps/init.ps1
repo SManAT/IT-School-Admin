@@ -16,5 +16,6 @@ New-ADUser `
   -ChangePasswordAtLogon 1 `
   -Enabled 1 `
   -DisplayName "Hans Moser" `
-  -HomeDirectory "Z:\kjhkljkl" `
-  -HomeDrive "Z:"
+  -HomeDrive "Z:" `
+  -HomeDirectory "pdc\home\h.moser" `
+  -ProfilePath "\\pdc\profiles\%USERNAME%"

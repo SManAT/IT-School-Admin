@@ -1,13 +1,15 @@
 version: 1
-
+config:
+  # dont do anything?
+  DEBUG: 1
 ad:
-  # OU Benutzer
+  # where are your users in the forrest
   OU_BENUTZER: OU=Benutzer,OU=Frauengasse,DC=schule,DC=local
-  # OU Lehrer
-  OU_LEHRER: OU=Lehrer
 
+  # which Drive to map the profile to
+  HOME_DRIVE: "Z:"
   HOME_PATH: D:\PDC\homes
   PROFILE_PATH: D:\PDC\profiles
 
-  #initial Passsword
-  INIT_PWD=Newton123
+  # initial Passsword
+  INIT_PWD: Newton123

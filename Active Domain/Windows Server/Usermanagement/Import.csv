@@ -1,2 +1,3 @@
-Vorname;Nachname;Username;Email;Zusatzgruppen
-Hans;Moser;moser;hans.moser@example.at;Lehrer
+Vorname,Nachname,Username,Email,Gruppe
+Hans,Moser,moser,hans.moser@example.at,Lehrer
+Test,,,,

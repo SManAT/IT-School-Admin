@@ -21,8 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import click
 import yaml
+import logging
 
 from pathlib import Path
+from libs.CSVTool import CSVTool
+from libs.LoggerConfiguration import configure_logging
+from libs.ScriptTool import ScriptTool
 
 
 class UsermanagementAD():
@@ -33,44 +37,73 @@ class UsermanagementAD():
         self.rootDir = Path(__file__).parent
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
 
+        # Logging Stuff
+        self.logger = logging.getLogger('UsermanagementAD')
+        self.tmpPath = os.path.join(self.rootDir, 'tmp/')
+
         self.config = self.load_yml()
-        info = ("UsermanagementAD\n"
+        self.debug = False
+        if self.config['config']['DEBUG'] == 1:
+          self.debug = True
+
+        info = ("\nUsermanagementAD\n"
                 "(c) Mag. Stefan Hagmann 2021\n"
                 "will manage AD Users on a Windows Server with Powershell\n"
                 "-------------------------------------------------------\n")
         print(info)
 
-        try:
-            # ensure BackupPath exists
-            pass
-        except Exception as ex:
-            print(ex)
+        if self.debug:
+          print("TEST MODE, no script will be executed (see config.yaml)\n")
 
-    def _load_yml(self):
+        self.csv = CSVTool(self.debug)
+        self.tool = ScriptTool(self.config, self.debug)
+
+    def load_yml(self):
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
             yml = yaml.safe_load(f.read())
         return yml
 
+    def Import(self, file):
+      """ Import Users from CSV File """
+      self.csv.read(file)
+
+      i = 0
+      k = 0
+      for user in self.csv.getUsers():
+        if user.isValid():
+          self.tool.addUser(user)
+          i += 1
+        else:
+          self.logger.info("INVALID: %s" % user)
+          k += 1
+      print("\nImport done ... +%s Users (%s Invalid Users)" % (i, k))
+
+    def Export(self):
+      """ Export Users to CSV File """
+      pass
+
 
 @click.command()
-@click.option('-f', '--file', required=True, default=False, help='which file to use')
-@click.option('-i', '--import', 'importoption', required=False, default=False, help='Import Users aus CSV Datei')
-@click.option('-e', '--export', 'exportoption', required=False, default=False, help='Export Users in CSV Datei')
+@click.option('-f', '--file', required=True, help='which file to use')
+@click.option('-i', '--import', 'importoption', is_flag=True, help='Import Users aus CSV Datei')
+@click.option('-e', '--export', 'exportoption', is_flag=True, help='Export Users in CSV Datei')
 def start(file, importoption, exportoption):
-    print(file, importoption, exportoption)
-    if importoption is True:
 
-      ou_benutzer = self.config["ad"]["OU_BENUTZER"]
-        pass
+    if file is False:
+      ctx = click.get_current_context()
+      print(ctx.get_help())
+      exit(-1)
+
+    if importoption is True:
+      userMgmt = UsermanagementAD()
+      userMgmt.Import(file)
     elif exportoption is not None:
-        pass
-    else:
-        if file is False:
-          ctx = click.get_current_context()
-          print(ctx.get_help())
+      userMgmt = UsermanagementAD()
+      userMgmt.Export()
 
 
 if __name__ == "__main__":
     # load logging Config
+    configure_logging()
     start()
