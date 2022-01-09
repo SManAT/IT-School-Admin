@@ -1,7 +1,7 @@
 version: 1
 config:
   # dont do anything?
-  DEBUG: 1
+  DEBUG: 0
 ad:
   # where are your users in the forrest
   OU_BENUTZER: OU=Benutzer,OU=Frauengasse,DC=schule,DC=local

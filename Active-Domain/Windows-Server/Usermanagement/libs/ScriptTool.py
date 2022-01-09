@@ -61,9 +61,33 @@ class ScriptTool:
         if (os.path.exists(filename) is True):
             os.remove(filename)
 
+    def existsUser(self, user):
+      """ check for User in Active Domain Forrest """
+      filename = "existsUser.ps1"
+      cmdarray = self.loadScript(filename)
+      cmdarray = self.modifyScript(cmdarray, user)
+      self.createScript(cmdarray, filename)
+      script = os.path.join(self.tmpPath, filename)
+      runner = CmdRunner()
+      if self.debug is False:
+        runner.runPSFile(script)
+      errors = runner.getStderr()
+      if errors:
+          self.logger.error(errors)
+      # Delete tmp Script
+      time.sleep(0.5)
+      self.rmFile(script)
+
+      # analyse answer
+      answer = runner.getStdout()
+      if answer.find('DistinguishedName') > -1:
+        return True
+      else:
+        return False
+
     def addUser(self, user):
         """ add User via Powershell Script """
-        filename = "adduser.ps1"
+        filename = "addUser.ps1"
         cmdarray = self.loadScript(filename)
         cmdarray = self.modifyScript(cmdarray, user)
         self.createScript(cmdarray, filename)
@@ -72,7 +96,8 @@ class ScriptTool:
 
         script = os.path.join(self.tmpPath, filename)
         runner = CmdRunner()
-        # runner.runPSFile(script)
+        if self.debug is False:
+          runner.runPSFile(script)
         errors = runner.getStderr()
         if errors:
             self.logger.error(errors)

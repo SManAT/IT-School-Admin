@@ -46,8 +46,7 @@ class UsermanagementAD():
         if self.config['config']['DEBUG'] == 1:
           self.debug = True
 
-        info = ("\nUsermanagementAD\n"
-                "(c) Mag. Stefan Hagmann 2021\n"
+        info = ("\nUsermanagementAD, (c) Mag. Stefan Hagmann 2021\n"
                 "will manage AD Users on a Windows Server with Powershell\n"
                 "-------------------------------------------------------\n")
         print(info)
@@ -68,16 +67,19 @@ class UsermanagementAD():
       """ Import Users from CSV File """
       self.csv.read(file)
 
-      i = 0
-      k = 0
+      i, k, m = 0, 0, 0
       for user in self.csv.getUsers():
         if user.isValid():
-          self.tool.addUser(user)
-          i += 1
+          if self.tool.existsUser(user) is False:
+            self.tool.addUser(user)
+            i += 1
+          else:
+            m += 1
+            print("User EXISTS: %s" % user.getFullname())
         else:
-          self.logger.info("INVALID: %s" % user)
+          print("INVALID Data: %s" % user)
           k += 1
-      print("\nImport done ... +%s Users (%s Invalid Users)" % (i, k))
+      print("\nImport done ... +%s Users (%s Existing Users, %s Invalid Users)" % (i, m, k))
 
     def Export(self):
       """ Export Users to CSV File """

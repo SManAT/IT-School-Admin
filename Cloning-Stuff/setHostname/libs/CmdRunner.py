@@ -44,3 +44,24 @@ class CmdRunner():
     def getPID(self):
         """ returns the running PID """
         return self.pid
+
+    def runPSFile(self, filename):
+        """ runs a PS File """
+        self._stderr = ""
+        self._stdout = ""
+
+        proc = subprocess.Popen(["powershell.exe", filename],
+                                shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                bufsize=0,
+                                preexec_fn=None)
+        for line in iter(proc.stderr.readline, b''):
+            self._stderr += line.decode('utf-8', 'ignore')
+
+        for line in iter(proc.stdout.readline, b''):
+            self._stdout += line.decode('utf-8', 'ignore')
+        proc.communicate()
+
+        self.pid = proc.pid

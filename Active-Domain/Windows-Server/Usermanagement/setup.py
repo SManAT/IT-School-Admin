@@ -15,6 +15,7 @@ if __name__ == '__main__':
         maintainer=__author__,
         license="GPLv3",
         install_requires=[
+            'pyyaml',
             'click',
             'pandas',
         ],
