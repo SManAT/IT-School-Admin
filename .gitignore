@@ -17,6 +17,7 @@ users.yaml
 
 MySQL/mysql.cnf
 *.odt#
+*.egg-info
 
 Cloning-Stuff/setHostname/dist/**
 Cloning-Stuff/setHostname/build/**

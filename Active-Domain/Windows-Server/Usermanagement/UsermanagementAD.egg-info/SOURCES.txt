@@ -1,6 +1,0 @@
-setup.py
-UsermanagementAD.egg-info/PKG-INFO
-UsermanagementAD.egg-info/SOURCES.txt
-UsermanagementAD.egg-info/dependency_links.txt
-UsermanagementAD.egg-info/requires.txt
-UsermanagementAD.egg-info/top_level.txt
