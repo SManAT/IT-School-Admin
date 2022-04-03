@@ -7,11 +7,11 @@ Provides some (that is what i think) usefull scripts for managing Linux Server.
 # Windows Server
 
 # Linux
-- [ActiveDomain with Samba4](Linux/README.md)
+- [ActiveDomain with Samba4](Linux/ActiveDomain-Samba4/README.md)
 - [Ansible](Ansible/README.md)
 
 # Other usefull Stuff
-- [MySQL stuff](MySQL/ActiveDomain-Samba4/README.md)
+- [MySQL stuff](MySQL/README.md)
 - [Cloning stuff](Cloning-Stuff/README.md)
 - [Common system stuff](System/README.md)
 - [VirtualBox-HyperV](VirtualBox-HyperV/README.md)
