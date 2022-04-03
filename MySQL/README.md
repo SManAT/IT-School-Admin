@@ -1,4 +1,9 @@
 ## MySQL
+It is written in Python, and just executes Powershell Scripts on the fly.  
+
+First of all you had to install **Python** and all needed **Python modules**.  
+After the Installation of Python, open a console in the this directory and run  `pip install .` Now we are ready to go!    
+
 It works with MySQL 5.7>.  
 The **Username** and **Password** for mysql ares stored in `mysql.cnf`.  
 Be sure to give `mysql.cnf` 400 rights, because there is listed a cleartext password!  
