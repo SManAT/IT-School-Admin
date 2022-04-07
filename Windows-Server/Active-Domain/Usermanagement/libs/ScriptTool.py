@@ -28,7 +28,7 @@ class ScriptTool:
                 lines = f.readlines()
             return lines
 
-    def pathEndingSlash(path):
+    def pathEndingSlash(self, path):
         """ check for ending slash at path """
         if path.endswith(os.path.sep) is False:
           path = "%s%s" % (path, os.path.sep)
