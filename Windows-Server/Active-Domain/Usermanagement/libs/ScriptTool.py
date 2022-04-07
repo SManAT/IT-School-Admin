@@ -28,6 +28,10 @@ class ScriptTool:
                 lines = f.readlines()
             return lines
 
+    def pathEndingSlash(path):
+        """ check for ending slash at path """
+        pass
+
     def modifyScript(self, lines, user):
         """ modify placeholders """
         erg = []
@@ -35,8 +39,8 @@ class ScriptTool:
             line = line.replace("%VORNAME%", user.getVorname())
             line = line.replace("%NACHNAME%", user.getNachname())
             line = line.replace("%USERNAME%", user.getUsername())
-            line = line.replace("%PROFILEDIR%", self.config["ad"]["PROFILE_PATH"])
-            line = line.replace("%HOMEDIR%", self.config["ad"]["HOME_PATH"])
+            line = line.replace("%PROFILEDIR%", self.pathEndingSlash(self.config["ad"]["PROFILE_PATH"]))
+            line = line.replace("%HOMEDIR%", self.pathEndingSlash(self.config["ad"]["HOME_PATH"]))
             line = line.replace("%OUUSERS%", self.config["ad"]["OU_BENUTZER"])
             line = line.replace("%GRUPPE%", user.getGruppe())
             line = line.replace("%PASSWORD%", self.config["ad"]["INIT_PWD"])

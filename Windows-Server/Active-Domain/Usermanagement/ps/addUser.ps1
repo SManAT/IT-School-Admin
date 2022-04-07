@@ -10,5 +10,5 @@ New-ADUser `
   -Enabled 1 `
   -DisplayName "%VORNAME% %NACHNAME%" `
   -HomeDrive "%HOMEDRIVE%" `
-  -HomeDirectory "%HOMEDIR%" `
-  -ProfilePath "%PROFILEDIR%"
+  -HomeDirectory "%HOMEDIR%%username%" `
+  -ProfilePath "%PROFILEDIR%%username%"

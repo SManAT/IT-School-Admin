@@ -1,7 +1,7 @@
 version: 1
 config:
   # 1 = Debug mode, no script will be executed
-  DEBUG: 0
+  DEBUG: 1
 ad:
   # where are your users in the forrest
   OU_BENUTZER: OU=Benutzer,DC=schule,DC=local
