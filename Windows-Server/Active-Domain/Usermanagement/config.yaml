@@ -1,15 +1,15 @@
 version: 1
 config:
-  # dont do anything?
+  # 1 = Debug mode, no script will be executed
   DEBUG: 0
 ad:
   # where are your users in the forrest
-  OU_BENUTZER: OU=Benutzer,OU=Frauengasse,DC=schule,DC=local
+  OU_BENUTZER: OU=Benutzer,DC=schule,DC=local
 
   # which Drive to map the profile to
   HOME_DRIVE: "Z:"
-  HOME_PATH: D:\PDC\homes
-  PROFILE_PATH: D:\PDC\profiles
+  HOME_PATH: S:\PDC\homes
+  PROFILE_PATH: S:\PDC\profiles
 
   # initial Passsword
   INIT_PWD: Newton123

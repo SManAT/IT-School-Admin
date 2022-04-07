@@ -76,7 +76,8 @@ class ScriptTool:
           self.logger.error(errors)
       # Delete tmp Script
       time.sleep(0.5)
-      self.rmFile(script)
+      if self.debug is False:
+        self.rmFile(script)
 
       # analyse answer
       answer = runner.getStdout()
@@ -103,4 +104,5 @@ class ScriptTool:
             self.logger.error(errors)
         # Delete tmp Script
         time.sleep(0.5)
-        self.rmFile(script)
+        if self.debug is False:
+            self.rmFile(script)
