@@ -30,7 +30,9 @@ class ScriptTool:
 
     def pathEndingSlash(path):
         """ check for ending slash at path """
-        pass
+        if path.endswith(os.path.sep) is False:
+          path = "%s%s" % (path, os.path.sep)
+        return path
 
     def modifyScript(self, lines, user):
         """ modify placeholders """
