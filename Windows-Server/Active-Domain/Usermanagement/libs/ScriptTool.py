@@ -9,13 +9,14 @@ import time
 class ScriptTool:
     """ Stuff to Scripts, Filemanagement """
 
-    def __init__(self, config, debug):
+    def __init__(self, config, debug, counter):
         self.logger = logging.getLogger('ScriptTool')
         self.rootDir = Path(__file__).parent.parent
         self.tmpPath = os.path.join(self.rootDir, 'tmp/')
         self.scriptPath = os.path.join(self.rootDir, 'ps/')
         self.config = config
         self.debug = debug
+        self.counter = counter
 
     def loadScript(self, filename):
         """ load a PS Script """
@@ -126,8 +127,10 @@ class ScriptTool:
           print("Creating User: %s " % user.getFullname())
 
           self._execute(script)
+          self.counter.incUser()
 
           # Add User to Goup -------------------------------------------------
           self.addUser2Group(user)
         else:
+          self.counter.incWrongGroups()
           print("Group %s does not exists! User %s will be not created!" % (user.getGruppe(), user.getFullname()))

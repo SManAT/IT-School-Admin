@@ -27,6 +27,7 @@ from pathlib import Path
 from libs.CSVTool import CSVTool
 from libs.LoggerConfiguration import configure_logging
 from libs.ScriptTool import ScriptTool
+from libs.Counter import Counter
 
 
 class UsermanagementAD():
@@ -54,8 +55,9 @@ class UsermanagementAD():
         if self.debug:
           print("TEST MODE, no script will be executed (see config.yaml)\n")
 
+        self.counter = Counter()
         self.csv = CSVTool(self.debug)
-        self.tool = ScriptTool(self.config, self.debug)
+        self.tool = ScriptTool(self.config, self.debug, self.counter)
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
@@ -67,19 +69,21 @@ class UsermanagementAD():
       """ Import Users from CSV File """
       self.csv.read(file)
 
-      i, k, m = 0, 0, 0
       for user in self.csv.getUsers():
         if user.isValid():
           if self.tool.existsUser(user) is False:
             self.tool.addUser(user)
-            i += 1
           else:
-            m += 1
+            self.counter.incUserExists()
             print("User EXISTS: %s" % user.getFullname())
         else:
           print("INVALID Data: %s" % user)
-          k += 1
-      print("\nImport done ... +%s Users (%s Existing Users, %s Invalid Users)" % (i, m, k))
+          self.counter.incUserInvalid()
+
+      print("\n---------------------------------------------------")
+      # :<25 box with 25 chars length
+      print(f"{'Wrong Groups: ':<26} { str(self.counter.getWrongGroups()) }")
+      print(f"{'Import done ... ':<25} +{self.counter.getCreatedUser()} ({str(self.counter.getUserExists())} Existing Users, {str(self.counter.getUserInvalid())} Invalid Users)")
 
     def Export(self):
       """ Export Users to CSV File """
