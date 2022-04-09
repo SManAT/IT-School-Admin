@@ -67,13 +67,15 @@ class ScriptTool:
         if (os.path.exists(filename) is True):
             os.remove(filename)
 
-    def existsUser(self, user):
-      """ check for User in Active Domain Forrest """
-      filename = "existsUser.ps1"
+    def _createRunningScript(self, filename, user):
+      """ will create the temp script to _execute with PS """
       cmdarray = self.loadScript(filename)
       cmdarray = self.modifyScript(cmdarray, user)
       self.createScript(cmdarray, filename)
-      script = os.path.join(self.tmpPath, filename)
+      return os.path.join(self.tmpPath, filename)
+
+    def _execute(self, script):
+      """ excute PS Script """
       runner = CmdRunner()
       if self.debug is False:
         runner.runPSFile(script)
@@ -84,31 +86,48 @@ class ScriptTool:
       time.sleep(0.5)
       if self.debug is False:
         self.rmFile(script)
+      return runner.getStdout()
+
+    def existsUser(self, user):
+      """ check for User in Active Domain Forrest """
+      script = self._createRunningScript("existsUser.ps1", user)
+      answer = self._execute(script)
 
       # analyse answer
-      answer = runner.getStdout()
       if answer.find('DistinguishedName') > -1:
         return True
       else:
         return False
 
+    def groupExists(self, user):
+      """ doese the group exists in AD """
+      script = self._createRunningScript("existsGroup.ps1", user)
+      answer = self._execute(script)
+
+      # analyse answer
+      if answer.find('DistinguishedName') > -1:
+        return True
+      else:
+        return False
+
+    def addUser2Group(self, user):
+        """ add User via Powershell Script to a AD Group"""
+        script = self._createRunningScript("addToGroup.ps1", user)
+        # Do the JOB
+        print("Adding User %s to Group: %s " % (user.getFullname(), user.getGruppe()))
+        self._execute(script)
+
     def addUser(self, user):
         """ add User via Powershell Script """
-        filename = "addUser.ps1"
-        cmdarray = self.loadScript(filename)
-        cmdarray = self.modifyScript(cmdarray, user)
-        self.createScript(cmdarray, filename)
-        # Do the JOB
-        print("Creating User: %s " % user.getFullname())
+        if self.groupExists(user):
+          script = self._createRunningScript("addUser.ps1", user)
 
-        script = os.path.join(self.tmpPath, filename)
-        runner = CmdRunner()
-        if self.debug is False:
-          runner.runPSFile(script)
-        errors = runner.getStderr()
-        if errors:
-            self.logger.error(errors)
-        # Delete tmp Script
-        time.sleep(0.5)
-        if self.debug is False:
-            self.rmFile(script)
+          # Do the JOB
+          print("Creating User: %s " % user.getFullname())
+
+          self._execute(script)
+
+          # Add User to Goup -------------------------------------------------
+          self.addUser2Group(user)
+        else:
+          print("Group %s does not exists! User %s will be not created!" % (user.getGruppe(), user.getFullname()))
