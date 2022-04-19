@@ -1,11 +1,11 @@
 Import-Module ActiveDirectory
 New-ADUser `
-  -Name "%VORNAME% %NACHNAME%" `
+  -Name "%NACHNAME% %VORNAME%" `
   -GivenName "%VORNAME%" `
   -Surname "%NACHNAME%" `
   -UserPrincipalName "%USERNAME%" `
   -AccountPassword (ConvertTo-SecureString "%PASSWORD%" -AsPlainText -Force) `
-  -Path "OU=%GRUPPE%,%OUUSERS%" `
+  -Path "OU=%GRUPPE_SHORT%,%OUUSERS%" `
   -ChangePasswordAtLogon 1 `
   -Enabled 1 `
   -DisplayName "%VORNAME% %NACHNAME%" `

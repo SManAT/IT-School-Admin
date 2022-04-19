@@ -1,2 +1,2 @@
 Import-Module ActiveDirectory
-Get-AdUser -Filter "Name -eq '%VORNAME% %NACHNAME%'"
+Get-AdUser -Filter "Name -eq '%NACHNAME% %VORNAME%'"

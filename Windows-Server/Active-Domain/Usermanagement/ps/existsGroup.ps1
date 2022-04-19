@@ -1,2 +1,2 @@
 Import-Module ActiveDirectory
-Get-AdGroup -Filter "Name -eq '%GRUPPE%'"
+Get-AdGroup -Filter "Name -eq '%GRUPPE_SHORT%'"

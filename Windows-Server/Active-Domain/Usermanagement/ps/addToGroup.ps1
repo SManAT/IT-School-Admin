@@ -1,2 +1,3 @@
 Import-Module ActiveDirectory
-Add-ADGroupMember -Identity %GRUPPE% -Members %USERNAME%
+$groupDN='%GRUPPE%'
+Add-ADGroupMember -Identity $groupDN -Members '%USERNAMEDN%'

@@ -38,14 +38,23 @@ class ScriptTool:
     def modifyScript(self, lines, user):
         """ modify placeholders """
         erg = []
+        grpgOU = "CN=%s,%s" % (user.getGruppe(), self.config["ad"]["OU_GRUPPEN"])
+        userDN = "CN=%s %s,OU=%s,%s" % (user.getNachname(), user.getVorname(), user.getGruppe(), self.config["ad"]["OU_BENUTZER"])
+
         for line in lines:
             line = line.replace("%VORNAME%", user.getVorname())
             line = line.replace("%NACHNAME%", user.getNachname())
+            
             line = line.replace("%USERNAME%", user.getUsername())
+            line = line.replace("%USERNAMEDN%", userDN)           
+
             line = line.replace("%PROFILEDIR%", self.pathEndingSlash(self.config["ad"]["PROFILE_PATH"]))
             line = line.replace("%HOMEDIR%", self.pathEndingSlash(self.config["ad"]["HOME_PATH"]))
             line = line.replace("%OUUSERS%", self.config["ad"]["OU_BENUTZER"])
-            line = line.replace("%GRUPPE%", user.getGruppe())
+            
+            line = line.replace("%GRUPPE%", grpgOU)
+            line = line.replace("%GRUPPE_SHORT%", user.getGruppe())
+
             line = line.replace("%PASSWORD%", self.config["ad"]["INIT_PWD"])
             line = line.replace("%HOMEDRIVE%", self.config["ad"]["HOME_DRIVE"])
 
@@ -75,10 +84,10 @@ class ScriptTool:
       self.createScript(cmdarray, filename)
       return os.path.join(self.tmpPath, filename)
 
-    def _execute(self, script):
+    def _execute(self, script, override_debug = False):
       """ excute PS Script """
       runner = CmdRunner()
-      if self.debug is False:
+      if self.debug is False or override_debug is True:
         runner.runPSFile(script)
       errors = runner.getStderr()
       if errors:
@@ -103,7 +112,8 @@ class ScriptTool:
     def groupExists(self, user):
       """ doese the group exists in AD """
       script = self._createRunningScript("existsGroup.ps1", user)
-      answer = self._execute(script)
+      # override debug, testin = allways
+      answer = self._execute(script, True)
 
       # analyse answer
       if answer.find('DistinguishedName') > -1:
@@ -133,4 +143,4 @@ class ScriptTool:
           self.addUser2Group(user)
         else:
           self.counter.incWrongGroups()
-          print("Group %s does not exists! User %s will be not created!" % (user.getGruppe(), user.getFullname()))
+          print("AD Group %s does not exists! User %s will be not created!" % (user.getGruppe(), user.getFullname()))
