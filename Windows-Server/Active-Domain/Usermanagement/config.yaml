@@ -3,15 +3,21 @@ config:
   # 1 = Debug mode, no script will be executed
   DEBUG: 0
 ad:
-  # where are your users in the forrest
+  # the domain name
+  DOMAIN: schule.local
+  # where are your users in the forest
   OU_BENUTZER: OU=Benutzer,DC=schule,DC=local
   # where are your Groups are located
   OU_GRUPPEN: OU=Gruppen,DC=schule,DC=local
 
-  # which Drive to map the profile to
+  # which Drive to map the profile to, schould be a network location
   HOME_DRIVE: "Z:"
-  HOME_PATH: S:\PDC\homes
-  PROFILE_PATH: S:\PDC\profiles
+  HOME_PATH: \\daddy.schule.local\homes$
+  PROFILE_PATH: \\daddy.schule.local\profiles$
 
   # initial Passsword
   INIT_PWD: Newton123
+
+
+  
+  

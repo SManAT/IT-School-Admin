@@ -40,12 +40,13 @@ class ScriptTool:
         erg = []
         grpgOU = "CN=%s,%s" % (user.getGruppe(), self.config["ad"]["OU_GRUPPEN"])
         userDN = "CN=%s %s,OU=%s,%s" % (user.getNachname(), user.getVorname(), user.getGruppe(), self.config["ad"]["OU_BENUTZER"])
+        principal = "%s@%s" % (user.getUsername(), self.config["ad"]["DOMAIN"])
 
         for line in lines:
             line = line.replace("%VORNAME%", user.getVorname())
             line = line.replace("%NACHNAME%", user.getNachname())
             
-            line = line.replace("%USERNAME%", user.getUsername())
+            line = line.replace("%USERNAME%", principal)
             line = line.replace("%USERNAMEDN%", userDN)           
 
             line = line.replace("%PROFILEDIR%", self.pathEndingSlash(self.config["ad"]["PROFILE_PATH"]))
@@ -94,8 +95,8 @@ class ScriptTool:
           self.logger.error(errors)
       # Delete tmp Script
       time.sleep(0.5)
-      if self.debug is False:
-        self.rmFile(script)
+      #if self.debug is False:
+      #  self.rmFile(script)
       return runner.getStdout()
 
     def existsUser(self, user):
