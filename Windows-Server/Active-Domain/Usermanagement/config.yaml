@@ -1,7 +1,7 @@
 version: 1
 config:
   # 1 = Debug mode, no script will be executed
-  DEBUG: 0
+  DEBUG: 1
 ad:
   # the domain name
   DOMAIN: schule.local

@@ -89,6 +89,7 @@ class ScriptTool:
       """ excute PS Script """
       runner = CmdRunner()
       if self.debug is False or override_debug is True:
+        Unblock-File -Path Z:\Dokumente\GitHub\IT-School-Admin\Windows-Server\Active-Domain\Usermanagement\ps\addUser.ps1
         runner.runPSFile(script)
       errors = runner.getStderr()
       if errors:
