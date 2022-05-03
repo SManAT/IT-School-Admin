@@ -85,11 +85,18 @@ class ScriptTool:
       self.createScript(cmdarray, filename)
       return os.path.join(self.tmpPath, filename)
 
+    def unblockFile(self, filename):
+      """ Use the Unblock cmd from PS """
+      runner = CmdRunner()
+      cmd = "Unblock-File -Path %s" % filename
+      runner.runCmd(cmd)
+
     def _execute(self, script, override_debug = False):
       """ excute PS Script """
       runner = CmdRunner()
+      
       if self.debug is False or override_debug is True:
-        Unblock-File -Path Z:\Dokumente\GitHub\IT-School-Admin\Windows-Server\Active-Domain\Usermanagement\ps\addUser.ps1
+        self.unblockFile(script)
         runner.runPSFile(script)
       errors = runner.getStderr()
       if errors:

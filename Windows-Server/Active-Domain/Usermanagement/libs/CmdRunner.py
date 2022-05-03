@@ -25,7 +25,8 @@ class CmdRunner():
         self._stderr = ""
         self._stdout = ""
 
-        proc = subprocess.Popen(cmd,
+        signedCmd = 'Powershell.exe -command "%s"' % cmd
+        proc = subprocess.Popen(signedCmd,
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
@@ -50,9 +51,8 @@ class CmdRunner():
         self._stderr = ""
         self._stdout = ""
 
-        proc = subprocess.Popen(["powershell.exe", 
-                                 "-ExecutionPolicy", "ByPass",
-                                 "-File", filename],
+        signedCmd = 'Powershell.exe -File "%s"' % filename
+        proc = subprocess.Popen(signedCmd,
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
