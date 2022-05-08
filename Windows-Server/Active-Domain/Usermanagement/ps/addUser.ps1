@@ -9,6 +9,8 @@ Import-Module ActiveDirectory
 $PW_ = "%PASSWORD%"
 $ADSplat = @{
     UserPrincipalName     = "%USERNAME%"
+    # Usernaem for Pre-Win Logon Style Domain\name
+    SamAccountName        = "%LOGIN_NAME%"
     Name                  = "%NACHNAME% %VORNAME%"
     GivenName             = "%VORNAME%"
     Surname               = "%NACHNAME%"
@@ -16,11 +18,11 @@ $ADSplat = @{
     DisplayName           = "%VORNAME% %NACHNAME%"
     Country               = "AT"
     Path                  = "OU=%GRUPPE_SHORT%,%OUUSERS%"
-    ChangePasswordAtLogon = 1
+    ChangePasswordAtLogon = $True
     AccountPassword       = (ConvertTo-SecureString $PW_ -AsPlainText -Force)
     HomeDrive             = "%HOMEDRIVE%"
-    HomeDirectory         = "%HOMEDIR%%username%"
-    ProfilePath           = "%PROFILEDIR%%username%"
+    HomeDirectory         = "%HOMEDIR%%USERNAME%"
+    ProfilePath           = "%PROFILEDIR%%USERNAME%"
 }
 
 New-ADUser @ADSplat

@@ -42,12 +42,18 @@ class ScriptTool:
         userDN = "CN=%s %s,OU=%s,%s" % (user.getNachname(), user.getVorname(), user.getGruppe(), self.config["ad"]["OU_BENUTZER"])
         principal = "%s@%s" % (user.getUsername(), self.config["ad"]["DOMAIN"])
 
+        nvn = user.getVorname().lower()
+        nnn = user.getNachname().lower()
+        loginName = "%s.%s" % (nvn[:1], nnn)
+
         for line in lines:
             line = line.replace("%VORNAME%", user.getVorname())
             line = line.replace("%NACHNAME%", user.getNachname())
             
             line = line.replace("%USERNAME%", principal)
             line = line.replace("%USERNAMEDN%", userDN)           
+
+            line = line.replace("%LOGIN_NAME%", loginName)           
 
             line = line.replace("%PROFILEDIR%", self.pathEndingSlash(self.config["ad"]["PROFILE_PATH"]))
             line = line.replace("%HOMEDIR%", self.pathEndingSlash(self.config["ad"]["HOME_PATH"]))
@@ -139,13 +145,14 @@ class ScriptTool:
 
     def addUser(self, user):
         """ add User via Powershell Script """
-        if self.groupExists(user):
+        if self.groupExists(user) or self.debug is True:
           script = self._createRunningScript("addUser.ps1", user)
 
           # Do the JOB
           print("Creating User: %s " % user.getFullname())
 
-          self._execute(script)
+          if self.debug is False:
+            self._execute(script)
           self.counter.incUser()
 
           # Add User to Goup -------------------------------------------------
