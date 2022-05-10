@@ -50,12 +50,16 @@ class ScriptTool:
             line = line.replace("%VORNAME%", user.getVorname())
             line = line.replace("%NACHNAME%", user.getNachname())
             
+            # hans.moser@schule.local
             line = line.replace("%USERNAME%", principal)
-            line = line.replace("%USERNAMEDN%", userDN)           
+            line = line.replace("%USERNAMEDN%", userDN) 
+
+            # hans.moser also ohne domain
+            ushort = principal.split("@")
+            line = line.replace("%USERNAME_SHORT%", ushort[0])
 
             line = line.replace("%LOGIN_NAME%", loginName)           
 
-            line = line.replace("%PROFILEDIR%", self.pathEndingSlash(self.config["ad"]["PROFILE_PATH"]))
             line = line.replace("%HOMEDIR%", self.pathEndingSlash(self.config["ad"]["HOME_PATH"]))
             line = line.replace("%OUUSERS%", self.config["ad"]["OU_BENUTZER"])
             

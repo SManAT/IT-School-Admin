@@ -21,8 +21,8 @@ $ADSplat = @{
     ChangePasswordAtLogon = $True
     AccountPassword       = (ConvertTo-SecureString $PW_ -AsPlainText -Force)
     HomeDrive             = "%HOMEDRIVE%"
-    HomeDirectory         = "%HOMEDIR%%USERNAME%"
-    ProfilePath           = "%PROFILEDIR%%USERNAME%"
+    HomeDirectory         = "%HOMEDIR%%USERNAME_SHORT%"
+    ProfilePath           = "%HOMEDIR%%USERNAME_SHORT%"
 }
 
 New-ADUser @ADSplat
