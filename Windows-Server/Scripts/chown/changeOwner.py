@@ -23,6 +23,8 @@ import click
 import yaml
 from pathlib import Path
 
+from libs.PSTool import PSTool
+
 
 class changeOwner():
     """ Backup Samba4 """
@@ -36,7 +38,7 @@ class changeOwner():
         if self.config['config']['DEBUG'] == 1:
           self.debug = True
 
-        info = ("\changeOwner, (c) Mag. Stefan Hagmann 2022\n"
+        info = ("\nchangeOwner, (c) Mag. Stefan Hagmann 2022\n"
                 "will change Owner from Files and Directories with Powershell\n"
                 "-------------------------------------------------------\n")
         print(info)
@@ -44,14 +46,16 @@ class changeOwner():
         if self.debug:
           print("TEST MODE, no script will be executed (see config.yaml)\n")
 
-        
     def load_yml(self):
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
             yml = yaml.safe_load(f.read())
         return yml
 
-    
+    def chown(self, user, target):
+      tool = PSTool(self.debug)
+      tool.chown(user, target)
+  
 
 @click.command()
 @click.option('-u', '--user', help='which User to set, e.g. MYDOMAIN\h.moser')
@@ -64,9 +68,9 @@ def start(user, target):
       exit(-1)
 
     if user is not None and target is not None:
-      print('OK')
+      changer = changeOwner()
+      changer.chown(user, target)
    
-
 
 if __name__ == "__main__":
     start()

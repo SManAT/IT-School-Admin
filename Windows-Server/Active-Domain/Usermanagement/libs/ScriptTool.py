@@ -116,8 +116,8 @@ class ScriptTool:
           self.logger.error(errors)
       # Delete tmp Script
       time.sleep(0.5)
-      #if self.debug is False:
-      #  self.rmFile(script)
+      if self.debug is False:
+        self.rmFile(script)
       return runner.getStdout()
 
     def existsUser(self, user):

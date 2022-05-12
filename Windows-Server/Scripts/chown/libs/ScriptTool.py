@@ -1,5 +1,4 @@
 import os
-import logging
 import sys
 from pathlib import Path
 from libs.CmdRunner import CmdRunner
@@ -9,20 +8,17 @@ import time
 class ScriptTool:
     """ Stuff to Scripts, Filemanagement """
 
-    def __init__(self, config, debug, counter):
-        self.logger = logging.getLogger('ScriptTool')
+    def __init__(self, debug):
         self.rootDir = Path(__file__).parent.parent
         self.tmpPath = os.path.join(self.rootDir, 'tmp/')
         self.scriptPath = os.path.join(self.rootDir, 'ps/')
-        self.config = config
         self.debug = debug
-        self.counter = counter
 
     def loadScript(self, filename):
         """ load a PS Script """
         path = os.path.join(self.scriptPath, filename)
         if (os.path.exists(path) is False):
-            self.logger.error("Script %s does not exist -abort-" % path)
+            print("Script %s does not exist -abort-" % path)
             sys.exit()
         else:
             with open(path, 'r') as f:
@@ -35,43 +31,12 @@ class ScriptTool:
           path = "%s%s" % (path, os.path.sep)
         return path
 
-    def modifyScript(self, lines, user):
+    def modifyScript(self, lines, user, filename):
         """ modify placeholders """
         erg = []
-        grpgOU = "CN=%s,%s" % (user.getGruppe(), self.config["ad"]["OU_GRUPPEN"])
-        userDN = "CN=%s %s,OU=%s,%s" % (user.getNachname(), user.getVorname(), user.getGruppe(), self.config["ad"]["OU_BENUTZER"])
-        principal = "%s@%s" % (user.getUsername(), self.config["ad"]["DOMAIN"])
-
-        nvn = user.getVorname().lower()
-        nnn = user.getNachname().lower()
-        loginName = "%s.%s" % (nvn[:1], nnn)
-
         for line in lines:
-            line = line.replace("%VORNAME%", user.getVorname())
-            line = line.replace("%NACHNAME%", user.getNachname())
-            
-            # hans.moser@schule.local
-            line = line.replace("%USERNAME%", principal)
-            line = line.replace("%USERNAMEDN%", userDN) 
-
-            # hans.moser also ohne domain
-            ushort = principal.split("@")
-            line = line.replace("%USERNAME_SHORT%", ushort[0])
-
-            line = line.replace("%LOGIN_NAME%", loginName)           
-
-            line = line.replace("%HOMEDIR%", self.pathEndingSlash(self.config["ad"]["HOME_PATH"]))
-            line = line.replace("%PROFILEDIR%", self.pathEndingSlash(self.config["ad"]["PROFILE_PATH"]))
-
-            
-            line = line.replace("%OUUSERS%", self.config["ad"]["OU_BENUTZER"])
-            
-            line = line.replace("%GRUPPE%", grpgOU)
-            line = line.replace("%GRUPPE_SHORT%", user.getGruppe())
-
-            line = line.replace("%PASSWORD%", self.config["ad"]["INIT_PWD"])
-            line = line.replace("%HOMEDRIVE%", self.config["ad"]["HOME_DRIVE"])
-
+            line = line.replace("%PATH%", "%s" % filename)
+            line = line.replace("%USER%", user) 
             erg.append(line)
         return erg
 
@@ -91,79 +56,30 @@ class ScriptTool:
         if (os.path.exists(filename) is True):
             os.remove(filename)
 
-    def _createRunningScript(self, filename, user):
-      """ will create the temp script to _execute with PS """
-      cmdarray = self.loadScript(filename)
-      cmdarray = self.modifyScript(cmdarray, user)
-      self.createScript(cmdarray, filename)
-      return os.path.join(self.tmpPath, filename)
-
-    def unblockFile(self, filename):
-      """ Use the Unblock cmd from PS """
-      runner = CmdRunner()
-      cmd = "Unblock-File -Path %s" % filename
-      runner.runCmd(cmd)
-
     def _execute(self, script, override_debug = False):
       """ excute PS Script """
       runner = CmdRunner()
       
       if self.debug is False or override_debug is True:
-        self.unblockFile(script)
         runner.runPSFile(script)
       errors = runner.getStderr()
       if errors:
-          self.logger.error(errors)
+          print(errors)
       # Delete tmp Script
       time.sleep(0.5)
-      #if self.debug is False:
-      #  self.rmFile(script)
+      if self.debug is False:
+        self.rmFile(script)
       return runner.getStdout()
 
-    def existsUser(self, user):
-      """ check for User in Active Domain Forrest """
-      script = self._createRunningScript("existsUser.ps1", user)
-      answer = self._execute(script)
+    def chownFile(self, user, filename):
+      psTemplate = "chownFile.ps1"
+      cmdarray = self.loadScript(psTemplate)      
+      cmdarray = self.modifyScript(cmdarray, user, filename)
+      self.createScript(cmdarray, psTemplate)
+      psFile =  os.path.join(self.tmpPath, filename)
+      if self.debug is False:
+        self._execute(psFile)
+        
 
-      # analyse answer
-      if answer.find('DistinguishedName') > -1:
-        return True
-      else:
-        return False
-
-    def groupExists(self, user):
-      """ doese the group exists in AD """
-      script = self._createRunningScript("existsGroup.ps1", user)
-      # override debug, testin = allways
-      answer = self._execute(script, True)
-
-      # analyse answer
-      if answer.find('DistinguishedName') > -1:
-        return True
-      else:
-        return False
-
-    def addUser2Group(self, user):
-        """ add User via Powershell Script to a AD Group"""
-        script = self._createRunningScript("addToGroup.ps1", user)
-        # Do the JOB
-        print("Adding User %s to Group: %s " % (user.getFullname(), user.getGruppe()))
-        self._execute(script)
-
-    def addUser(self, user):
-        """ add User via Powershell Script """
-        if self.groupExists(user) or self.debug is True:
-          script = self._createRunningScript("addUser.ps1", user)
-
-          # Do the JOB
-          print("Creating User: %s " % user.getFullname())
-
-          if self.debug is False:
-            self._execute(script)
-          self.counter.incUser()
-
-          # Add User to Goup -------------------------------------------------
-          self.addUser2Group(user)
-        else:
-          self.counter.incWrongGroups()
-          print("AD Group %s does not exists! User %s will be not created!" % (user.getGruppe(), user.getFullname()))
+        
+   
