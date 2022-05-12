@@ -13,6 +13,7 @@ ad:
   # which Drive to map the profile to, schould be a network location
   HOME_DRIVE: "Z:"
   HOME_PATH: \\daddy.schule.local\homes$
+  PROFILE_PATH: \\daddy.schule.local\profiles$
   
   # initial Passsword
   INIT_PWD: Newton123

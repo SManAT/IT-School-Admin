@@ -22,7 +22,7 @@ $ADSplat = @{
     AccountPassword       = (ConvertTo-SecureString $PW_ -AsPlainText -Force)
     HomeDrive             = "%HOMEDRIVE%"
     HomeDirectory         = "%HOMEDIR%%USERNAME_SHORT%"
-    ProfilePath           = "%HOMEDIR%%USERNAME_SHORT%\AppData\Roaming"
+    ProfilePath           = "%PROFILEDIR%%USERNAME_SHORT%"
 }
 
 New-ADUser @ADSplat
