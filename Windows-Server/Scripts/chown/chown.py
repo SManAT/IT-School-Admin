@@ -32,25 +32,12 @@ class changeOwner():
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
-        self.configFile = os.path.join(self.rootDir, 'config.yaml')
-        self.config = self.load_yml()
         self.debug = False
-        if self.config['config']['DEBUG'] == 1:
-          self.debug = True
 
         info = ("\nchangeOwner, (c) Mag. Stefan Hagmann 2022\n"
                 "will change Owner from Files and Directories with Powershell\n"
                 "-------------------------------------------------------\n")
         print(info)
-
-        if self.debug:
-          print("TEST MODE, no script will be executed (see config.yaml)\n")
-
-    def load_yml(self):
-        """ Load the yaml file config.yaml """
-        with open(self.configFile, 'rt') as f:
-            yml = yaml.safe_load(f.read())
-        return yml
 
     def chown(self, user, target):
       tool = PSTool(self.debug)

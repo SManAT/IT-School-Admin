@@ -40,23 +40,23 @@ class PSTool:
       # target is valid?
       path = Path(target)
       if path.is_dir():
-        print(">>> Directory")
         self.chownDir(user, path)
         return
 
       if path.is_file():
-        print(">>> File")
         self.chownFile(user, path)
         return
 
       # Error Handling
       print("The file/directory %s is not valid or does not exists! -exit-" % target)
-      exit(-1)   
+      exit(-1)
 
     def chownDir(self, user, path):
       """ change Owner of directory recursive """
+      script = ScriptTool(self.debug)
+      script.chownDir(user, path)
       pass
-  
+
     def chownFile(self, user, filename):
       """ change Owner of this file """
       script = ScriptTool(self.debug)
