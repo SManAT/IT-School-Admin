@@ -8,7 +8,7 @@ After the Installation of Python, open a console in the this directory and run  
 Now we are ready to go!
 
 ## Usage
-bash```
+```bash
 chown -u DOMAIN\User -t <targetfile or targetdirectory>
 ```
 if you target a directory, than it will change the Owner recursive!  
