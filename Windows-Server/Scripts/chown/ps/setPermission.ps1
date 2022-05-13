@@ -3,7 +3,7 @@ $user = "%USER%"
 $Rights = "FullControl"
 # Controls how permissions are inherited by children
 # ContainerInherit, None, ObjectInherit
-$InheritSettings = "None" 
+$InheritSettings = "ContainerInherit, ObjectInherit" 
 # Usually set to none but can setup rules that only apply to children.
 $PropogationSettings = "None" 
 # Allow or Deny

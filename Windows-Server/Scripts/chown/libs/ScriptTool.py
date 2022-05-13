@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 from libs.CmdRunner import CmdRunner
 import time
+import fnmatch
 
 
 class ScriptTool:
@@ -73,11 +74,9 @@ class ScriptTool:
       self.rmFile(script)
     return runner.getStdout()
 
-  def chownFile(self, user, filename):
-    """ change Owner of File and set Permissions to Full Control """
-    print("chown %s %s" % (user, filename))
+  def change(self, psfile, user, filename):
     # Set Owner -----
-    psTemplate = "chownFile.ps1"
+    psTemplate = psfile
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user, filename)
     self.createScript(cmdarray, psTemplate)
@@ -95,14 +94,57 @@ class ScriptTool:
     if self.debug is False:
       self._execute(psFile)
 
-  def readDir(self, path):
+  def chownFile(self, user, filename):
+    """ change Owner of File and set Permissions to Full Control """
+    print("chown %s %s" % (user, filename))
+    self.change("chownFile.ps1", user, filename)
+
+  def chownSingleDir(self, user, dir):
+    """ change Owner of File and set Permissions to Full Control """
+    print("chown %s %s" % (user, dir))
+    self.change("chownDir.ps1", user, dir)
+    
+  def getFileExtension(self, filename):
+    """ get Extension of a File without . """
+    return os.path.splitext(filename)[1][1:].strip().lower()
+
+  def getSubDirs(self, rootdir):
+    """ get alls Subdirectories from rootdir """
     erg = []
-    for dirpath, dirs, files in os.walk(path):
-      for filename in files:
-        fname = os.path.join(dirpath, filename)
-        print(fname)
+    for it in os.scandir(rootdir):
+      if it.is_dir():
+        erg.append(it.path)
+        self.getSubDirs(it)
+    return erg
+
+  def search_files(self, directory='.', pattern='.*'):
+    """
+    search for pattern in directory recursive
+    :param directory: path where to search. relative or absolute
+    :param pattern: a list e.g. ['*.jpg', '__.*']
+    """
+    data = []
+    for dirpath, dirnames, files in os.walk(directory):
+      for p in pattern:        
+        for f in fnmatch.filter(files, p):
+          data.append(os.path.join(dirpath, f))
+    return data
 
   def chownDir(self, user, path):
     """ change Owner of Directory and set Permissions to Full Control recursive """
     print("chown -R %s %s" % (user, path))
-    self.readDir(path)
+
+    # chmod dirs
+    dirs = self.getSubDirs(path)
+    for p in dirs:
+      print(p)
+      self.chownSingleDir(user, p)
+    
+    # chmod files
+    files = self.search_files(path)
+    for f in files:
+      pass
+      #print(f)
+      #self.chownFile(user, f)
+
+    
