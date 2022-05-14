@@ -1,14 +1,7 @@
 # Prerequisites
-The most Tools are written in Perl, so you had to install some libraries. Here are the steps
-
+The Tools are written in Python, Perl and some bash.
+Be sure you install all needed modules, with
+```bash
+pip install <and so on>  
+cpan install <and so on>  
 ```
-/* CPAN History & CPAN – Perl Docs */
-apt-get install libterm-readline-gnu-perl perl-doc
-
-cpan -i Bundle::CPAN
-
-cpan -i YAML Term::ReadLine::Perl HTTP::Date Getopt::Std Getopt::Long  
-Linux::usermod File::Basename Text::CSV Net::Ping DBI DBD::mysql Config::IniFiles
-Data::Dumper File::Spec::Unix File::Find::Rule Log::Log4perl
-```
-(maybe something is missing)
