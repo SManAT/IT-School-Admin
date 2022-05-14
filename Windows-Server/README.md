@@ -9,7 +9,7 @@ Here are some usefull Script, that I use
   ```
   the script will then get a List of all subdirectories, and will change recursive the Owner
   of all data to **<DOMAIN>\<username>**.  
-  h.moser will be owned bei User **<DOMAIN>\h.moser**  
+  h.moser will be owned bei User **\<DOMAIN>\h.moser**  
   s.davies will be owned bei User **<DOMAIN>\s.davies**  
   and so on.
 
