@@ -7,6 +7,8 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 # Windows Server
 - [Active-Domain Usermanagement](Windows-Server/Usermanagement/README.md)
 - [Change Owner](Windows-Server/chown/README.md)
+- [restoreRechte](Windows-Server/README.md)
+
 
 # Linux
 - [ActiveDomain with Samba4](Linux/ActiveDomain-Samba4/README.md)
