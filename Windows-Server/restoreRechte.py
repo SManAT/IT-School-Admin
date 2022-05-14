@@ -20,96 +20,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import click
-import yaml
-import logging
-import sys
 
 from pathlib import Path
-from libs.CSVTool import CSVTool
-from libs.LoggerConfiguration import configure_logging
-from libs.Counter import Counter
-from libs.ScriptTool import ScriptTool
 
-class UsermanagementAD():
-    """ Backup Samba4 """
-    debug = False
 
-    def __init__(self):
-        self.rootDir = Path(__file__).parent
-        self.configFile = os.path.join(self.rootDir, 'config.yaml')
+def getSubDirs(rootdir):
+  """ get alls Subdirectories from rootdir, not recursive """
+  return [f.path for f in os.scandir(rootdir) if f.is_dir()]
 
-        # Logging Stuff
-        self.logger = logging.getLogger('UsermanagementAD')
-        self.tmpPath = os.path.join(self.rootDir, 'tmp/')
 
-        self.config = self.load_yml()
-        self.debug = False
-        if self.config['config']['DEBUG'] == 1:
-          self.debug = True
+def startUp(go, domain, path):
+  """ do your Job """
+  if path is None:
+    rootDir = Path(__file__).parent
+  else:
+    # use Path
+    rootDir = path
+  print(rootDir)
+  dirs = getSubDirs(rootDir)
 
-        info = ("\nUsermanagementAD, (c) Mag. Stefan Hagmann 2021\n"
-                "will manage AD Users on a Windows Server with Powershell\n"
-                "-------------------------------------------------------\n")
-        print(info)
+  for dir in dirs:
+    # extract Username
+    parts = os.path.split(dir)
+    username = "%s\\%s" % (domain, parts[len(parts) - 1])
+    print("Set Owner (%s) on: %s" % (username, dir))
 
-        if self.debug:
-          print("TEST MODE, no script will be executed (see config.yaml)\n")
 
-        self.counter = Counter()
-        self.csv = CSVTool(self.debug)
-        self.tool = ScriptTool(self.rootDir, self.config, self.debug, self.counter)
 
-    def load_yml(self):
-        """ Load the yaml file config.yaml """
-        with open(self.configFile, 'rt') as f:
-            yml = yaml.safe_load(f.read())
-        return yml
-
-    def Import(self, file):
-      """ Import Users from CSV File """
-      self.csv.read(file)
-
-      for user in self.csv.getUsers():
-        if user.isValid():
-          if self.tool.existsUser(user) is False:
-            self.tool.addUser(user)
-          else:
-            self.counter.incUserExists()
-            print("User EXISTS: %s" % user.getFullname())
-        else:
-          print("INVALID Data: %s" % user)
-          self.counter.incUserInvalid()
-
-      print("\n---------------------------------------------------")
-      # :<25 box with 25 chars length
-      print(f"{'Wrong Groups: ':<26} { str(self.counter.getWrongGroups()) }")
-      print(f"{'Import done ... ':<25} +{self.counter.getCreatedUser()} ({str(self.counter.getUserExists())} Existing Users, {str(self.counter.getUserInvalid())} Invalid Users)")
-
-    def Export(self):
-      """ Export Users to CSV File """
-      pass
 
 
 @click.command()
-@click.option('-f', '--file', required=True, help='which file to use')
-@click.option('-i', '--import', 'importoption', is_flag=True, help='Import Users aus CSV Datei')
-@click.option('-e', '--export', 'exportoption', is_flag=True, help='Export Users in CSV Datei')
-def start(file, importoption, exportoption):
-
-    if file is False:
-      ctx = click.get_current_context()
-      print(ctx.get_help())
-      exit(-1)
-
-    if importoption is True:
-      userMgmt = UsermanagementAD()
-      userMgmt.Import(file)
-    elif exportoption is not None:
-      userMgmt = UsermanagementAD()
-      userMgmt.Export()
+@click.option('-g', '--go', is_flag=True, help='go, do it!')
+@click.option('-d', '--domain', required=True, help='the Domainname')
+@click.option('-p', '--path', required=False, help='which Path to work on')
+def start(go, domain, path):
+  startUp(go, domain, path)
 
 
 if __name__ == "__main__":
-    # load logging Config
-    configure_logging()
     start()
