@@ -7,7 +7,7 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 # Windows Server
 - [Active-Domain Usermanagement](Windows-Server/Usermanagement/README.md)
 - [Change Owner](Windows-Server/chown/README.md)
-- [restoreRechte](Windows-Server/README.md)
+- [Usfull scripts](Windows-Server/README.md)
 
 
 # Linux
