@@ -14,6 +14,7 @@ class ScriptTool:
     self.tmpPath = os.path.join(self.rootDir, 'tmp/')
     self.scriptPath = os.path.join(self.rootDir, 'ps/')
     self.debug = debug
+    self.runner = CmdRunner()
 
   def loadScript(self, filename):
     """ load a PS Script """
@@ -61,38 +62,65 @@ class ScriptTool:
 
   def _execute(self, script, override_debug=False):
     """ excute PS Script """
-    runner = CmdRunner()
-
     if self.debug is False or override_debug is True:
-      runner.runPSFile(script)
-    errors = runner.getStderr()
+      self.runner.runPSFile(script)
+    errors = self.runner.getStderr()
     if errors:
       print(errors)
     # Delete tmp Script
     time.sleep(0.5)
     if self.debug is False:
       self.rmFile(script)
-    return runner.getStdout()
+    return self.runner.getStdout()
+
+  def existsUser(self, user):
+      """ check for User in Active Domain Forrest """
+      answer = self._execute("existsUser.ps1", user)
+
+      # analyse answer
+      if answer.find('DistinguishedName') > -1:
+        return True
+      else:
+        return False
+
+  def createCmd(self, arr):
+    """ from array to line;line;line """
+    erg = ""
+    for line in arr:
+      erg += ";%s" % line
+    # delete first ;
+    erg = erg[1:]
+    # replace line breaks
+    erg = erg.replace('\n', '')
+    # escape sign
+    erg = erg.replace('"', '\\"')
+    return erg
+
+  def debugOutput(self, data):
+    """ just Debug Output """
+    for line in data:
+      line = line.replace('\n', '')
+      print(line)
 
   def change(self, psfile, user, filename):
     # Set Owner -----
     psTemplate = psfile
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user, filename)
-    self.createScript(cmdarray, psTemplate)
-    psFile = os.path.join(self.tmpPath, psTemplate)
+    cmd = self.createCmd(cmdarray)
 
     if self.debug is False:
-      self._execute(psFile)
+      self.runner.runCmd(cmd)
 
     # grant Permissions to this owner
     psTemplate = "setPermission.ps1"
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user, filename)
-    self.createScript(cmdarray, psTemplate)
-    psFile = os.path.join(self.tmpPath, psTemplate)
+    #self.debugOutput(cmdarray)
+    cmd = self.createCmd(cmdarray)
+
     if self.debug is False:
-      self._execute(psFile)
+      self.runner.runCmd(cmd)
 
   def chownFile(self, user, filename):
     """ change Owner of File and set Permissions to Full Control """
@@ -103,7 +131,7 @@ class ScriptTool:
     """ change Owner of File and set Permissions to Full Control """
     print("chown %s %s" % (user, dir))
     self.change("chownDir.ps1", user, dir)
-    
+
   def getFileExtension(self, filename):
     """ get Extension of a File without . """
     return os.path.splitext(filename)[1][1:].strip().lower()
@@ -125,7 +153,7 @@ class ScriptTool:
     """
     data = []
     for dirpath, dirnames, files in os.walk(directory):
-      for p in pattern:        
+      for p in pattern:
         for f in fnmatch.filter(files, p):
           data.append(os.path.join(dirpath, f))
     return data
@@ -137,14 +165,9 @@ class ScriptTool:
     # chmod dirs
     dirs = self.getSubDirs(path)
     for p in dirs:
-      print(p)
       self.chownSingleDir(user, p)
-    
+
     # chmod files
     files = self.search_files(path)
     for f in files:
-      pass
-      #print(f)
-      #self.chownFile(user, f)
-
-    
+      self.chownFile(user, f)

@@ -24,7 +24,6 @@ class CmdRunner():
         ''' runs a command '''
         self._stderr = ""
         self._stdout = ""
-
         signedCmd = 'Powershell.exe -command "%s"' % cmd
         proc = subprocess.Popen(signedCmd,
                                 shell=True,

@@ -3,16 +3,15 @@ $user = "%USER%"
 $Rights = "FullControl"
 # Controls how permissions are inherited by children
 # ContainerInherit, None, ObjectInherit
-$InheritSettings = "ContainerInherit, ObjectInherit" 
+# $InheritSettings = "ContainerInherit, ObjectInherit" 
 # Usually set to none but can setup rules that only apply to children.
-$PropogationSettings = "None" 
+# $PropogationSettings = "None" 
 # Allow or Deny
 $RuleType = "Allow" 
 
 $acl = Get-Acl $path
-$perm = $user, $Rights, $InheritSettings, $PropogationSettings, $RuleType
-$rule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $perm
-$acl.SetAccessRule($rule)
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($user, $Rights, $RuleType)
+$acl.SetAccessRule($AccessRule)
 $acl | Set-Acl -Path $path
 
 # List of Rights

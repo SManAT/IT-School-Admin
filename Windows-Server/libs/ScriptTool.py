@@ -2,21 +2,18 @@ import os
 import logging
 import sys
 from pathlib import Path
-from libs.CmdRunner import CmdRunner
-import time
-
 
 class ScriptTool:
     """ Stuff to Scripts, Filemanagement """
 
-    def __init__(self, config, debug, counter):
+    def __init__(self, rootDir, runner, config, debug, counter):
         self.logger = logging.getLogger('ScriptTool')
-        self.rootDir = Path(__file__).parent.parent
-        self.tmpPath = os.path.join(self.rootDir, 'tmp/')
-        self.scriptPath = os.path.join(self.rootDir, 'ps/')
+        self.tmpPath = os.path.join(rootDir, 'tmp/')
+        self.scriptPath = os.path.join(rootDir, 'ps/')
         self.config = config
         self.debug = debug
         self.counter = counter
+        self.runner = runner
 
     def loadScript(self, filename):
         """ load a PS Script """
@@ -91,39 +88,45 @@ class ScriptTool:
         if (os.path.exists(filename) is True):
             os.remove(filename)
 
-    def _createRunningScript(self, filename, user):
-      """ will create the temp script to _execute with PS """
-      cmdarray = self.loadScript(filename)
-      cmdarray = self.modifyScript(cmdarray, user)
-      self.createScript(cmdarray, filename)
-      return os.path.join(self.tmpPath, filename)
-
     def unblockFile(self, filename):
       """ Use the Unblock cmd from PS """
       runner = CmdRunner()
       cmd = "Unblock-File -Path %s" % filename
       runner.runCmd(cmd)
 
-    def _execute(self, script, override_debug = False):
-      """ excute PS Script """
-      runner = CmdRunner()
-      
-      if self.debug is False or override_debug is True:
-        self.unblockFile(script)
-        runner.runPSFile(script)
-      errors = runner.getStderr()
-      if errors:
-          self.logger.error(errors)
-      # Delete tmp Script
-      time.sleep(0.5)
+    def createCmd(self, arr):
+      """ from array to line;line;line """
+      erg = ""
+      for line in arr:
+        erg += ";%s" % line
+      # delete first ;
+      erg = erg[1:]
+      # replace line breaks
+      erg = erg.replace('\n', '')
+      # escape sign, will run inside String
+      erg = erg.replace('"', '\\"')
+      return erg
+
+    def debugOutput(self, data):
+      """ just Debug Output """
+      for line in data:
+        line = line.replace('\n', '')
+        print(line)
+
+    def _execute(self, psfile, user):
+      # Set Owner -----
+      psTemplate = psfile
+      cmdarray = self.loadScript(psTemplate)
+      cmdarray = self.modifyScript(cmdarray, user)
+      cmd = self.createCmd(cmdarray)
       if self.debug is False:
-        self.rmFile(script)
-      return runner.getStdout()
+        self.runner.runCmd(cmd)
+      return self.runner.getStdout()
+
 
     def existsUser(self, user):
       """ check for User in Active Domain Forrest """
-      script = self._createRunningScript("existsUser.ps1", user)
-      answer = self._execute(script)
+      answer = self._execute("existsUser.ps1", user)
 
       # analyse answer
       if answer.find('DistinguishedName') > -1:
@@ -133,9 +136,7 @@ class ScriptTool:
 
     def groupExists(self, user):
       """ doese the group exists in AD """
-      script = self._createRunningScript("existsGroup.ps1", user)
-      # override debug, testin = allways
-      answer = self._execute(script, True)
+      answer = self._execute("existsGroup.ps1", user)
 
       # analyse answer
       if answer.find('DistinguishedName') > -1:
@@ -153,13 +154,17 @@ class ScriptTool:
     def addUser(self, user):
         """ add User via Powershell Script """
         if self.groupExists(user) or self.debug is True:
-          script = self._createRunningScript("addUser.ps1", user)
-
           # Do the JOB
           print("Creating User: %s " % user.getFullname())
 
           if self.debug is False:
-            self._execute(script)
+            self._execute("addUser.ps1", user)
+
+
+            print('xxx')
+            exit()
+
+            
           self.counter.incUser()
 
           # Add User to Goup -------------------------------------------------
