@@ -18,9 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
 import click
-import yaml
 from pathlib import Path
 
 from libs.PSTool import PSTool
@@ -42,10 +40,10 @@ class changeOwner():
     def chown(self, user, target):
       tool = PSTool(self.debug)
       tool.chown(user, target)
-  
+
 
 @click.command()
-@click.option('-u', '--user', help='which User to set, e.g. MYDOMAIN\h.moser')
+@click.option('-u', '--user', help='which User to set, e.g. MYDOMAIN\\h.moser')
 @click.option('-t', '--target', help='which Target to change (File or Directory)')
 def start(user, target):
 
@@ -57,7 +55,7 @@ def start(user, target):
     if user is not None and target is not None:
       changer = changeOwner()
       changer.chown(user, target)
-   
+
 
 if __name__ == "__main__":
     start()

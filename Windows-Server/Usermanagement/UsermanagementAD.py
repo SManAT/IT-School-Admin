@@ -28,12 +28,7 @@ from pathlib import Path
 from libs.CSVTool import CSVTool
 from libs.LoggerConfiguration import configure_logging
 from libs.Counter import Counter
-
-# add application root to python path for imports at position 0
-sys.path.insert(0, os.path.join(Path(__file__).parent.parent, "libs"))
-from ScriptTool import ScriptTool
-from CmdRunner import CmdRunner
-
+from libs.ScriptTool import ScriptTool
 
 class UsermanagementAD():
     """ Backup Samba4 """
@@ -62,8 +57,7 @@ class UsermanagementAD():
 
         self.counter = Counter()
         self.csv = CSVTool(self.debug)
-        self.runner = CmdRunner()
-        self.tool = ScriptTool(self.rootDir, self.runner, self.config, self.debug, self.counter)
+        self.tool = ScriptTool(self.rootDir, self.config, self.debug, self.counter)
 
     def load_yml(self):
         """ Load the yaml file config.yaml """

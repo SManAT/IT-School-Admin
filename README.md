@@ -5,8 +5,8 @@ Provides some (that is what i think) usefull scripts for managing Linux Server.
 [Prerequisites, is what you need](Prerequisites.md)  
 
 # Windows Server
-- [Active-Domain Usermanagement](Windows-Server/Active-Domain/Usermanagement/README.md)
-- [Change Owner](Windows-Server/Scripts/chown/README.md)
+- [Active-Domain Usermanagement](Windows-Server/Usermanagement/README.md)
+- [Change Owner](Windows-Server/chown/README.md)
 
 # Linux
 - [ActiveDomain with Samba4](Linux/ActiveDomain-Samba4/README.md)

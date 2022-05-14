@@ -1,8 +1,7 @@
 import os
 from pathlib import Path
-from libs.CmdRunner import CmdRunner
 from libs.ScriptTool import ScriptTool
-import time
+from libs.CmdRunner import CmdRunner
 
 
 class PSTool:
@@ -12,28 +11,14 @@ class PSTool:
         self.rootDir = Path(__file__).parent.parent
         self.scriptPath = os.path.join(self.rootDir, 'ps/')
         self.debug = debug
+        self.runner = CmdRunner()
+        self.tool = ScriptTool(self.debug)
 
     def pathEndingSlash(self, path):
         """ check for ending slash at path """
         if path.endswith(os.path.sep) is False:
           path = "%s%s" % (path, os.path.sep)
         return path
-
-    def _execute(self, script, override_debug=False):
-      """ excute PS Script """
-      runner = CmdRunner()
-
-      if self.debug is False or override_debug is True:
-        self.unblockFile(script)
-        runner.runPSFile(script)
-      errors = runner.getStderr()
-      if errors:
-          self.logger.error(errors)
-      # Delete tmp Script
-      time.sleep(0.5)
-      # if self.debug is False:
-      #  self.rmFile(script)
-      return runner.getStdout()
 
     def chown(self, user, target):
       """ will change target to Ownership of user """
@@ -53,12 +38,8 @@ class PSTool:
 
     def chownDir(self, user, path):
       """ change Owner of directory recursive """
-      script = ScriptTool(self.debug)
-      script.chownDir(user, path)
-      pass
+      self.tool.chownDir(user, path)
 
     def chownFile(self, user, filename):
       """ change Owner of this file """
-      script = ScriptTool(self.debug)
-      script.chownFile(user, filename)
-      pass
+      self.tool.chownFile(user, filename)

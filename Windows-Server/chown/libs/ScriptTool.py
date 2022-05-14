@@ -116,7 +116,7 @@ class ScriptTool:
     psTemplate = "setPermission.ps1"
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user, filename)
-    #self.debugOutput(cmdarray)
+    # self.debugOutput(cmdarray)
     cmd = self.createCmd(cmdarray)
 
     if self.debug is False:
