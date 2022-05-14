@@ -1,6 +1,6 @@
 # IT-School-Admin
 
-Provides some (that is what i think) usefull scripts for managing Linux Server.
+Provides some (that is what i think) usefull scripts for managing Linux&Windows Server.
 
 [Prerequisites, is what you need](Prerequisites.md)  
 

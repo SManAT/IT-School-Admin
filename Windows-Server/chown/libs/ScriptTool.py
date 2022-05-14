@@ -138,12 +138,10 @@ class ScriptTool:
 
   def getSubDirs(self, rootdir):
     """ get alls Subdirectories from rootdir """
-    erg = []
-    for it in os.scandir(rootdir):
-      if it.is_dir():
-        erg.append(it.path)
-        self.getSubDirs(it)
-    return erg
+    subdirs = []
+    for x in os.walk(rootdir):
+        subdirs.append(x[0])
+    return subdirs
 
   def search_files(self, directory='.', pattern='.*'):
     """
