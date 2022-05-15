@@ -73,22 +73,6 @@ class ScriptTool():
       erg.append(line)
     return erg
 
-  def createScript(self, lines, filename):
-    """ create a temporary PS Script """
-    # tmp exists
-    if (os.path.exists(self.tmpPath) is False):
-      os.mkdir(self.tmpPath)
-
-    newfile = os.path.join(self.tmpPath, filename)
-    file = open(newfile, 'w')
-    for line in lines:
-      file.write(line)
-    file.close()
-
-  def rmFile(self, filename):
-    if (os.path.exists(filename) is True):
-      os.remove(filename)
-
   def unblockFile(self, filename):
     """ Use the Unblock cmd from PS """
     cmd = "Unblock-File -Path %s" % filename
@@ -123,8 +107,8 @@ class ScriptTool():
       line = line.replace('\n', '')
       print(line)
 
-  def _execute(self, psfile, user):
-    psTemplate = psfile
+  def _execute(self, psTemplate, user):
+    """ load Code from PS File, replace variables and excute it """
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user)
 

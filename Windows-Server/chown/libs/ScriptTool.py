@@ -2,7 +2,6 @@ import os
 import sys
 from pathlib import Path
 from libs.CmdRunner import CmdRunner
-import time
 import fnmatch
 
 
@@ -44,39 +43,20 @@ class ScriptTool:
         erg.append(line)
     return erg
 
-  def createScript(self, lines, filename):
-    """ create a temporary PS Script """
-    # tmp exists
-    if (os.path.exists(self.tmpPath) is False):
-      os.mkdir(self.tmpPath)
+  def _execute(self, psTemplate, user, filename=None):
+    """ load Code from PS File, replace variables and excute it """
+    cmdarray = self.loadScript(psTemplate)
+    cmdarray = self.modifyScript(cmdarray, user, filename)
+    cmd = self.createCmd(cmdarray)
 
-    newfile = os.path.join(self.tmpPath, filename)
-    file = open(newfile, 'w')
-    for line in lines:
-      file.write(line)
-    file.close()
-
-  def rmFile(self, filename):
-    if (os.path.exists(filename) is True):
-      os.remove(filename)
-
-  def _execute(self, script, override_debug=False):
-    """ excute PS Script """
-    if self.debug is False or override_debug is True:
-      self.runner.runPSFile(script)
-    errors = self.runner.getStderr()
-    if errors:
-      print(errors)
-    # Delete tmp Script
-    time.sleep(0.5)
     if self.debug is False:
-      self.rmFile(script)
+      self.runner.runCmd(cmd)
     return self.runner.getStdout()
 
   def existsUser(self, user):
       """ check for User in Active Domain Forrest """
+      # no filename parameter
       answer = self._execute("existsUser.ps1", user)
-
       # analyse answer
       if answer.find('DistinguishedName') > -1:
         return True
@@ -87,12 +67,22 @@ class ScriptTool:
     """ from array to line;line;line """
     erg = ""
     for line in arr:
-      erg += ";%s" % line
+      # replace line breaks
+      line = line.replace('\n', '')
+      # no comments
+      line = line.strip()
+      # delete empty lines
+      char = line[:1]
+      if char != "#":
+        if len(line) != 0:
+          if erg[-1:] == "{":  # nach { oder } darf kein ; sein
+            erg += "%s" % line
+          else:
+            erg += ";%s" % line
     # delete first ;
     erg = erg[1:]
-    # replace line breaks
-    erg = erg.replace('\n', '')
-    # escape sign
+
+    # escape sign, will run inside String
     erg = erg.replace('"', '\\"')
     return erg
 
@@ -107,6 +97,7 @@ class ScriptTool:
     psTemplate = psfile
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user, filename)
+    # self.debugOutput(cmdarray)
     cmd = self.createCmd(cmdarray)
 
     if self.debug is False:
@@ -169,3 +160,19 @@ class ScriptTool:
     files = self.search_files(path)
     for f in files:
       self.chownFile(user, f)
+
+  def chown(self, user, target):
+    """ will change target to Ownership of user """
+    # target is valid?
+    path = Path(target)
+    if path.is_dir():
+      self.chownDir(user, path)
+      return
+
+    if path.is_file():
+      self.chownFile(user, path)
+      return
+
+    # Error Handling
+    print("The file/directory %s is not valid or does not exists! -exit-" % target)
+    exit(-1)

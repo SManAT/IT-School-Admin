@@ -36,7 +36,6 @@ def startUp(go, domain, path):
   else:
     # use Path
     rootDir = path
-  print(rootDir)
   dirs = getSubDirs(rootDir)
 
   for dir in dirs:
@@ -44,6 +43,12 @@ def startUp(go, domain, path):
     parts = os.path.split(dir)
     username = "%s\\%s" % (domain, parts[len(parts) - 1])
     print("Set Owner (%s) on: %s" % (username, dir))
+
+    path = os.path.join(Path(__file__).parent, "chown", "chown.py")
+    cmd = "python %s -u %s -t %s" % (path, username, dir)
+    print(cmd)
+    os.system(cmd)
+
 
 
 

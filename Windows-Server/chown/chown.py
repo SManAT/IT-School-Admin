@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import click
 from pathlib import Path
 
-from libs.PSTool import PSTool
+from libs.ScriptTool import ScriptTool
 
 
 class changeOwner():
@@ -38,8 +38,11 @@ class changeOwner():
         print(info)
 
     def chown(self, user, target):
-      tool = PSTool(self.debug)
-      tool.chown(user, target)
+      tool = ScriptTool(self.debug)
+      if tool.existsUser(user):
+        tool.chown(user, target)
+      else:
+        print("The User %s does not exist? -abort-" % user)
 
 
 @click.command()
