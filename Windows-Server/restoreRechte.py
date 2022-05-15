@@ -38,6 +38,8 @@ def startUp(go, domain, path):
     rootDir = path
   dirs = getSubDirs(rootDir)
 
+  print("\n")
+
   for dir in dirs:
     # extract Username
     parts = os.path.split(dir)
@@ -46,12 +48,14 @@ def startUp(go, domain, path):
 
     path = os.path.join(Path(__file__).parent, "chown", "chown.py")
     cmd = "python %s -u %s -t %s" % (path, username, dir)
-    print(cmd)
-    os.system(cmd)
+    if go is True:
+      os.system(cmd)
+      print("\n----\n")
 
-
-
-
+  if go is False:
+    print("\n==================================================================")
+    print("Simulation > ausführen mit -g Parameter !")
+    print("==================================================================\n")
 
 
 @click.command()

@@ -39,7 +39,12 @@ class ScriptTool:
       # dont use comments
       if not line.startswith("#"):
         line = line.replace("%PATH%", "%s" % filename)
+        # with Domain
         line = line.replace("%USER%", user)
+        # with Username only
+        parts = user.split("\\")
+        usershort = parts[1]
+        line = line.replace("%USERSHORT%", usershort)
         erg.append(line)
     return erg
 
@@ -47,6 +52,7 @@ class ScriptTool:
     """ load Code from PS File, replace variables and excute it """
     cmdarray = self.loadScript(psTemplate)
     cmdarray = self.modifyScript(cmdarray, user, filename)
+    # self.debugOutput(cmdarray)
     cmd = self.createCmd(cmdarray)
 
     if self.debug is False:

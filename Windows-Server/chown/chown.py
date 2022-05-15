@@ -32,11 +32,6 @@ class changeOwner():
         self.rootDir = Path(__file__).parent
         self.debug = False
 
-        info = ("\nchangeOwner, (c) Mag. Stefan Hagmann 2022\n"
-                "will change Owner from Files and Directories with Powershell\n"
-                "-------------------------------------------------------\n")
-        print(info)
-
     def chown(self, user, target):
       tool = ScriptTool(self.debug)
       if tool.existsUser(user):
@@ -52,6 +47,10 @@ def start(user, target):
 
     if user is None or target is None:
       ctx = click.get_current_context()
+      info = ("\nchangeOwner, (c) Mag. Stefan Hagmann 2022\n"
+              "will change Owner from Files and Directories with Powershell\n"
+              "-------------------------------------------------------\n")
+      print(info)
       print(ctx.get_help())
       exit(-1)
 

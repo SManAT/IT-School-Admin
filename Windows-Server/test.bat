@@ -1,1 +1,1 @@
-python restoreRechte.py -d SCHULE -p Z:\Desktop\TestOwner
+python restoreRechte.py -d SCHULE -p Z:\Desktop\TestOwner -g
