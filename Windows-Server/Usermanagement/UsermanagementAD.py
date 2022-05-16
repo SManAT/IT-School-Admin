@@ -29,6 +29,7 @@ from libs.CSVTool import CSVTool
 from libs.LoggerConfiguration import configure_logging
 from libs.Counter import Counter
 from libs.ScriptTool import ScriptTool
+from libs.Error import Error
 
 class UsermanagementAD():
     """ Backup Samba4 """
@@ -47,6 +48,8 @@ class UsermanagementAD():
         if self.config['config']['DEBUG'] == 1:
           self.debug = True
 
+        self.error = Error()
+
         info = ("\nUsermanagementAD, (c) Mag. Stefan Hagmann 2021\n"
                 "will manage AD Users on a Windows Server with Powershell\n"
                 "-------------------------------------------------------\n")
@@ -57,7 +60,7 @@ class UsermanagementAD():
 
         self.counter = Counter()
         self.csv = CSVTool(self.debug)
-        self.tool = ScriptTool(self.rootDir, self.config, self.debug, self.counter)
+        self.tool = ScriptTool(self.rootDir, self.error, self.config, self.debug, self.counter)
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
@@ -71,11 +74,12 @@ class UsermanagementAD():
 
       for user in self.csv.getUsers():
         if user.isValid():
+          self.error.reset() # set no errors yet
           if self.tool.existsUser(user) is False:
             self.tool.addUser(user)
           else:
             self.counter.incUserExists()
-            print("User EXISTS: %s" % user.getFullname())
+            print("User EXISTS: %s\n" % user.getFullname())
         else:
           print("INVALID Data: %s" % user)
           self.counter.incUserInvalid()

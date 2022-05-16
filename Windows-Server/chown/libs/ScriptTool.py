@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 from pathlib import Path
 from libs.CmdRunner import CmdRunner
 import fnmatch
@@ -68,7 +69,7 @@ class ScriptTool:
         return True
       else:
         return False
-
+    
   def createCmd(self, arr):
     """ from array to line;line;line """
     erg = ""
@@ -133,12 +134,16 @@ class ScriptTool:
     """ get Extension of a File without . """
     return os.path.splitext(filename)[1][1:].strip().lower()
 
+      
+
   def getSubDirs(self, rootdir):
     """ get alls Subdirectories from rootdir """
     subdirs = []
-    for x in os.walk(rootdir):
-        subdirs.append(x[0])
+    for dirpath, dirnames, files in os.walk(rootdir):
+      subdirs.append(dirpath)
     return subdirs
+  
+  
 
   def search_files(self, directory='.', pattern='.*'):
     """

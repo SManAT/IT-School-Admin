@@ -44,13 +44,16 @@ def startUp(go, domain, path):
     # extract Username
     parts = os.path.split(dir)
     username = "%s\\%s" % (domain, parts[len(parts) - 1])
-    print("Set Owner (%s) on: %s" % (username, dir))
+    if username == "Administrator":
+      print("%s will not be processed! - skipping-" % username)
+    else:
+      print("Set Owner (%s) on: %s" % (username, dir))
 
-    path = os.path.join(Path(__file__).parent, "chown", "chown.py")
-    cmd = "python %s -u %s -t %s" % (path, username, dir)
-    if go is True:
-      os.system(cmd)
-      print("\n----\n")
+      path = os.path.join(Path(__file__).parent, "chown", "chown.py")
+      cmd = "python %s -u %s -t %s" % (path, username, dir)
+      if go is True:
+        os.system(cmd)
+        print("\n----\n")
 
   if go is False:
     print("\n==================================================================")

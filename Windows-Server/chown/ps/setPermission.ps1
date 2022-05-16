@@ -1,4 +1,4 @@
-$path = "%PATH%" 
+$path = '%PATH%' 
 $user = "%USER%" 
 $Rights = "FullControl"
 # Controls how permissions are inherited by children

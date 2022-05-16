@@ -8,7 +8,7 @@ from libs.CmdRunner import CmdRunner
 class ScriptTool():
   """ Stuff to Scripts, Filemanagement """
 
-  def __init__(self, rootDir, config=None, debug=False, counter=None):
+  def __init__(self, rootDir, error, config=None, debug=False, counter=None):
     self.logger = logging.getLogger('ScriptTool')
     self.tmpPath = os.path.join(rootDir, 'tmp/')
     self.scriptPath = os.path.join(rootDir, 'ps/')
@@ -16,6 +16,7 @@ class ScriptTool():
     self.debug = debug
     self.counter = counter
     self.runner = CmdRunner()
+    self.error = error
 
   def loadScript(self, filename):
     """ load a PS Script """
@@ -115,16 +116,27 @@ class ScriptTool():
     # self.debugOutput(cmdarray)
     cmd = self.createCmd(cmdarray)
 
+    # max 20 Chars for SamAccountName, only used in addUser.ps1
+    if psTemplate == "addUser.ps1":
+      nvn = user.getVorname().lower()
+      nnn = user.getNachname().lower()
+      loginName = "%s.%s" % (nvn[:1], nnn)
+      if len(loginName) > 20:
+        self.error.setErrorMessage("Error: SamAccountName %s is longer than 20 characters. -Skipping-\n" % loginName)
+
     if self.debug is False:
-      self.runner.runCmd(cmd)
-    return self.runner.getStdout()
+      if self.error.hasErrors() is False:
+        self.runner.runCmd(cmd)
+        return self.runner.getStdout()
+    else:
+      return ""
 
   def existsUser(self, user):
     """ check for User in Active Domain Forrest """
     answer = self._execute("existsUser.ps1", user)
 
     # analyse answer
-    if answer.find('DistinguishedName') > -1:
+    if answer.find('SID') > -1:
       return True
     else:
       return False
@@ -142,7 +154,7 @@ class ScriptTool():
   def addUser2Group(self, user):
     """ add User via Powershell Script to a AD Group"""
     # Do the JOB
-    print("Adding User %s to Group: %s " % (user.getFullname(), user.getGruppe()))
+    print("Adding User %s to Group: %s \n" % (user.getFullname(), user.getGruppe()))
     self._execute("addToGroup.ps1", user)
 
   def addUser(self, user):
@@ -152,12 +164,14 @@ class ScriptTool():
       print("Creating User: %s " % user.getFullname())
 
       if self.debug is False:
-        answer = self._execute("addUser.ps1", user)
-        print(answer)
-      self.counter.incUser()
+        self._execute("addUser.ps1", user)
+        self.counter.incUser()
+        if self.error.hasErrors() is False:
+          # Add User to Goup -------------------------------------------------
+          self.addUser2Group(user)
 
-      # Add User to Goup -------------------------------------------------
-      self.addUser2Group(user)
+      if self.error.hasErrors():
+        print(self.error.getErrorMessage())
     else:
       self.counter.incWrongGroups()
       print("AD Group %s does not exists! User %s will be not created!" % (user.getGruppe(), user.getFullname()))

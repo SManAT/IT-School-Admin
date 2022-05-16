@@ -4,6 +4,7 @@ $PW_ = '%PASSWORD%'
 $ADSplat = @{
     UserPrincipalName     = '%USERNAME%'
     # Username for Pre-Win Logon Style Domain\name
+    # max length 20
     SamAccountName        = '%LOGIN_NAME%'
     Name                  = '%NACHNAME% %VORNAME%'
     GivenName             = '%VORNAME%'
