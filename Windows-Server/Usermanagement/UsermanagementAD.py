@@ -74,7 +74,7 @@ class UsermanagementAD():
 
       for user in self.csv.getUsers():
         if user.isValid():
-          self.error.reset() # set no errors yet
+          self.error.reset()  # set no errors yet
           if self.tool.existsUser(user) is False:
             self.tool.addUser(user)
           else:

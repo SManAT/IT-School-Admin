@@ -42,9 +42,7 @@ class ScriptTool():
     userDN = "CN=%s %s,OU=%s,%s" % (user.getNachname(), user.getVorname(), user.getGruppe(), self.config["ad"]["OU_BENUTZER"])
     principal = "%s@%s" % (user.getUsername(), self.config["ad"]["DOMAIN"])
 
-    nvn = user.getVorname().lower()
-    nnn = user.getNachname().lower()
-    loginName = "%s.%s" % (nvn[:1], nnn)
+    loginName = user.getUsername()
 
     for line in lines:
       line = line.replace("%VORNAME%", user.getVorname())
@@ -118,9 +116,7 @@ class ScriptTool():
 
     # max 20 Chars for SamAccountName, only used in addUser.ps1
     if psTemplate == "addUser.ps1":
-      nvn = user.getVorname().lower()
-      nnn = user.getNachname().lower()
-      loginName = "%s.%s" % (nvn[:1], nnn)
+      loginName = user.getUsername()
       if len(loginName) > 20:
         self.error.setErrorMessage("Error: SamAccountName %s is longer than 20 characters. -Skipping-\n" % loginName)
 
