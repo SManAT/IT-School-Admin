@@ -43,11 +43,15 @@ def startUp(go, domain, path):
   for dir in dirs:
     # extract Username
     parts = os.path.split(dir)
-    username = "%s\\%s" % (domain, parts[len(parts) - 1])
+    username = parts[len(parts) - 1]
+
     if username == "Administrator":
-      print("%s will not be processed! - skipping-" % username)
+      print("%s will not be processed! - skipping-\n" % username)
     else:
+      # create Domain Username
+      username = "%s\\%s" % (domain, parts[len(parts) - 1])
       print("Set Owner (%s) on: %s" % (username, dir))
+      print("->")
 
       path = os.path.join(Path(__file__).parent, "chown", "chown.py")
       cmd = "python %s -u %s -t %s" % (path, username, dir)
