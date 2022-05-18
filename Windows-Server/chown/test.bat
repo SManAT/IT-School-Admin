@@ -1,1 +1,1 @@
-python chown.py -u SCHULE\a.schager-feher -t Z:\Desktop\TestOwner\a.schager-feher
+python chown.py -u SCHULE\c.hagmann -t S:\Rescue\c.hagmann

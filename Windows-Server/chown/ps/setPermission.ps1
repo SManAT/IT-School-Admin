@@ -1,16 +1,18 @@
-$path = '%PATH%' 
+$path = "%PATH%"
 $user = "%USER%" 
 $Rights = "FullControl"
 # Controls how permissions are inherited by children
-# ContainerInherit, None, ObjectInherit
-# $InheritSettings = "ContainerInherit, ObjectInherit" 
-# Usually set to none but can setup rules that only apply to children.
-# $PropogationSettings = "None" 
+# 
+#               folder only  folder, sub-folders and files  folder and sub-folders  folder and files  sub-folders and files  sub-folders     files    
+#  Propagation  none         none                           none                    none              InheritOnly            InheritOnly  InheritOnly 
+#  Inheritance  none         Container|Object               Container               Object            Container|Object       Container    Object      
+$InheritSettings = "ContainerInherit, ObjectInherit" 
+$PropogationSettings = "None" 
 # Allow or Deny
 $RuleType = "Allow" 
 
 $acl = Get-Acl $path
-$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($user, $Rights, $RuleType)
+$AccessRule = New-Object System.Security.AccessControl.FileSystemAccessRule($user, $Rights, $InheritSettings, $PropogationSettings, $RuleType)
 $acl.SetAccessRule($AccessRule)
 $acl | Set-Acl -Path $path
 
