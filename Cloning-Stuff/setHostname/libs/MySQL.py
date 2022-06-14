@@ -1,12 +1,24 @@
 import uuid
 import re
+import mysql.connector
 
 
 class MySQL:
     """ load MAC Adress and get Hostname from MySQL DB """
 
-    def __init__(self):
-        self.getMacAdresses()
+    def __init__(self, config):
+        self.config = config
+        self.connect()
+        
+        
+    def connect(self):
+        mydb = mysql.connector.connect(
+          host=self.config['server'],
+          user=self.config['user'],
+          password=self.config['password']
+        )
+        
+        print(mydb) 
 
     def getHostData(self):
         self.getMacAdresses()

@@ -16,7 +16,7 @@ if __name__ == '__main__':
         license="GPLv3",
         install_requires=[
             'PyYAML',
-            'mysql.connector',
+            'mysql-connector-python',
             'cryptography',
             'click',
             'psutil'

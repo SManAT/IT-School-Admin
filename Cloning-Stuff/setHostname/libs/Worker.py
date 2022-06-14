@@ -12,11 +12,26 @@ class Worker:
     debug = True
     debugHostname = "DummyHostname"
 
-    def __init__(self, config, rootDir):
+    def __init__(self, config, rootDir, cryptor):
         self.logger = logging.getLogger('Worker')
         self.config = config
         self.rootDir = rootDir
+        self.cryptor = cryptor
+        
+        self.mysql = {}
+        
+        self.mysql['server'] = self.config["config"]["mysql"]["server"]
+        self.mysql['user'] = self.config["config"]["mysql"]["user"]
+        # decrypt password
+        pwd = self.cryptor.decrypt(self.config["config"]["mysql"]["password"])
+        self.mysql['password'] = pwd
+        self.mysql['database'] = self.config["config"]["mysql"]["database"]
+        self.mysql['mactable'] = self.config["config"]["mysql"]["mactable"]
 
+
+    def decrypt(self, encMessage):
+        """ decrypt a String """
+        return self.fernet.decrypt(str.encode(encMessage)).decode()
     def doTheJob(self):
         self.mac = self.getMAC()
         if self.mac is None:
@@ -33,11 +48,12 @@ class Worker:
             self.hostname = self.debugHostname
             msg = "Using MAC: %s, Hostname: %s" % ("-keine-", self.hostname)
             self.logger.info(msg)
+            self.testMySQLConnection()
             
         else:
             # get Hostname from MySQL DB
             self.logger.info("ToDo: Code missing")
-            # self.hostname = self.getHostname()
+            self.hostname = self.getHostname()
             self.hostname = "ToDo"
             msg = "MAC: %s, Hostname: %s gefunden!" % (self.mac, self.hostname)
             self.logger.info(msg)
@@ -114,6 +130,15 @@ class Worker:
             FileTools.deleteDir(Paths.get(TMP_Dir).toFile())
         }
         """
+        
+    def testMySQLConnection(self):
+        """ check if a connection to MySQL is possible """
+        mysql = MySQL(self.mysql)
+
+        
+
+        
+        mysql.getHostData()
 
     def getMAC(self):
         """ get MAC Adress from active interface """

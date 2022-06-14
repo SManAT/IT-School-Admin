@@ -28,6 +28,7 @@ from libs.Worker import Worker
 import atexit
 import shutil
 import click
+from libs.Cryptor import Cryptor
 
 
 class setHostname():
@@ -42,6 +43,7 @@ class setHostname():
         # catch terminating Signal
         atexit.register(self.exit_handler)
         self.config = self._load_yml()
+        self.cryptor = Cryptor(self.keyFile)
 
     def _load_yml(self):
         """ Load the yaml file config.yaml """
@@ -49,32 +51,6 @@ class setHostname():
             yml = yaml.safe_load(f.read())
         return yml
 
-    def createKeyFile(self):
-        """ Create an encryption key """
-        # Test if key.key is present
-        if (os.path.exists(self.keyFile) is False):
-            # create a key file
-            key = Fernet.generate_key()
-            file = open(self.keyFile, 'wb')
-            file.write(key)
-            file.close()
-            print("KeyFile created in %s" % self.keyFile)
-
-    def do_encrypt(self, estring):
-        """ Encrypt this string """
-        # if not exists
-        self.createKeyFile()
-
-        # read Key File
-        file = open(self.keyFile, 'rb')
-        key = file.read()
-        file.close()
-
-        # encrypt
-        fernet = Fernet(key)
-        encMessage = fernet.encrypt(estring.encode())
-        print("%s: %s" % (estring, encMessage.decode()))
-        print("\nUse this hash in your config File for sensible data, e.g. passwords")
 
     def exit_handler(self):
         """ do something on sys.exit() """
@@ -87,7 +63,7 @@ class setHostname():
 
 
 @click.command()
-@click.option('-c', '--createkey', required=False, default=False, help='Create an encryption key')
+@click.option('-c', '--createkey', required=False, is_flag=True, help='Create an encryption key')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
 def start(createkey, encrypt):
     """
@@ -99,12 +75,14 @@ def start(createkey, encrypt):
     """
     sethostname = setHostname()
     if createkey is True:
-        sethostname.createKeyFile()
+        sethostname.cryptor.createKeyFile()
     elif encrypt is not None:
-        sethostname.do_encrypt(encrypt)
+        chiper = sethostname.cryptor.encrypt(encrypt)
+        print("\n%s: %s" % (encrypt, chiper))
+        print("Use this hash in your config File for sensible data, e.g. passwords")
     else:
         # normal Operation
-        worker = Worker(sethostname.config, sethostname.rootDir)
+        worker = Worker(sethostname.config, sethostname.rootDir, sethostname.cryptor)
         worker.doTheJob()
 
 
