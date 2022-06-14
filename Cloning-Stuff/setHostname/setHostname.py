@@ -31,7 +31,6 @@ import click
 
 
 class setHostname():
-    _debug = False
 
     def __init__(self):
         self.rootDir = Path(__file__).parent

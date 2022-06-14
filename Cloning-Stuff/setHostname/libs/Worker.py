@@ -18,26 +18,32 @@ class Worker:
         self.rootDir = rootDir
 
     def doTheJob(self):
-        if self.debug is True:
-            self.logger.info("=== DEBUGGING ===")
-
         self.mac = self.getMAC()
         if self.mac is None:
             self.logger.error("No active Interface found -abort-")
             sys.exit()
+        else:
+          msg = "Detected MAC: %s" % self.mac
+          self.logger.info(msg)
+
+        if self.debug is True:
+          self.logger.info("=== DEBUGGING ===")
+          
         if self.debug is True:
             self.hostname = self.debugHostname
-            msg = "Debugging: MAC: %s, Hostname: %s" % ("-keine-", self.hostname)
+            msg = "Using MAC: %s, Hostname: %s" % ("-keine-", self.hostname)
+            self.logger.info(msg)
+            
         else:
             # get Hostname from MySQL DB
             self.logger.info("ToDo: Code missing")
             # self.hostname = self.getHostname()
             self.hostname = "ToDo"
             msg = "MAC: %s, Hostname: %s gefunden!" % (self.mac, self.hostname)
+            self.logger.info(msg)
 
-        self.logger.info(msg)
 
-        # Delay gib Windows etwas Zeit to complete StartUp
+        # Delay, gib Windows Zeit to complete StartUp
         if self.debug is False:
             time.sleep(10000)
 
