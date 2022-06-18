@@ -40,24 +40,22 @@ class Worker:
         else:
           msg = "Detected MAC: %s" % self.mac
           self.logger.info(msg)
-
-        if self.debug is True:
-          self.logger.info("=== DEBUGGING ===")
+          
           
         if self.debug is True:
+            self.logger.info("=== DEBUGGING ===")
             self.hostname = self.debugHostname
             msg = "Using MAC: %s, Hostname: %s" % ("-keine-", self.hostname)
-            self.logger.info(msg)
-            self.testMySQLConnection()
-            
+            self.logger.info(msg)           
         else:
             # get Hostname from MySQL DB
-            self.logger.info("ToDo: Code missing")
             self.hostname = self.getHostname()
             self.hostname = "ToDo"
             msg = "MAC: %s, Hostname: %s gefunden!" % (self.mac, self.hostname)
             self.logger.info(msg)
 
+        # debug
+        self.hostname = self.getHostname()
 
         # Delay, gib Windows Zeit to complete StartUp
         if self.debug is False:
@@ -208,10 +206,6 @@ class Worker:
         """ load the HostName via MAC Adress from MySQL Database """
         mysql = MySQL()
 
-        server = self.config["config"]["mysql"]["server"]
-        user: self.config["config"]["mysql"]["user"]
-        password: self.config["config"]["mysql"]["password"]
-        database: self.config["config"]["mysql"]["database"]
         mactable: self.config["config"]["mysql"]["mactable"]
 
         # Tests

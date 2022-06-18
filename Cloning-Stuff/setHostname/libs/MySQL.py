@@ -8,22 +8,26 @@ class MySQL:
 
     def __init__(self, config):
         self.config = config
-        self.connect()
+        self.con = None
+        
         
         
     def connect(self):
-        mydb = mysql.connector.connect(
-          host=self.config['server'],
-          user=self.config['user'],
-          password=self.config['password']
-        )
-        
-        print(mydb) 
-
+        if self.con is None:
+            self.con = mysql.connector.connect(
+              host=self.config['server'],
+              user=self.config['user'],
+              password=self.config['password']
+            )
+            
+    def close(self):
+        if self.con is not None:
+            self.con.close()
+    
     def getHostData(self):
         self.getMacAdresses()
 
-    def getMacAdresses(self):
+    def TEST_getMacAdresses(self):
         """ get MAC Adresses of eths """
         print(uuid.getnode())
 
