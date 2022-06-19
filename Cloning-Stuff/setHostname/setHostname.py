@@ -22,7 +22,6 @@ from pathlib import Path
 
 import yaml
 import logging
-from cryptography.fernet import Fernet
 from libs.LoggerConfiguration import configure_logging
 from libs.Worker import Worker
 import atexit
@@ -44,6 +43,15 @@ class setHostname():
         atexit.register(self.exit_handler)
         self.config = self._load_yml()
         self.cryptor = Cryptor(self.keyFile)
+        
+        info = ("setHostname.py, (c) Mag. Stefan Hagmann 2021\n"
+                "- is changing Hostname of client with Powershell\n"
+                "- hostname is loaded via MAC from MySQL Databse\n"
+                "- is joining a domain\n"
+                "- will reset KMS\n"
+                "- see config.yaml for config parameters\n"
+                "-------------------------------------------------------\n")
+        print(info)
 
     def _load_yml(self):
         """ Load the yaml file config.yaml """
@@ -78,7 +86,7 @@ def start(createkey, encrypt):
         sethostname.cryptor.createKeyFile()
     elif encrypt is not None:
         chiper = sethostname.cryptor.encrypt(encrypt)
-        print("\n%s: %s" % (encrypt, chiper))
+        print("\n%s: %s" % (encrypt, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
     else:
         # normal Operation
@@ -88,5 +96,6 @@ def start(createkey, encrypt):
 
 if __name__ == "__main__":
     # load logging Config
+    print("# debug is active ....!")
     configure_logging()
     start()

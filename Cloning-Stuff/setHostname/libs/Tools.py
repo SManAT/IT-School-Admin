@@ -4,11 +4,10 @@ import sys
 from cryptography.fernet import Fernet
 from pathlib import Path
 from libs.CmdRunner import CmdRunner
-import time
 
 
 class Tools:
-    """ Stuff to Scripts, Filemanagement """
+    """ Stuff to Scripts, Filemanagement """ 
 
     def __init__(self, config, hostname, debug):
         self.logger = logging.getLogger('Tools')
@@ -80,21 +79,45 @@ class Tools:
             erg.append(line)
         return erg
 
-    def createScript(self, lines, filename):
-        """ create a temporary PS Script """
-        # tmp exists
-        if (os.path.exists(self.tmpPath) is False):
-            os.mkdir(self.tmpPath)
+    def createCmd(self, arr):
+        """ from array to line;line;line """
+        erg = ""
+        for line in arr:
+            # replace line breaks
+            line = line.replace('\n', '')
+            # no comments
+            line = line.strip()
+            # delete empty lines
+            char = line[:1]
+            if char != "#":
+                if len(line) != 0:
+                    if erg[-1:] == "{":  # nach { oder } darf kein ; sein
+                        erg += "%s" % line
+                    else:
+                        erg += ";%s" % line
+        # delete first ;
+        erg = erg[1:]
+    
+        # escape sign, will run inside String
+        erg = erg.replace('"', '\\"')
+        return erg
+    
+    def _execute(self, psTemplate, user):
+        """ load Code from PS File, replace variables and excute it """
+        cmdarray = self.loadScript(psTemplate)
+        cmdarray = self.modifyScript(cmdarray, user)
+    
+        # self.debugOutput(cmdarray)
+        cmd = self.createCmd(cmdarray)
+    
+        if self.debug is False:
+            if self.error.hasErrors() is False:
+                self.runner.runCmd(cmd)
+                return self.runner.getStdout()
+        else:
+            return ""
 
-        newfile = os.path.join(self.tmpPath, filename)
-        file = open(newfile, 'w')
-        for line in lines:
-            file.write(line)
-        file.close()
-
-    def rmFile(self, filename):
-        if (os.path.exists(filename) is True):
-            os.remove(filename)
+    
 
     def Rename(self, filename):
         cmdarray = self.loadScript(filename)
@@ -104,14 +127,5 @@ class Tools:
         self.debug = False
         # Do the JOB
         self.logger.info("Renaming Host to " + self.hostname)
-        if self.debug is False:
-            script = os.path.join(self.tmpPath, filename)
-            runner = CmdRunner()
-            runner.runPSFile(script)
-            errors = runner.getStderr()
-            if errors:
-                self.logger.error(errors)
-            # Delete tmp Script with passwords
-            time.sleep(10)
-            self.rmFile(script)
+        self._execute("???.ps1", user)
         self.logger.info("Host Renamed---------------------------------------------")

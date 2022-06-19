@@ -5,8 +5,7 @@ config:
     server: 192.168.1.100
     user: admintools
     password: gAAAAABiqLwtyGjmkWNN9t1RXcI3fQICccd-Ou8dR9Kw0uuZzti2MyqmMn6upXI0-gYwcK3LDWl8zZ-s0IXGsLrkO_-1wgnq9Txk09GxVfC0wYIQgqzdwCA=
-    database: AdminTools
-    mactable: mac
+    sql: SELECT host, mac FROM AdminTools.mac WHERE mac LIKE '%__mac__%'
   domain:
     domainname: schule.local
     admin: SCHULE\\Administrator

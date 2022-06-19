@@ -25,8 +25,6 @@ class Worker:
         # decrypt password
         pwd = self.cryptor.decrypt(self.config["config"]["mysql"]["password"])
         self.mysql['password'] = pwd
-        self.mysql['database'] = self.config["config"]["mysql"]["database"]
-        self.mysql['mactable'] = self.config["config"]["mysql"]["mactable"]
 
 
     def decrypt(self, encMessage):
@@ -38,8 +36,8 @@ class Worker:
             self.logger.error("No active Interface found -abort-")
             sys.exit()
         else:
-          msg = "Detected MAC: %s" % self.mac
-          self.logger.info(msg)
+            msg = "Detected MAC: %s" % self.mac
+            self.logger.info(msg)
           
           
         if self.debug is True:
@@ -47,14 +45,12 @@ class Worker:
             self.hostname = self.debugHostname
             msg = "Using MAC: %s, Hostname: %s" % ("-keine-", self.hostname)
             self.logger.info(msg)           
-        else:
+        else: 
             # get Hostname from MySQL DB
-            self.hostname = self.getHostname()
             self.hostname = "ToDo"
             msg = "MAC: %s, Hostname: %s gefunden!" % (self.mac, self.hostname)
             self.logger.info(msg)
 
-        # debug
         self.hostname = self.getHostname()
 
         # Delay, gib Windows Zeit to complete StartUp
@@ -62,15 +58,19 @@ class Worker:
             time.sleep(10000)
 
         self.doTheRealJobNow()
+       
 
     def doTheRealJobNow(self):
         """ Main Method """
         tools = Tools(self.config, self.hostname, self.debug)
         # LockFile Status erfragen, falls es noch nicht existiert - 1
         lock_status = tools.getLockFilestatus()
+        
+        
         if self.debug:
             lock_status = 4
 
+        # debug
         lock_status = -1
 
         # kein Lock File > Rename Computer and Reboot
@@ -128,16 +128,7 @@ class Worker:
             FileTools.deleteDir(Paths.get(TMP_Dir).toFile())
         }
         """
-        
-    def testMySQLConnection(self):
-        """ check if a connection to MySQL is possible """
-        mysql = MySQL(self.mysql)
-
-        
-
-        
-        mysql.getHostData()
-
+ 
     def getMAC(self):
         """ get MAC Adress from active interface """
         eth_list = []
@@ -172,7 +163,7 @@ class Worker:
 
         # build it together
         result = {}
-        for i, k in enumerate(eth_list):
+        for i, k in enumerate(eth_list):  # noqa
             try:
                 data = {}
                 data['name'] = eth_list[i]
@@ -187,9 +178,9 @@ class Worker:
 
         filteredResult = {}
         # filter out inactive Adresses
-        for i, k in enumerate(result):
+        for i, k in enumerate(result):  # noqa
             item = result[i]
-            for i2, k2 in enumerate(available_networks):
+            for i2, k2 in enumerate(available_networks):  # noqa
                 item2 = available_networks[i2]
                 if item['name'] in item2:
                     filteredResult[i] = item
@@ -204,46 +195,23 @@ class Worker:
 
     def getHostname(self):
         """ load the HostName via MAC Adress from MySQL Database """
-        mysql = MySQL()
+        mysql = MySQL(self.mysql)
 
-        mactable: self.config["config"]["mysql"]["mactable"]
-
-        # Tests
-        # print(self.config)
-        # print(self.config["config"]["domain"])
-
-        # Test
-        mysql.getHostData()
-
+        
+        # debug 
+        mac = '54:EE:75:33:04:89'
+        
+        sql = self.config["config"]["mysql"]["sql"]
         if self.debug is False:
-            mysql.getHostData()
-
-        """
-            if (host.getId() == -1) {
-                logger.error("Die MAC Adresse " +
-                             host.getMacListasString() + " existiert nicht!")
-                logger.error("Exit")
-                System.exit(0)
-            }
-        }
-        if (DEBUG == false) {
-            host.setName(mysql.getHostname())
-        } else {
-            host.setName(debugHostname)
-        }
-        logger.info("Debug Informations:")
-        String msg = String.format("MAC: %s, Hostname: %s gefunden!", host.getMacListasString(), host.getName())
-        if (DEBUG) {
-            msg = String.format("MAC: %s, Hostname: %s gefunden!",
-                                "-keine-", host.getName())
-        }
-        logger.info(msg)
-        // Host existiert umbenennen starten
-        HostWorker work = new HostWorker(host, domainAdminObject, localAdminObject, kmsON, DEBUG)
-
-        // Delay gib Windows etwas Zeit to complete StartUp
-        if (DEBUG == false) {
-            Wait(10000)
-        }
-        work.doTheJob()
-        """
+            hostname = mysql.getHostName(sql, mac)
+        else:
+            hostname = self.debugHostname
+            
+        # debug
+        hostname = mysql.getHostName(sql, mac)
+        
+        
+        if hostname is None:
+            self.logger.error("Die MAC Adresse %s existiert nicht! -exit-" % mac)
+            exit()
+     
