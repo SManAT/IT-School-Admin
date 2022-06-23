@@ -75,8 +75,9 @@ class Worker:
 
         # kein Lock File > Rename Computer and Reboot
         if lock_status == -1:
-            tools.Rename("Rename.ps1")
+            tools.Rename(self.hostname)
 
+            k = 4
             # tools.setLockFileStatus(1, "Host Renamed")
             # das Restart File kann man nicht löschen, da es während des Reboots aktiv sein muss!
             # tools.Restart()
@@ -196,22 +197,15 @@ class Worker:
     def getHostname(self):
         """ load the HostName via MAC Adress from MySQL Database """
         mysql = MySQL(self.mysql)
-
-        
-        # debug 
-        mac = '54:EE:75:33:04:89'
-        
         sql = self.config["config"]["mysql"]["sql"]
         if self.debug is False:
             hostname = mysql.getHostName(sql, mac)
         else:
-            hostname = self.debugHostname
-            
-        # debug
-        hostname = mysql.getHostName(sql, mac)
-        
+            hostname = self.debugHostname       
         
         if hostname is None:
             self.logger.error("Die MAC Adresse %s existiert nicht! -exit-" % mac)
             exit()
+       
+        return hostname
      

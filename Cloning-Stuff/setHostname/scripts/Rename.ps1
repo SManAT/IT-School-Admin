@@ -5,5 +5,12 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 Write  'Running PS with Administrator Rights'
 #Run as Admin--------------------
 
-Write-Host "I am a dummy script ..."
-Read-Host -Prompt "Press Enter to exit"
+$User = "{% localadmin %}"
+$strPass = ConvertTo-SecureString -String "{% localadminpasswd %}" -AsPlainText -Force
+$Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($User, $strPass)
+
+Start-Sleep -s 2
+
+Rename-Computer -ComputerName (hostname) -NewName "{% newhostname %}" -LocalCredential $Credential
+
+Start-Sleep -s 2

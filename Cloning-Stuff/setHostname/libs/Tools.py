@@ -102,10 +102,10 @@ class Tools:
         erg = erg.replace('"', '\\"')
         return erg
     
-    def _execute(self, psTemplate, user):
+    def _execute(self, psTemplate):
         """ load Code from PS File, replace variables and excute it """
         cmdarray = self.loadScript(psTemplate)
-        cmdarray = self.modifyScript(cmdarray, user)
+        cmdarray = self.modifyScript(cmdarray)
     
         # self.debugOutput(cmdarray)
         cmd = self.createCmd(cmdarray)
@@ -115,17 +115,17 @@ class Tools:
                 self.runner.runCmd(cmd)
                 return self.runner.getStdout()
         else:
+            print("\nCommand:")
+            print(cmd)
+            print("\n")
             return ""
 
     
 
-    def Rename(self, filename):
-        cmdarray = self.loadScript(filename)
-        cmdarray = self.modifyScript(cmdarray)
-        self.createScript(cmdarray, filename)
-        # test
-        self.debug = False
+    def Rename(self, hostname):
+        self.hostname = hostname
+      
         # Do the JOB
         self.logger.info("Renaming Host to " + self.hostname)
-        self._execute("???.ps1", user)
+        answer = self._execute("Rename.ps1")
         self.logger.info("Host Renamed---------------------------------------------")

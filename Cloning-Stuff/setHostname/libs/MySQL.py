@@ -42,16 +42,14 @@ class MySQL:
         cursor.execute(sql)
         data = cursor.fetchall()
         
+        cursor.close() 
+        self.close()
+   
         erg = None
-    
-        #print(cursor.rowcount)
         # only return first hit
         for (hostname, mac) in data:
             erg = hostname
             break
-
-        cursor.close() 
-        self.close()
         return erg
         
 
