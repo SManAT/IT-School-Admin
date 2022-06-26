@@ -30,6 +30,7 @@ class Worker:
     def decrypt(self, encMessage):
         """ decrypt a String """
         return self.fernet.decrypt(str.encode(encMessage)).decode()
+    
     def doTheJob(self):
         self.mac = self.getMAC()
         if self.mac is None:
@@ -47,15 +48,13 @@ class Worker:
             self.logger.info(msg)           
         else: 
             # get Hostname from MySQL DB
-            self.hostname = "ToDo"
+            self.hostname = self.getHostname()
             msg = "MAC: %s, Hostname: %s gefunden!" % (self.mac, self.hostname)
             self.logger.info(msg)
 
-        self.hostname = self.getHostname()
-
         # Delay, gib Windows Zeit to complete StartUp
         if self.debug is False:
-            time.sleep(10000)
+            time.sleep(10000) 
 
         self.doTheRealJobNow()
        
@@ -66,69 +65,52 @@ class Worker:
         # LockFile Status erfragen, falls es noch nicht existiert - 1
         lock_status = tools.getLockFilestatus()
         
-        
         if self.debug:
             lock_status = 4
 
-        # debug
-        lock_status = -1
-
         # kein Lock File > Rename Computer and Reboot
-        if lock_status == -1:
+        if lock_status == -1: 
             tools.Rename(self.hostname)
+            tools.setLockFileStatus(1, "Host Renamed")
+            tools.RestartHost()
 
-            k = 4
-            # tools.setLockFileStatus(1, "Host Renamed")
-            # das Restart File kann man nicht löschen, da es während des Reboots aktiv sein muss!
-            # tools.Restart()
+        if lock_status == 1:
+            tools.JoinDomain()
+            if self.config["config"]["kms"] is False:
+                tools.appendLockFileStatus(2, "Joined Domain")
+            else:
+                # index muss auf 4 gesetzt werden
+                tools.appendLockFileStatus(4, "Joined Domain")
+            tools.RestartHost()
+        
+        
+        if lock_status == 2:
+            if self.config["config"]["kms"] is True:
+                tools.KMSRearm()
+                tools.appendLockFileStatus(3, "KMS Client rearmed")
+                tools.RestartHost()       
+        
+        if lock_status == 3:
+            if self.config["config"]["kms"] is True:
+                tools.KMSAto()
+                tools.appendLockFileStatus(4, "KMS Client ato")
+                tools.RestartHost()
 
-        """
-        if (status == 1) {
-            this.JoinDomain("joinDomain.ps1")
-            this.appendLockFileStatus(2, "Joined Domain")
-            this.Restart()
-        }
-        if (status == 2) {
-            if (kmsON) {
-                // KMS Rearm Thing
-                this.KMS("KMSPart1.ps1")
-                logger.info("KMS Client REARM-----------------------------------")
-                this.appendLockFileStatus(3, "KMS Client rearmed")
-                this.Restart()
-            }
-        }
-        if (status == 3) {
-            if (kmsON) {
-                // KMS Rearm Thing
-                this.KMS("KMSPart2.ps1")
-                logger.info("KMS Client ATO-----------------------------------")
-                this.appendLockFileStatus(4, "KMS Client ato")
-                this.Restart()
-            }
-        }
-        if (status == 4) {
-            this.appendLockFileStatus(-2, "All done")
-            logger.info("")
-            logger.info("")
-            logger.info("############################################################")
-            logger.info("       we are finished, hostname, joined, rearm, ato")
-            logger.info("############################################################")
-            logger.info("")
-            logger.info("")
+        
+        if lock_status == 4:
+            tools.appendLockFileStatus(-2, "All done")
+            self.logger.info("")
+            self.logger.info("############################################################")
+            self.logger.info("       we are finished, hostname, joined, rearmed, ato")
+            self.logger.info("############################################################")
+            self.logger.info("")
 
-            this.Shutdown()
-        }
+            # shutdown Host
+            tools.Shutdown()
 
-        //nichts zu tun
-        if (status == -2) {
-            logger.info("Host " + host.getName() + ":" + host.getMacListasString() + " bereits fertig bearbeitet!")
-            this.triggerCloseEvent()
-        }
-        //try to delete tmp Folder
-        if(this.debug == false){
-            FileTools.deleteDir(Paths.get(TMP_Dir).toFile())
-        }
-        """
+        # nichts zu tun
+        if lock_status == -2:
+            self.logger.info("Host %s:%s bereits fertig bearbeitet!" % (self.hostname, self.mac))
  
     def getMAC(self):
         """ get MAC Adress from active interface """
@@ -199,13 +181,17 @@ class Worker:
         mysql = MySQL(self.mysql)
         sql = self.config["config"]["mysql"]["sql"]
         if self.debug is False:
-            hostname = mysql.getHostName(sql, mac)
+            hostname = mysql.getHostName(sql, self.mac)
         else:
             hostname = self.debugHostname       
         
         if hostname is None:
-            self.logger.error("Die MAC Adresse %s existiert nicht! -exit-" % mac)
+            self.logger.error("Die MAC Adresse %s existiert nicht! -exit-" % self.mac)
             exit()
        
         return hostname
+    
+    
+   
+      
      

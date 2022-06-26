@@ -1,0 +1,16 @@
+10:00:21] [INFO,doTheJob():41] Detected MAC: 8C-55-4A-04-DD-E1
+10:00:21] [INFO,doTheJob():45] === DEBUGGING ===
+10:00:21] [INFO,doTheJob():48] Using MAC: -keine-, Hostname: DummyHostname
+10:00:21] [INFO,doTheRealJobNow():102] 
+10:00:21] [INFO,doTheRealJobNow():103] ############################################################
+10:00:21] [INFO,doTheRealJobNow():104]        we are finished, hostname, joined, rearmed, ato
+10:00:21] [INFO,doTheRealJobNow():105] ############################################################
+10:00:21] [INFO,doTheRealJobNow():106] 
+[10:00:47] [INFO,doTheJob():41] Detected MAC: 8C-55-4A-04-DD-E1
+[10:00:47] [INFO,doTheJob():45] === DEBUGGING ===
+[10:00:47] [INFO,doTheJob():48] Using MAC: -keine-, Hostname: DummyHostname
+[10:00:47] [INFO,doTheRealJobNow():102] 
+[10:00:47] [INFO,doTheRealJobNow():103] ############################################################
+[10:00:47] [INFO,doTheRealJobNow():104]        we are finished, hostname, joined, rearmed, ato
+[10:00:47] [INFO,doTheRealJobNow():105] ############################################################
+[10:00:47] [INFO,doTheRealJobNow():106] 
