@@ -19,7 +19,7 @@ __pyfile__ = "setHostname"
 include_files = ["config.yaml"]
 include_dirs = ["scripts/"]
 includes = []
-excludes = []
+excludes = ["java.7z"]
 packages = []
 # add other dirs to search for custom modules
 path = ["libs"] + sys.path

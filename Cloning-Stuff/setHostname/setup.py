@@ -19,7 +19,8 @@ if __name__ == '__main__':
             'mysql-connector-python',
             'cryptography',
             'click',
-            'psutil'
+            'psutil',
+            'cx_Freeze',
         ],
         python_requires='>=3.8',
     )

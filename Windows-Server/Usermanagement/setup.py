@@ -18,6 +18,7 @@ if __name__ == '__main__':
             'pyyaml',
             'click',
             'pandas',
+            'cx_Freeze',
         ],
         python_requires='>=3.8',
     )
