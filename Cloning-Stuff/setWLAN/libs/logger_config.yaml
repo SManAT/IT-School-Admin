@@ -1,0 +1,37 @@
+version: 1 
+disable_existing_loggers: False
+formatters:
+  simple:
+    format: "%(asctime)s - [%(name)s:%(lineno)s] : %(message)s"
+    datefmt: "%H:%M:%S"
+  default:
+    format: "[%(asctime)s] [%(levelname)s,%(funcName)s():%(lineno)s] %(message)s"
+    datefmt: "%H:%M:%S"
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+
+  debug_file_handler:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: default
+    filename: setHostname.log
+    maxBytes: 200000 # 200k
+    backupCount: 2
+    encoding: utf8
+
+    
+loggers:
+  simpleExample:
+    level: DEBUG
+    handlers: [console, debug_file_handler]
+    propagate: no
+    
+root:
+  level: NOTSET
+  handlers: [console, debug_file_handler]
+  propogate: yes
