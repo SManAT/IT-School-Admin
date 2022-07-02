@@ -96,6 +96,5 @@ def start(createkey, encrypt):
 
 if __name__ == "__main__":
     # load logging Config
-    print("# debug is active ....!")
     configure_logging()
     start()

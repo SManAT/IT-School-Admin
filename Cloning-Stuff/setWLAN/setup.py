@@ -1,5 +1,5 @@
 """
-setup.py setHostname
+setup.py setWLAN
 Usage: sudo pip3 install .
 """
 __author__ = 'Mag. Stefan Hagmann'
@@ -9,14 +9,12 @@ from distutils.core import setup
 if __name__ == '__main__':
 
     setup(
-        name="setHostname",
-        description="set the hostname of a windows client via MySQL",
+        name="setWLAN",
+        description="manage WLAN Keys for Windows encrypted",
         author=__author__,
         maintainer=__author__,
         license="GPLv3",
         install_requires=[
-            'PyYAML',
-            'mysql-connector-python',
             'cryptography',
             'click',
             'psutil',

@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 from pathlib import Path
 
-import yaml
 import logging
 from libs.LoggerConfiguration import configure_logging
 from libs.Worker import Worker
@@ -34,30 +33,18 @@ class setWLAN():
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
-        self.configFile = os.path.join(self.rootDir, 'config.yaml')
         self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
-        self.tmpPath = os.path.join(self.rootDir, 'tmp/')
-        self.logger = logging.getLogger('setHostname')
+        self.logger = logging.getLogger('setWLAN')
 
         # catch terminating Signal
         atexit.register(self.exit_handler)
         self.config = self._load_yml()
         self.cryptor = Cryptor(self.keyFile)
         
-        info = ("setHostname.py, (c) Mag. Stefan Hagmann 2021\n"
-                "- is changing Hostname of client with Powershell\n"
-                "- hostname is loaded via MAC from MySQL Databse\n"
-                "- is joining a domain\n"
-                "- will reset KMS\n"
-                "- see config.yaml for config parameters\n"
+        info = ("setWLAN.py, (c) Mag. Stefan Hagmann 2021\n"
+                "- mange WLAN Keys for WIndows\n"
                 "-------------------------------------------------------\n")
         print(info)
-
-    def _load_yml(self):
-        """ Load the yaml file config.yaml """
-        with open(self.configFile, 'rt') as f:
-            yml = yaml.safe_load(f.read())
-        return yml
 
 
     def exit_handler(self):
@@ -78,23 +65,23 @@ class setWLAN():
 @click.option('-a', '--add', required=False, default=None, help='Add a WLAN Key')
 def start(createkey, encrypt, list, delete, add):
     """
-    Will manage WLAN COnfigurations for Windows
+    Will manage WLAN Configurations for Windows
     """
-    sethostname = setHostname()
+    setwlan = setWLAN()
     if createkey is True:
-        sethostname.cryptor.createKeyFile()
+        setwlan.cryptor.createKeyFile()
     elif encrypt is not None:
-        chiper = sethostname.cryptor.encrypt(encrypt)
+        chiper = setwlan.cryptor.encrypt(encrypt)
         print("\n%s: %s" % (encrypt, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
     else:
+        pass
         # normal Operation
-        worker = Worker(sethostname.config, sethostname.rootDir, sethostname.cryptor)
-        worker.doTheJob()
+        # worker = Worker(sethostname.config, sethostname.rootDir, sethostname.cryptor)
+        # worker.doTheJob()
 
 
 if __name__ == "__main__":
     # load logging Config
-    print("# debug is active ....!")
     configure_logging()
     start()
