@@ -30,7 +30,7 @@ import click
 from libs.Cryptor import Cryptor
 
 
-class setHostname():
+class setWLAN():
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
@@ -73,13 +73,12 @@ class setHostname():
 @click.command()
 @click.option('-c', '--createkey', required=False, is_flag=True, help='Create an encryption key')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
-def start(createkey, encrypt):
+@click.option('-l', '--list', required=False, default=None, help='List all WLAN Keys')
+@click.option('-d', '--delete', required=False, default=None, help='Delete a WLAN Key')
+@click.option('-a', '--add', required=False, default=None, help='Add a WLAN Key')
+def start(createkey, encrypt, list, delete, add):
     """
-    After a fresh Cloning session, this tool will do
-    - rename to Hostname via MAC Address from a MySQL Database
-    - will join a defined domain
-    - will activate KMS and will contact it
-    - when finished, client will shut down
+    Will manage WLAN COnfigurations for Windows
     """
     sethostname = setHostname()
     if createkey is True:
