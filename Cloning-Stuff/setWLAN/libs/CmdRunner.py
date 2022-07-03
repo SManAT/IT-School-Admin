@@ -24,9 +24,8 @@ class CmdRunner():
         ''' runs a command '''
         self._stderr = ""
         self._stdout = ""
-        signedCmd = 'Powershell.exe -command "%s"' % cmd
         # print(signedCmd)
-        proc = subprocess.Popen(signedCmd,
+        proc = subprocess.Popen(cmd,
                                 shell=True,
                                 stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE,
@@ -34,10 +33,11 @@ class CmdRunner():
                                 bufsize=0,
                                 preexec_fn=None)
         for line in iter(proc.stderr.readline, b''):
-            self._stderr += line.decode()
+            self._stderr += line.decode('utf-8', 'ignore')
 
         for line in iter(proc.stdout.readline, b''):
-            self._stdout += line.decode()
+            # decode ignore errors
+            self._stdout += line.decode('utf-8', 'ignore')
         proc.communicate()
 
         self.pid = proc.pid

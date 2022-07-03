@@ -1,1 +1,1 @@
-python setWLAN.py 
+python setWLAN.py -a

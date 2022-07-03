@@ -38,31 +38,25 @@ class setWLAN():
 
         # catch terminating Signal
         atexit.register(self.exit_handler)
-        self.config = self._load_yml()
         self.cryptor = Cryptor(self.keyFile)
         
-        info = ("setWLAN.py, (c) Mag. Stefan Hagmann 2021\n"
-                "- mange WLAN Keys for WIndows\n"
+        info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2021\n"
+                "- manage WLAN Keys for Windows\n"
                 "-------------------------------------------------------\n")
         print(info)
 
 
     def exit_handler(self):
         """ do something on sys.exit() """
-        # be sure to delete tmp/ dir
-        if (os.path.exists(self.tmpPath) is True):
-            try:
-                shutil.rmtree(self.tmpPath)
-            except OSError as e:
-                print("Error: %s : %s" % (self.tmpPath, e.strerror))
+        pass
 
 
 @click.command()
 @click.option('-c', '--createkey', required=False, is_flag=True, help='Create an encryption key')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
-@click.option('-l', '--list', required=False, default=None, help='List all WLAN Keys')
-@click.option('-d', '--delete', required=False, default=None, help='Delete a WLAN Key')
-@click.option('-a', '--add', required=False, default=None, help='Add a WLAN Key')
+@click.option('-l', '--list', required=False, is_flag=True, help='List all WLAN Keys')
+@click.option('-d', '--delete', required=False, is_flag=True, help='Delete a WLAN Key')
+@click.option('-a', '--add', required=False, is_flag=True, help='Add a WLAN Key')
 def start(createkey, encrypt, list, delete, add):
     """
     Will manage WLAN Configurations for Windows
@@ -74,11 +68,13 @@ def start(createkey, encrypt, list, delete, add):
         chiper = setwlan.cryptor.encrypt(encrypt)
         print("\n%s: %s" % (encrypt, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
-    else:
-        pass
-        # normal Operation
-        # worker = Worker(sethostname.config, sethostname.rootDir, sethostname.cryptor)
-        # worker.doTheJob()
+    
+    worker = Worker(setwlan.rootDir, setwlan.cryptor)
+    if list is True:       
+        worker.listWlan()
+        
+    if add is True:       
+        worker.addWlan()
 
 
 if __name__ == "__main__":

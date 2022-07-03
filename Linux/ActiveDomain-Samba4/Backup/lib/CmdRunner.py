@@ -37,10 +37,10 @@ class CmdRunner():
                                 bufsize=0,
                                 preexec_fn=None)
         for line in iter(proc.stderr.readline, b''):
-            self._stderr += line.decode()
+            self._stderr += line.decode('utf-8', 'ignore')
 
         for line in iter(proc.stdout.readline, b''):
-            self._stdout += line.decode()
+            self._stdout += line.decode('utf-8', 'ignore')
         proc.communicate()
 
         self.pid = proc.pid
@@ -68,10 +68,10 @@ class CmdRunner():
                                 # env={'env_keep': ENV}
                                 )
         for line in iter(proc.stderr.readline, b''):
-            self._stderr += line.decode()
+            self._stderr += line.decode('utf-8', 'ignore')
 
         for line in iter(proc.stdout.readline, b''):
-            self._stdout += line.decode()
+            self._stdout += line.decode('utf-8', 'ignore')
         proc.communicate()
 
     def check_username(self):
