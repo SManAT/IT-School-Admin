@@ -120,9 +120,10 @@ class Worker:
                 print(">> not a number ... try again")
         return number
     
-    def getSizeofDict(self, dict):
+    def getWlanSize(self):
         i = 0
-        data = self.processList(dict) 
+        lines = self.getArrayFromString(self.wlanlist)
+        data = self.processList(lines) 
         for key, item in data.items():
             i += 1
         return i
@@ -133,10 +134,15 @@ class Worker:
         hasErrors = True
         while hasErrors is True:
             number = self.readInteger("\nWhich WLAN Creditentials will you save?: ")
-            print("1 <= %s <= %s" % (number, self.getSizeofDict(self.wlanlist)))
-            if number >= 1 and number <= self.getSizeofDict(self.wlanlist):
+            # print("1 <= %s <= %s" % (number, self.getWlanSize()))
+            if number >= 1 and number <= self.getWlanSize():
                 hasErrors = False
-        print(number)
+                
+        # get WLAN via number
+        lines = self.getArrayFromString(self.wlanlist)
+        data = self.processList(lines)
+        ssid = data[number]
+  
         
         
             
