@@ -1,0 +1,1 @@
+netsh wlan export profile name="{% profile_name %}" key=clear folder={% path %}

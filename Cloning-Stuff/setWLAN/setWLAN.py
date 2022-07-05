@@ -54,10 +54,11 @@ class setWLAN():
 @click.command()
 @click.option('-c', '--createkey', required=False, is_flag=True, help='Create an encryption key')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
-@click.option('-l', '--list', required=False, is_flag=True, help='List all WLAN Keys')
-@click.option('-d', '--delete', required=False, is_flag=True, help='Delete a WLAN Key')
-@click.option('-a', '--add', required=False, is_flag=True, help='Add a WLAN Key')
-def start(createkey, encrypt, list, delete, add):
+@click.option('-l', '--list', required=False, is_flag=True, help='List all WLAN profiles')
+@click.option('-d', '--delete', required=False, is_flag=True, help='Delete a WLAN profile')
+@click.option('-a', '--add', required=False, is_flag=True, help='Add a WLAN profile')
+@click.option('-s', '--show', required=False, is_flag=True, help='Show stored WLAN profiles')
+def start(createkey, encrypt, list, delete, add, show):
     """
     Will manage WLAN Configurations for Windows
     """

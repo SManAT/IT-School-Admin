@@ -18,6 +18,7 @@ if __name__ == '__main__':
             'cryptography',
             'click',
             'psutil',
+            'lxml',
             'cx_Freeze',
         ],
         python_requires='>=3.8',

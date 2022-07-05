@@ -5,7 +5,9 @@ import time
 import psutil
 import os
 from libs.CmdRunner import CmdRunner
-from pickle import TRUE
+import xml.etree.ElementTree as ET
+from libs.XMLTool import XMLTool
+
 
 
 class Worker:
@@ -18,6 +20,7 @@ class Worker:
         self.cryptor = cryptor
         self.runner = CmdRunner()
         self.scriptPath = os.path.join(self.rootDir, 'cmd/')
+        self.xmlPath = os.path.join(self.rootDir, 'xml/')
         self.wlanlist = {}
 
     def decrypt(self, encMessage):
@@ -29,7 +32,12 @@ class Worker:
         for line in data:
           line = line.replace('\n', '')
           print(line)
-    
+          
+    def createDir(self, path):
+        """ create dir if it not exists """
+        if os.path.isdir(path) is False:
+          os.mkdir(path)
+          
     def loadScript(self, filename):
         """ load a PS Script """
         path = os.path.join(self.scriptPath, filename)
@@ -40,6 +48,15 @@ class Worker:
             with open(path, 'r', encoding='utf8') as f:
                 lines = f.readlines()
             return lines
+        
+    def modifyScript(self, lines, ssid):
+        """ modify placeholders """
+        erg = []
+        for line in lines:
+            line = line.replace("{% profile_name %}", ssid)
+            line = line.replace("{% path %}", os.path.abspath(self.xmlPath))
+            erg.append(line)
+        return erg
 
     def createCmd(self, arr):
         """ from array to line;line;line """
@@ -142,6 +159,34 @@ class Worker:
         lines = self.getArrayFromString(self.wlanlist)
         data = self.processList(lines)
         ssid = data[number]
+        
+        # save to xml folder
+        self.saveWlanProfile(ssid)
+        
+    def saveWlanProfile(self, ssid):
+        """ export Wlan Profile to disk and encrypt it """
+        self.createDir(self.xmlPath)
+        
+        cmdarray = self.loadScript("saveWLAN")
+        cmdarray = self.modifyScript(cmdarray, ssid)
+        cmd = self.createCmd(cmdarray)
+        self.runner.runCmd(cmd)
+        print("Wlan Profile %s saved ..." % ssid)
+        
+        # ------------------------------------   
+        ssidPath = os.path.abspath(os.path.join(self.xmlPath, "WLAN-"+ssid+".xml"))
+        print(ssidPath)
+        
+        xmltool = XMLTool(ssidPath) 
+        elem = xmltool.find('keyMaterial')
+        print(elem)
+        #print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
+        
+       # elem.text ="Hallo"
+                
+       # https://www.geeksforgeeks.org/modify-xml-files-with-python/        
+        #xmltool.write()
+        
   
         
         
