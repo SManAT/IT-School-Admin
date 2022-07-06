@@ -19,6 +19,9 @@ class Cryptor:
         file.close()
         
         self.fernet = Fernet(self.KEY)
+    
+    def keyExists(self):
+        return os.path.exists(self.keyFile)
         
     def createKeyFile(self):
         """ Create an encryption key """

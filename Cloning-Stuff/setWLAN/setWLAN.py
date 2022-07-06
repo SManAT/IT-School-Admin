@@ -24,7 +24,6 @@ import logging
 from libs.LoggerConfiguration import configure_logging
 from libs.Worker import Worker
 import atexit
-import shutil
 import click
 from libs.Cryptor import Cryptor
 
@@ -40,9 +39,8 @@ class setWLAN():
         atexit.register(self.exit_handler)
         self.cryptor = Cryptor(self.keyFile)
         
-        info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2021\n"
-                "- manage WLAN Keys for Windows\n"
-                "-------------------------------------------------------\n")
+        info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2022\n"
+                "------------------------------------------")
         print(info)
 
 
@@ -54,11 +52,12 @@ class setWLAN():
 @click.command()
 @click.option('-c', '--createkey', required=False, is_flag=True, help='Create an encryption key')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
-@click.option('-l', '--list', required=False, is_flag=True, help='List all WLAN profiles')
+@click.option('-l', '--listing', required=False, is_flag=True, help='List all WLAN profiles')
 @click.option('-d', '--delete', required=False, is_flag=True, help='Delete a WLAN profile')
 @click.option('-a', '--add', required=False, is_flag=True, help='Add a WLAN profile')
 @click.option('-s', '--show', required=False, is_flag=True, help='Show stored WLAN profiles')
-def start(createkey, encrypt, list, delete, add, show):
+@click.option('-r', '--restore', required=False, is_flag=True, help='Import all stored WLAN profiles to the client')
+def start(createkey, encrypt, listing, delete, add, show, restore):
     """
     Will manage WLAN Configurations for Windows
     """
@@ -71,11 +70,20 @@ def start(createkey, encrypt, list, delete, add, show):
         print("Use this hash in your config File for sensible data, e.g. passwords")
     
     worker = Worker(setwlan.rootDir, setwlan.cryptor)
-    if list is True:       
+    if listing is True:       
         worker.listWlan()
         
     if add is True:       
         worker.addWlan()
+        
+    if show is True:       
+        worker.showStoredWLan()
+        
+    if delete is True:       
+        print("Just delete the corresponding xml file in directory ./xml/ ...")
+    
+    if restore is True:
+      worker.importStoredWLan()
 
 
 if __name__ == "__main__":

@@ -13,13 +13,13 @@ from pathlib import Path
 __author__ = 'Mag. Stefan Hagmann'
 __version__ = '1.0.0'
 # without Extension
-__pyfile__ = "setHostname"
+__pyfile__ = "setWLAN"
 
 # use relative paths
-include_files = ["config.yaml"]
-include_dirs = ["scripts/"]
+include_files = []
+include_dirs = ["cmd/"]
 includes = []
-excludes = ["java.7z"]
+excludes = ["java.7z", "test.bat", "build.bat"]
 packages = []
 # add other dirs to search for custom modules
 path = ["libs"] + sys.path
@@ -32,7 +32,7 @@ base = None
 
 setup(
     name=__pyfile__,
-    description='set the hostname of a windows client via MySQL',
+    description='manage WLAN Keys for Windows (encrypted)',
     version=__version__,
     executables=[Executable(__pyfile__ + '.py', base=base, icon='App.ico')],
     options={'build_exe': {

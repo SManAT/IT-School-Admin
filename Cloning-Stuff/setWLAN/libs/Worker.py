@@ -1,13 +1,10 @@
 import logging
 import re
 import sys
-import time
-import psutil
 import os
 from libs.CmdRunner import CmdRunner
-import xml.etree.ElementTree as ET
 from libs.XMLTool import XMLTool
-
+from pathlib import Path
 
 
 class Worker:
@@ -26,18 +23,18 @@ class Worker:
     def decrypt(self, encMessage):
         """ decrypt a String """
         return self.fernet.decrypt(str.encode(encMessage)).decode()
-    
+
     def debugOutput(self, data):
         """ just Debug Output """
         for line in data:
-          line = line.replace('\n', '')
-          print(line)
-          
+            line = line.replace('\n', '')
+            print(line)
+
     def createDir(self, path):
         """ create dir if it not exists """
         if os.path.isdir(path) is False:
-          os.mkdir(path)
-          
+            os.mkdir(path)
+
     def loadScript(self, filename):
         """ load a PS Script """
         path = os.path.join(self.scriptPath, filename)
@@ -48,7 +45,7 @@ class Worker:
             with open(path, 'r', encoding='utf8') as f:
                 lines = f.readlines()
             return lines
-        
+
     def modifyScript(self, lines, ssid):
         """ modify placeholders """
         erg = []
@@ -76,24 +73,24 @@ class Worker:
                         erg += ";%s" % line
         # delete first ;
         erg = erg[1:]
-    
+
         # escape sign, will run inside String
         erg = erg.replace('"', '\\"')
         return erg
-    
+
     def _execute(self, template):
         """ load Code from cmd File and execute it """
         cmdarray = self.loadScript(template)
-    
-        #self.debugOutput(cmdarray)
+
+        # self.debugOutput(cmdarray)
         cmd = self.createCmd(cmdarray)
         self.runner.runCmd(cmd)
         return self.runner.getStdout()
-    
+
     def getArrayFromString(self, lines):
         lines = lines.split('\n')
         return lines
-    
+
     def processList(self, lines):
         erg = {}
         index = 1
@@ -106,45 +103,62 @@ class Worker:
                     erg[index] = data
                     index += 1
         return erg
-    
+
     def getWlan(self):
         self.wlanlist.clear()
         self.wlanlist = self._execute("listWLAN")
-        
+
     def printWlanList(self):
         lines = self.getArrayFromString(self.wlanlist)
-        data = self.processList(lines) 
+        data = self.processList(lines)
         for key, item in data.items():
             print(f"{key:>3}: { item }")
-    
+
     def listWlan(self):
         """ list all available WLAN """
         self.getWlan()
-    
+
         print("WLANS stored on this client:")
         print("----------------------------")
         self.printWlanList()
-        
-            
+
+    def search_files_in_dir(self, directory='.', pattern=''):
+        """
+        search for pattern in directory NOT recursive
+        :param directory: path where to search. relative or absolute
+        :param pattern: a list e.g. ['.jpg', '.gif']
+        """
+        data = []
+        for child in Path(directory).iterdir():
+            if child.is_file():
+                # print(f"{child.name}")
+                if pattern == '':
+                    data.append(os.path.join(directory, child.name))
+                else:
+                    for p in pattern:
+                        if child.name.endswith(p):
+                            data.append(os.path.join(directory, child.name))
+        return data
+
     def readInteger(self, msg):
-        hasErrors =True
+        hasErrors = True
         while hasErrors is True:
             try:
                 print(msg, sep='', end='')
                 number = eval(input())
-                hasErrors =False
+                hasErrors = False
             except:
                 print(">> not a number ... try again")
         return number
-    
+
     def getWlanSize(self):
         i = 0
         lines = self.getArrayFromString(self.wlanlist)
-        data = self.processList(lines) 
-        for key, item in data.items():
+        data = self.processList(lines)
+        for key, item in data.items():  # noqa
             i += 1
         return i
-            
+
     def addWlan(self):
         self.getWlan()
         self.printWlanList()
@@ -154,41 +168,77 @@ class Worker:
             # print("1 <= %s <= %s" % (number, self.getWlanSize()))
             if number >= 1 and number <= self.getWlanSize():
                 hasErrors = False
-                
+
         # get WLAN via number
         lines = self.getArrayFromString(self.wlanlist)
         data = self.processList(lines)
         ssid = data[number]
-        
+
         # save to xml folder
         self.saveWlanProfile(ssid)
-        
+
     def saveWlanProfile(self, ssid):
         """ export Wlan Profile to disk and encrypt it """
         self.createDir(self.xmlPath)
-        
+
         cmdarray = self.loadScript("saveWLAN")
         cmdarray = self.modifyScript(cmdarray, ssid)
         cmd = self.createCmd(cmdarray)
         self.runner.runCmd(cmd)
         print("Wlan Profile %s saved ..." % ssid)
+
+        # ------------------------------------
+        ssidPath = os.path.abspath(os.path.join(self.xmlPath, "WLAN-" + ssid + ".xml"))
+
+        xmltool = XMLTool(ssidPath)
+        ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
+        elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
+        # print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
+
+        if self.cryptor.keyExists is False:
+            self.cryptor.createKeyFile()
+        chiper = self.cryptor.encrypt(elem.text)
+        print("%s > %s" % (elem.text, chiper))
+
+        xmltool.changeText(elem, chiper)
+        xmltool.write()
+
+    def showStoredWLan(self):
+        """ shows all stored Wlan Profiles """
+        print("Stored Wlan Profiles are ...")
+        print("============================")
+        files = self.search_files_in_dir(self.xmlPath, '*.xml')
+        key = 1
+        for item in files:
+          # extract Wlan Profile Name
+          # WLAN-PNMS_Schueler
+          file = os.path.basename(item)[5:-4]
+          print(f"{key:>3}: { file }")
+          key += 1
+          
+    def importStoredWLan(self):
+      """ will import all stored Wlan Profiles to this client """
+      files = self.search_files_in_dir(self.xmlPath, '*.xml')
+      for item in files:
+        ssid = os.path.basename(item)[5:-4]
+        print("Importing Wlan Profile %s ..." % ssid)
         
-        # ------------------------------------   
-        ssidPath = os.path.abspath(os.path.join(self.xmlPath, "WLAN-"+ssid+".xml"))
-        print(ssidPath)
-        
-        xmltool = XMLTool(ssidPath) 
-        elem = xmltool.find('keyMaterial')
-        print(elem)
-        #print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
-        
-       # elem.text ="Hallo"
-                
-       # https://www.geeksforgeeks.org/modify-xml-files-with-python/        
-        #xmltool.write()
-        
-  
+        print(item)
         
         
-            
-     
+        
+        
+        
+        
+        
+        xmltool = XMLTool(item)
+        ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
+        elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
+        
+        elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
+        print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
+
+        #if self.cryptor.keyExists is False:
+        #    self.cryptor.createKeyFile()
+        #chiper = self.cryptor.encrypt(elem.text)
+        #print("%s > %s" % (elem.text, chiper))
