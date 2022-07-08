@@ -19,6 +19,9 @@ class Worker:
         self.scriptPath = os.path.join(self.rootDir, 'cmd/')
         self.xmlPath = os.path.join(self.rootDir, 'xml/')
         self.wlanlist = {}
+        
+        self.ssid = None
+        self.profilePath = None
 
     def decrypt(self, encMessage):
         """ decrypt a String """
@@ -46,13 +49,19 @@ class Worker:
                 lines = f.readlines()
             return lines
 
-    def modifyScript(self, lines, ssid):
+    def modifyScript(self, lines):
         """ modify placeholders """
         erg = []
         for line in lines:
-            line = line.replace("{% profile_name %}", ssid)
-            line = line.replace("{% path %}", os.path.abspath(self.xmlPath))
-            erg.append(line)
+          if self.ssid:
+            line = line.replace("{% profile_name %}", self.ssid)
+          line = line.replace("{% path %}", os.path.abspath(self.xmlPath))
+            
+          if self.profilePath:
+            line = line.replace("{% file_name %}", self.profilePath)
+          #line = line.replace("{% interface_name %}", ssid)
+
+        erg.append(line)
         return erg
 
     def createCmd(self, arr):
@@ -181,8 +190,9 @@ class Worker:
         """ export Wlan Profile to disk and encrypt it """
         self.createDir(self.xmlPath)
 
+        self.ssid = ssid
         cmdarray = self.loadScript("saveWLAN")
-        cmdarray = self.modifyScript(cmdarray, ssid)
+        cmdarray = self.modifyScript(cmdarray)
         cmd = self.createCmd(cmdarray)
         self.runner.runCmd(cmd)
         print("Wlan Profile %s saved ..." % ssid)
@@ -216,6 +226,10 @@ class Worker:
           print(f"{key:>3}: { file }")
           key += 1
           
+    def rmFile(self, filename):
+        if (os.path.exists(filename) is True):
+            os.remove(filename)
+            
     def importStoredWLan(self):
       """ will import all stored Wlan Profiles to this client """
       files = self.search_files_in_dir(self.xmlPath, '*.xml')
@@ -223,22 +237,39 @@ class Worker:
         ssid = os.path.basename(item)[5:-4]
         print("Importing Wlan Profile %s ..." % ssid)
         
-        print(item)
-        
-        
-        
-        
-        
-        
-        
+        # load xml and decrypt passwd
         xmltool = XMLTool(item)
         ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
         elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
-        
-        elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
-        print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
+      
+        # print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
 
-        #if self.cryptor.keyExists is False:
-        #    self.cryptor.createKeyFile()
-        #chiper = self.cryptor.encrypt(elem.text)
-        #print("%s > %s" % (elem.text, chiper))
+        if self.cryptor.keyExists is False:
+            print("No Key file for decrypting found ... exiting now!")
+            exit()
+        text = self.cryptor.decrypt(elem.text)
+        # print("%s > %s" % (elem.text, text))
+        
+        # create temp xml file WLAN-PNMS_Schueler.xml > WLAN-PNMS_Schueler-tmp.xml
+        filename = item[:-4]+"-tmp.xml"
+        xmltool.changeText(elem, text)
+        xmltool.write(filename)
+        
+        self.importWlan(filename)
+        
+        # delete tmp file
+        f = os.path.join(self.xmlPath, filename)
+        self.rmFile(f)
+        
+    def importWlan(self, filename):
+      """ import from xml file """
+      self.profilePath = os.path.join(self.xmlPath, filename)
+      cmdarray = self.loadScript("importWLAN")
+      cmdarray = self.modifyScript(cmdarray)
+      cmd = self.createCmd(cmdarray)
+      
+      self.runner.runCmd(cmd)
+      print(self.runner.getStdout())
+      
+      profile = os.path.basename(filename)[5:-8]
+      print("Wlan Profile %s imported ..." % profile)

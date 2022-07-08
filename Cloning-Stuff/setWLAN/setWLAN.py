@@ -49,7 +49,7 @@ class setWLAN():
         pass
 
 
-@click.command()
+@click.command(no_args_is_help=True)
 @click.option('-c', '--createkey', required=False, is_flag=True, help='Create an encryption key')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
 @click.option('-l', '--listing', required=False, is_flag=True, help='List all WLAN profiles')
@@ -84,6 +84,7 @@ def start(createkey, encrypt, listing, delete, add, show, restore):
     
     if restore is True:
       worker.importStoredWLan()
+      
 
 
 if __name__ == "__main__":

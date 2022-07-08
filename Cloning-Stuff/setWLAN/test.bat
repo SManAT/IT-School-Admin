@@ -1,2 +1,2 @@
-python setWLAN.py -a
+rem python setWLAN.py -a
 python setWLAN.py --restore

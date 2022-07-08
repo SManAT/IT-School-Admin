@@ -1,1 +1,0 @@
-netsh wlan add profile filename="path_and_filename.xml" interface="interface_name"

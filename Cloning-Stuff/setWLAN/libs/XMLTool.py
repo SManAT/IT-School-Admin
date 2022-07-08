@@ -51,11 +51,14 @@ class XMLTool():
                 elem = elem.find(elements[i])
         return elem
        
-    def write(self):
+    def write(self, filename=None):
         """ save the xml file to disk """
         try:
             tree = etree.ElementTree(self.root)
-            tree.write(self.filename, pretty_print=True, xml_declaration=True, encoding=None)
+            if filename is None:
+              tree.write(self.filename, pretty_print=True, xml_declaration=True, encoding=None)
+            else:
+              tree.write(filename, pretty_print=True, xml_declaration=True, encoding=None)
         except Exception as e:
             print(e)
             
