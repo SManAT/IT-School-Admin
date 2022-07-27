@@ -19,7 +19,7 @@ handlers:
     class: logging.handlers.RotatingFileHandler
     level: INFO
     formatter: default
-    filename: setHostname.log
+    filename: setWLAN.log
     maxBytes: 200000 # 200k
     backupCount: 2
     encoding: utf8
