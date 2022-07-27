@@ -10,9 +10,9 @@ class Cryptor:
         self.keyFile = keyFile
         
         if (os.path.exists(self.keyFile) is False):
-            print("There is no Key file to encrypt/decrypt -exit-")
+            print("There is no Key file to encrypt/decrypt creating it ...")
             print("Path: %s" % self.keyFile)
-            exit()
+            self.createKeyFile()
         # read Key File
         file = open(self.keyFile, 'rb')
         self.KEY = file.read()
