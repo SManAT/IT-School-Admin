@@ -4,25 +4,23 @@ from cryptography.fernet import Fernet
 
 class Cryptor:
     """ Class to encrypt/decrypt """
-   
 
     def __init__(self, keyFile):
         self.keyFile = keyFile
-        
+
         if (os.path.exists(self.keyFile) is False):
-            print("There is no Key file to encrypt/decrypt creating it ...")
-            print("Path: %s" % self.keyFile)
+            print("\nThere is no Key file to encrypt/decrypt data, creating it ...")
             self.createKeyFile()
         # read Key File
         file = open(self.keyFile, 'rb')
         self.KEY = file.read()
         file.close()
-        
+
         self.fernet = Fernet(self.KEY)
-    
+
     def keyExists(self):
         return os.path.exists(self.keyFile)
-        
+
     def createKeyFile(self):
         """ Create an encryption key """
         # Test if key.key is present
@@ -37,8 +35,7 @@ class Cryptor:
     def encrypt(self, estring):
         """ Encrypt this string """
         return self.fernet.encrypt(estring.encode())
-  
+
     def decrypt(self, encMessage):
         """ decrypt a String """
         return self.fernet.decrypt(str.encode(encMessage)).decode()
-    
