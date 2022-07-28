@@ -43,7 +43,7 @@ class setHostname():
         atexit.register(self.exit_handler)
         self.config = self._load_yml()
         self.cryptor = Cryptor(self.keyFile)
-        
+
         info = ("setHostname.py, (c) Mag. Stefan Hagmann 2021\n"
                 "- is changing Hostname of client with Powershell\n"
                 "- hostname is loaded via MAC from MySQL Databse\n"

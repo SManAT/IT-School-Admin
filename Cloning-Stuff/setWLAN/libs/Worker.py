@@ -19,7 +19,7 @@ class Worker:
         self.scriptPath = os.path.join(self.rootDir, 'cmd/')
         self.xmlPath = os.path.join(self.rootDir, 'xml/')
         self.wlanlist = {}
-        
+
         self.ssid = None
         self.profilePath = None
 
