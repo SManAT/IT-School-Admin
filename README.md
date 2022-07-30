@@ -4,11 +4,12 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 
 [Prerequisites, is what you need](Prerequisites.md)  
 
+# O365 Management
+- [Sync with Sokrates] (https://github.com/SManAT/O365Admin)
 # Windows Server
 - [Active-Domain Usermanagement](Windows-Server/Usermanagement/README.md)
 - [Change Owner](Windows-Server/chown/README.md)
 - [Usfull scripts](Windows-Server/README.md)
-
 
 # Linux
 - [ActiveDomain with Samba4](Linux/ActiveDomain-Samba4/README.md)
