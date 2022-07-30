@@ -56,7 +56,7 @@ class Worker:
           if self.ssid:
             line = line.replace("{% profile_name %}", self.ssid)
           line = line.replace("{% path %}", os.path.abspath(self.xmlPath))
-            
+
           if self.profilePath:
             line = line.replace("{% file_name %}", self.profilePath)
           #line = line.replace("{% interface_name %}", ssid)
@@ -225,23 +225,23 @@ class Worker:
           file = os.path.basename(item)[5:-4]
           print(f"{key:>3}: { file }")
           key += 1
-          
+
     def rmFile(self, filename):
         if (os.path.exists(filename) is True):
             os.remove(filename)
-            
+
     def importStoredWLan(self):
       """ will import all stored Wlan Profiles to this client """
       files = self.search_files_in_dir(self.xmlPath, '*.xml')
       for item in files:
         ssid = os.path.basename(item)[5:-4]
         print("Importing Wlan Profile %s ..." % ssid)
-        
+
         # load xml and decrypt passwd
         xmltool = XMLTool(item)
         ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
         elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
-      
+
         # print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
 
         if self.cryptor.keyExists is False:
@@ -249,27 +249,27 @@ class Worker:
             exit()
         text = self.cryptor.decrypt(elem.text)
         # print("%s > %s" % (elem.text, text))
-        
+
         # create temp xml file WLAN-PNMS_Schueler.xml > WLAN-PNMS_Schueler-tmp.xml
         filename = item[:-4]+"-tmp.xml"
         xmltool.changeText(elem, text)
         xmltool.write(filename)
-        
+
         self.importWlan(filename)
-        
+
         # delete tmp file
         f = os.path.join(self.xmlPath, filename)
         self.rmFile(f)
-        
+
     def importWlan(self, filename):
       """ import from xml file """
       self.profilePath = os.path.join(self.xmlPath, filename)
       cmdarray = self.loadScript("importWLAN")
       cmdarray = self.modifyScript(cmdarray)
       cmd = self.createCmd(cmdarray)
-      
+
       self.runner.runCmd(cmd)
       print(self.runner.getStdout())
-      
+
       profile = os.path.basename(filename)[5:-8]
       print("Wlan Profile %s imported ..." % profile)

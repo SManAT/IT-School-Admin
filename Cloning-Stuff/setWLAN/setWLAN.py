@@ -38,7 +38,7 @@ class setWLAN():
         # catch terminating Signal
         atexit.register(self.exit_handler)
         self.cryptor = Cryptor(self.keyFile)
-        
+
         info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2022\n"
                 "------------------------------------------")
         print(info)
@@ -68,23 +68,23 @@ def start(createkey, encrypt, listing, delete, add, show, restore):
         chiper = setwlan.cryptor.encrypt(encrypt)
         print("\n%s: %s" % (encrypt, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
-    
+
     worker = Worker(setwlan.rootDir, setwlan.cryptor)
-    if listing is True:       
+    if listing is True:
         worker.listWlan()
-        
-    if add is True:       
+
+    if add is True:
         worker.addWlan()
-        
-    if show is True:       
+
+    if show is True:
         worker.showStoredWLan()
-        
-    if delete is True:       
+
+    if delete is True:
         print("Just delete the corresponding xml file in directory ./xml/ ...")
-    
+
     if restore is True:
       worker.importStoredWLan()
-      
+
 
 
 if __name__ == "__main__":
