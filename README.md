@@ -2,8 +2,6 @@
 
 Provides some (that is what i think) usefull scripts for managing Linux&Windows Server.
 
-[Prerequisites, is what you need](Prerequisites.md)  
-
 # O365 Management
 - <https://github.com/SManAT/O365Admin>
 
