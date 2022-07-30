@@ -16,5 +16,5 @@ Here are some usefull Script, that I use
   Will only work, if the directory name is excact the AD-Username (as it is in my environment).
 
 - **Change Owner**
-  see <chown/README.md>
+  see <https://github.com/SManAT/IT-School-Admin/tree/master/Windows-Server/chown>
 
