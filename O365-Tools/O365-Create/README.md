@@ -20,6 +20,6 @@ Das Tool funktioniert aber auch für alle anderen Account.
    python O365-Create.py
    ```
    Aus dem Email Text werden die zugesandeten Zugangsdaten extrahiert, und alle Daten in
-   einer CSV Datei ==O365-Create-Users.csv== exportiert.
+   einer CSV Datei `O365-Create-Users.csv` exportiert.
 
 5. Mit dieser CSV Datei kann man dann einen Serienbrief für die Schüler erstellen lassen.
