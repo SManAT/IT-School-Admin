@@ -16,7 +16,7 @@ class Questions():
       pass
 
     def MainMenue(self, lastupdates):
-      print("\nO365Admin.py, (c) Mag. Stefan Hagmann 2022")
+      print("\nO365-Sync.py, (c) Mag. Stefan Hagmann 2022")
       msg = "Letztes Azure Update:"
       print(f"{msg :<25} {lastupdates[0]}")
       msg = "Letztes Sokrates Update:"

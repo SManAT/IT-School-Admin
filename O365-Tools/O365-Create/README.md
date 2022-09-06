@@ -3,7 +3,7 @@ Das Tool funktioniert aber auch für alle anderen Account.
 
 1. Die Schüler Accounts werden aus Sokrates via CSV Datei importiert.
    Auswertungen > Dynamische Suche > 100 Aktive Schüler > Exportieren als CSV
-   Die Datei in das root Verzeichnis des Tools legen
+   Die Datei in das Verzeichnis files/ des Tools legen
       
 2. Starte das Tool
    ```ps

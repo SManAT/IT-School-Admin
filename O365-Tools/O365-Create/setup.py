@@ -21,6 +21,7 @@ if __name__ == '__main__':
             'rich',
             'pandas',
             'questionary',
+            'universal-startfile',
         ],
         python_requires='>=3.8',
     )

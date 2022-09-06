@@ -2,7 +2,6 @@ import os
 import pandas
 from libs.UserObj import UserObj
 import logging
-from libs.UserSokrates import UserSokrates
 from libs.MyConsole import MyConsole
 
 
