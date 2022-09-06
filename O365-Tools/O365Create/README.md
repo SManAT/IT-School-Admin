@@ -7,19 +7,19 @@ Das Tool funktioniert aber auch für alle anderen Account.
       
 2. Starte das Tool
    ```ps
-   python O365-Create.py
+   python O365Create.py
    ```
    Es werden die Vor- und Nachnamen aus der CSV Datei verwendet, um eine
-   CSV Datei für den Massenimport in O365 erzeugt.
+   CSV Datei für den Massenimport in O365 erzeugt (`O365-Import-File.csv`).
 
 3. O365 sendet eine Email mit allen Zugangsdaten zu. Den Text dieser Email wird
    in die Datei Email.txt kopiert.
 
 4. Starte das Tool
    ```ps
-   python O365-Create.py
+   python O365Create.py
    ```
    Aus dem Email Text werden die zugesandeten Zugangsdaten extrahiert, und alle Daten in
-   einer CSV Datei `O365-Create-Users.csv` exportiert.
+   einer CSV Datei `O365Created-Users-Finished.csv` exportiert.
 
 5. Mit dieser CSV Datei kann man dann einen Serienbrief für die Schüler erstellen lassen.

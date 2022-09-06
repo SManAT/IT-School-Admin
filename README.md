@@ -3,8 +3,8 @@
 Provides some (that is what i think) usefull scripts for managing Linux&Windows Server.
 
 # O365 Tools
-- [O365 Sync Sokrates](O365-Tools/O365-Sync/README.md)
-- [O365 Create User Helper](O365-Tools/O365-Create/README.md)
+- [O365 Sync Sokrates](O365-Tools/O365Sync/README.md)
+- [O365 Create User Helper](O365-Tools/O365Create/README.md)
 
 # Windows Server
 - [Active-Domain Usermanagement](Windows-Server/Usermanagement/README.md)

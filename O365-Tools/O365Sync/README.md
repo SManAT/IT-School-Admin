@@ -24,5 +24,5 @@ Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen
    
 5. Starte das Tool
    ```ps
-   python O365-Sync.py
+   python O365Sync.py
    ```

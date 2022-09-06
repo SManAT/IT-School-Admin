@@ -9,7 +9,7 @@ from distutils.core import setup
 if __name__ == '__main__':
 
     setup(
-        name="O365-Create",
+        name="O365Create",
         description="Create O365 Accounts Helper",
         author=__author__,
         maintainer=__author__,
