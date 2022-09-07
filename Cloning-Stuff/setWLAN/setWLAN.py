@@ -17,15 +17,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import atexit
+import logging
 import os
 from pathlib import Path
 
-import logging
+import click
+
+from libs.Cryptor import Cryptor
 from libs.LoggerConfiguration import configure_logging
 from libs.Worker import Worker
-import atexit
-import click
-from libs.Cryptor import Cryptor
 
 
 class setWLAN():
@@ -42,7 +43,6 @@ class setWLAN():
         info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2022\n"
                 "------------------------------------------")
         print(info)
-
 
     def exit_handler(self):
         """ do something on sys.exit() """
@@ -83,8 +83,7 @@ def start(createkey, encrypt, listing, delete, add, show, restore):
         print("Just delete the corresponding xml file in directory ./xml/ ...")
 
     if restore is True:
-      worker.importStoredWLan()
-
+        worker.importStoredWLan()
 
 
 if __name__ == "__main__":

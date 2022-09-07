@@ -1,10 +1,11 @@
 import logging
+import os
+from pathlib import Path
 import re
 import sys
-import os
+
 from libs.CmdRunner import CmdRunner
 from libs.XMLTool import XMLTool
-from pathlib import Path
 
 
 class Worker:
@@ -22,10 +23,6 @@ class Worker:
 
         self.ssid = None
         self.profilePath = None
-
-    def decrypt(self, encMessage):
-        """ decrypt a String """
-        return self.fernet.decrypt(str.encode(encMessage)).decode()
 
     def debugOutput(self, data):
         """ just Debug Output """
@@ -53,13 +50,13 @@ class Worker:
         """ modify placeholders """
         erg = []
         for line in lines:
-          if self.ssid:
-            line = line.replace("{% profile_name %}", self.ssid)
-          line = line.replace("{% path %}", os.path.abspath(self.xmlPath))
+            if self.ssid:
+                line = line.replace("{% profile_name %}", self.ssid)
+            line = line.replace("{% path %}", os.path.abspath(self.xmlPath))
 
-          if self.profilePath:
-            line = line.replace("{% file_name %}", self.profilePath)
-          #line = line.replace("{% interface_name %}", ssid)
+            if self.profilePath:
+                line = line.replace("{% file_name %}", self.profilePath)
+            # line = line.replace("{% interface_name %}", ssid)
 
         erg.append(line)
         return erg
@@ -68,7 +65,7 @@ class Worker:
         """ from array to line;line;line """
         erg = ""
         for line in arr:
-            # replace line breaks
+                # replace line breaks
             line = line.replace('\n', '')
             # no comments
             line = line.strip()
@@ -173,7 +170,8 @@ class Worker:
         self.printWlanList()
         hasErrors = True
         while hasErrors is True:
-            number = self.readInteger("\nWhich WLAN Creditentials will you save?: ")
+            number = self.readInteger(
+                "\nWhich WLAN Creditentials will you save?: ")
             # print("1 <= %s <= %s" % (number, self.getWlanSize()))
             if number >= 1 and number <= self.getWlanSize():
                 hasErrors = False
@@ -198,11 +196,13 @@ class Worker:
         print("Wlan Profile %s saved ..." % ssid)
 
         # ------------------------------------
-        ssidPath = os.path.abspath(os.path.join(self.xmlPath, "WLAN-" + ssid + ".xml"))
+        ssidPath = os.path.abspath(os.path.join(
+            self.xmlPath, "WLAN-" + ssid + ".xml"))
 
         xmltool = XMLTool(ssidPath)
         ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
-        elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
+        elem = xmltool.find_chain(
+            ['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
         # print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
 
         if self.cryptor.keyExists is False:
@@ -215,61 +215,67 @@ class Worker:
 
     def showStoredWLan(self):
         """ shows all stored Wlan Profiles """
-        print("Stored Wlan Profiles are ...")
-        print("============================")
-        files = self.search_files_in_dir(self.xmlPath, '*.xml')
-        key = 1
-        for item in files:
-          # extract Wlan Profile Name
-          # WLAN-PNMS_Schueler
-          file = os.path.basename(item)[5:-4]
-          print(f"{key:>3}: { file }")
-          key += 1
+
+        if os.path.isdir(self.xmlPath) is True:
+            print("Stored Wlan Profiles are ...")
+            print("============================")
+            files = self.search_files_in_dir(self.xmlPath, '*.xml')
+            key = 1
+            for item in files:
+                # extract Wlan Profile Name
+                # WLAN-PNMS_Schueler
+                file = os.path.basename(item)[5:-4]
+                print(f"{key:>3}: { file }")
+                key += 1
+        else:
+            print("Im moment gibt es noch keine gespeicherten WLAN Profile ...")
 
     def rmFile(self, filename):
         if (os.path.exists(filename) is True):
             os.remove(filename)
 
     def importStoredWLan(self):
-      """ will import all stored Wlan Profiles to this client """
-      files = self.search_files_in_dir(self.xmlPath, '*.xml')
-      for item in files:
-        ssid = os.path.basename(item)[5:-4]
-        print("Importing Wlan Profile %s ..." % ssid)
+        """ will import all stored Wlan Profiles to this client """
+        files = self.search_files_in_dir(self.xmlPath, '*.xml')
+        for item in files:
+            ssid = os.path.basename(item)[5:-4]
+            print("Importing Wlan Profile %s ..." % ssid)
 
-        # load xml and decrypt passwd
-        xmltool = XMLTool(item)
-        ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
-        elem = xmltool.find_chain(['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
+            # load xml and decrypt passwd
+            xmltool = XMLTool(item)
+            ns = 'http://www.microsoft.com/networking/WLAN/profile/v1'
+            elem = xmltool.find_chain(
+                ['MSM', 'security', 'sharedKey', 'keyMaterial'], ns)
 
-        # print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
+            # print("Found: %s, %s, %s" % (elem.tag, elem.attrib, elem.text))
 
-        if self.cryptor.keyExists is False:
-            print("No Key file for decrypting found ... exiting now!")
-            exit()
-        text = self.cryptor.decrypt(elem.text)
-        # print("%s > %s" % (elem.text, text))
+            if self.cryptor.keyExists is False:
+                print("No Key file for decrypting found ... exiting now!")
+                exit()
+            text = self.cryptor.decrypt(elem.text)
+            # print("%s > %s" % (elem.text, text))
 
-        # create temp xml file WLAN-PNMS_Schueler.xml > WLAN-PNMS_Schueler-tmp.xml
-        filename = item[:-4]+"-tmp.xml"
-        xmltool.changeText(elem, text)
-        xmltool.write(filename)
+            # create temp xml file WLAN-PNMS_Schueler.xml >
+            # WLAN-PNMS_Schueler-tmp.xml
+            filename = item[:-4] + "-tmp.xml"
+            xmltool.changeText(elem, text)
+            xmltool.write(filename)
 
-        self.importWlan(filename)
+            self.importWlan(filename)
 
-        # delete tmp file
-        f = os.path.join(self.xmlPath, filename)
-        self.rmFile(f)
+            # delete tmp file
+            f = os.path.join(self.xmlPath, filename)
+            self.rmFile(f)
 
     def importWlan(self, filename):
-      """ import from xml file """
-      self.profilePath = os.path.join(self.xmlPath, filename)
-      cmdarray = self.loadScript("importWLAN")
-      cmdarray = self.modifyScript(cmdarray)
-      cmd = self.createCmd(cmdarray)
+        """ import from xml file """
+        self.profilePath = os.path.join(self.xmlPath, filename)
+        cmdarray = self.loadScript("importWLAN")
+        cmdarray = self.modifyScript(cmdarray)
+        cmd = self.createCmd(cmdarray)
 
-      self.runner.runCmd(cmd)
-      print(self.runner.getStdout())
+        self.runner.runCmd(cmd)
+        print(self.runner.getStdout())
 
-      profile = os.path.basename(filename)[5:-8]
-      print("Wlan Profile %s imported ..." % profile)
+        profile = os.path.basename(filename)[5:-8]
+        print("Wlan Profile %s imported ..." % profile)
