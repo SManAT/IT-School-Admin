@@ -1,6 +1,6 @@
 
 class UserObj:
-    domain = "frauengasse.eu"
+    domain = ""
     klasse = ""
     vorname = ""
     nachname = ""
@@ -44,6 +44,9 @@ class UserObj:
         for key, val in patterns.items():
             thestr = thestr.replace(key, val)
         return thestr
+
+    def setDomain(self, domain):
+        self.domain = domain
 
     def getBenutzername(self):
         v = self.getVorname(True)

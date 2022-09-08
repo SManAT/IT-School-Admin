@@ -1,6 +1,7 @@
 import atexit
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -8,6 +9,7 @@ import questionary
 from rich.console import Console
 from rich.table import Table
 from startfile import startfile
+import yaml
 
 from libs.CSVTool import CSVTool
 from libs.MyConsole import MyConsole
@@ -20,6 +22,8 @@ class O365():
     def __init__(self):
         self.rootDir = Path(__file__).parent
         self.filesPath = os.path.join(self.rootDir, 'files')
+        self.configFile = os.path.join(self.rootDir, 'config.yaml')
+        self.config = self.load_yml()
 
         self.console = MyConsole()
 
@@ -29,6 +33,12 @@ class O365():
     def exit_handler(self):
         """ do something on sys.exit() """
         pass
+
+    def load_yml(self):
+        """ Load the yaml file config.yaml """
+        with open(self.configFile, 'rt') as f:
+            yml = yaml.safe_load(f.read())
+        return yml
 
     def openFileManager(self, path):
         """ cross OS """
@@ -80,7 +90,7 @@ class O365():
         # check CSV Datei
         csvFile = os.path.join(self.filesPath, a)
         if (os.path.exists(csvFile) is True):
-            csv = CSVTool()
+            csv = CSVTool(self.config)
             accounts = csv.readSokrates(csvFile)
             self.printTable(accounts)
 
@@ -113,7 +123,7 @@ class O365():
 
     def email(self):
         """ Import Email Text and create Serienbriefdokument"""
-        test = """   
+        emailLines = """   
  
 Ein Benutzerkonto wurde erstellt oder geändert.
  
@@ -124,7 +134,40 @@ Kennwort: Wob17361
 Nächste Schritte:
 
     Teilen Sie diese Informationen mit ihren Benutzern.
+Ein Benutzerkonto wurde erstellt oder geändert.
+ 
+Benutzername: Sepp.Forcher@frauengasse.eu
+Kennwort: xcdfdfdf
+ 
+ 
+Nächste Schritte:
+
+    Teilen Sie diese Informationen mit ihren Benutzern.
 """
+        lines = emailLines.splitlines()
+        nextIsPassword = False
+        userData = []
+        allUsers = []
+        for line in lines:
+            line = line.strip()
+            if len(line) > 0:
+                # Detect Benutzername:
+                match = re.match(r'Benutzername\:(.*)', line)
+                if match:
+                    benutzer = match.group(1).strip()
+                    nextIsPassword = True
+                    userData.append(benutzer)
+
+                if nextIsPassword is True:
+                    # Detect Kennwort:
+                    match = re.match(r'Kennwort\:(.*)', line)
+                    if match:
+                        pwd = match.group(1).strip()
+                        nextIsPassword = False
+                        userData.append(pwd)
+                        allUsers.append(userData)
+                        userData = []
+        print(allUsers)
 
 
 def start():

@@ -22,6 +22,7 @@ if __name__ == '__main__':
             'pandas',
             'questionary',
             'universal-startfile',
+            'pyyaml',
         ],
         python_requires='>=3.8',
     )

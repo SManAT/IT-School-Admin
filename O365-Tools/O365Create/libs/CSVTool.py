@@ -9,8 +9,10 @@ class CSVTool():
     """ Read / Write CSV Files with pandas """
     userList = []
 
-    def __init__(self):
+    def __init__(self, config):
         self.console = MyConsole()
+        self.config = config
+        self.domain = self.config['config']['domain']
 
     def getUsers(self):
         """ return all Users from CSV File """
@@ -26,6 +28,7 @@ class CSVTool():
 
                 for index, row in df.iterrows():  # noqa
                     user = UserObj()
+                    user.setDomain(self.domain)
                     user.vorname = str(row['Vorname']).strip()
                     user.nachname = str(row['Familienname']).strip()
                     user.klasse = str(row['Klasse']).strip()
