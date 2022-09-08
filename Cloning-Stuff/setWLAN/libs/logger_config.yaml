@@ -15,23 +15,14 @@ handlers:
     formatter: simple
     stream: ext://sys.stdout
 
-  debug_file_handler:
-    class: logging.handlers.RotatingFileHandler
-    level: INFO
-    formatter: default
-    filename: setWLAN.log
-    maxBytes: 200000 # 200k
-    backupCount: 2
-    encoding: utf8
-
     
 loggers:
   simpleExample:
     level: DEBUG
-    handlers: [console, debug_file_handler]
+    handlers: [console]
     propagate: no
     
 root:
   level: NOTSET
-  handlers: [console, debug_file_handler]
+  handlers: [console]
   propogate: yes

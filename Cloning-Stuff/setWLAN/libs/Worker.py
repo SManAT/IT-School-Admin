@@ -6,6 +6,7 @@ import sys
 
 from libs.CmdRunner import CmdRunner
 from libs.XMLTool import XMLTool
+import tempfile
 
 
 class Worker:
@@ -65,7 +66,7 @@ class Worker:
         """ from array to line;line;line """
         erg = ""
         for line in arr:
-                # replace line breaks
+            # replace line breaks
             line = line.replace('\n', '')
             # no comments
             line = line.strip()
@@ -259,13 +260,17 @@ class Worker:
             # WLAN-PNMS_Schueler-tmp.xml
             filename = item[:-4] + "-tmp.xml"
             xmltool.changeText(elem, text)
-            xmltool.write(filename)
 
-            self.importWlan(filename)
+            # save Temp File to %TEMP%, we will work Remote from Share
+            tmpPath = tempfile.gettempdir()
+
+            filePath = os.path.join(tmpPath, os.path.basename(filename))
+            xmltool.write(filePath)
+
+            self.importWlan(filePath)
 
             # delete tmp file
-            f = os.path.join(self.xmlPath, filename)
-            self.rmFile(f)
+            self.rmFile(filePath)
 
     def importWlan(self, filename):
         """ import from xml file """

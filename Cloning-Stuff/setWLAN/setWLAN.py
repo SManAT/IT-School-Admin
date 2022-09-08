@@ -70,6 +70,9 @@ def start(createkey, encrypt, listing, delete, add, show, restore):
         print("Use this hash in your config File for sensible data, e.g. passwords")
 
     worker = Worker(setwlan.rootDir, setwlan.cryptor)
+
+    # DEBUG
+    # worker.importStoredWLan()
     if listing is True:
         worker.listWlan()
 

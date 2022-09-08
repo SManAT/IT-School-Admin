@@ -17,8 +17,9 @@ if __name__ == '__main__':
         install_requires=[
             'cryptography',
             'click',
-
+            'PyYAML',
             'lxml',
+            'wheel',
             'cx_Freeze',
         ],
         python_requires='>=3.8',
