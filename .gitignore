@@ -25,3 +25,9 @@ Cloning-Stuff/setHostname/.settings/org.eclipse.core.resources.prefs
 
 Windows-Server/Active-Domain/Usermanagement/tmp/**
 Cloning-Stuff/setHostname/.classpath
+O365-Tools/O365-Sync/*.csv
+O365-Tools/O365-Sync/config/vip.yaml
+O365-Tools/O365-Sync/config/key.key
+O365-Tools/O365-Sync/config/config.yaml
+O365-Tools/O365-Create/files/*.csv
+O365-Tools/O365-Sync/db/*.db
