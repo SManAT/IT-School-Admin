@@ -18,6 +18,7 @@ from libs.Questions import Questions
 
 # cross-plattform os.startfile
 class O365():
+    finishFile = "O365Created-Users-Finished.csv"
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
@@ -96,7 +97,7 @@ class O365():
 
         # Serienbrief Dokument gleich erstellen
         csv.writeSerienbrief(os.path.join(
-            self.filesPath, "O365Created-Users-Finished.csv"), accounts)
+            self.filesPath, self.finishFile), accounts)
 
         # Massenimport erstellen
         csv.writeO365Export(os.path.join(
@@ -167,7 +168,17 @@ Nächste Schritte:
                         userData.append(pwd)
                         allUsers.append(userData)
                         userData = []
+        # Passwörter in Serienbrief Dokument setzen
         print(allUsers)
+
+        csvFile = os.path.join(self.filesPath, self.finishFile)
+        if (os.path.exists(csvFile) is True):
+            csv = CSVTool(self.config)
+            accounts = csv.readFinishFile(csvFile)
+
+            # Abgleichen
+
+        self.printTable(accounts)
 
 
 def start():

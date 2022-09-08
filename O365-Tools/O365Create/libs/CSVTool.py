@@ -42,6 +42,31 @@ class CSVTool():
             print("File ./%s not found! - exit -" % filename)
         return self.userList
 
+    def readFinishFile(self, filename):
+        """ Read a CSV file """
+        self.userList.clear()
+
+        if os.path.exists(filename) is True:
+            try:
+                df = pandas.read_csv(filename, sep=',')
+                for index, row in df.iterrows():  # noqa
+                    user = UserObj()
+                    user.setDomain(self.domain)
+                    user.vorname = str(row['Vorname']).strip()
+                    user.nachname = str(row['Nachname']).strip()
+                    user.klasse = str(row['Klasse']).strip()
+                    user.benutzername = str(row['O365Benutzername']).strip()
+
+                    self.userList.append(user)
+            except Exception as ex:
+                self.console.error(
+                    "Parsing csv File Error, is the seperator ',' ?")
+                print(ex)
+                exit()
+        else:
+            print("File ./%s not found! - exit -" % filename)
+        return self.userList
+
     def writeO365Export(self, filename, data):
         """ Write data to a CSV File """
         file1 = open(filename, "w", encoding="utf-8")
