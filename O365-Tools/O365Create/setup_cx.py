@@ -13,13 +13,13 @@ from pathlib import Path
 __author__ = 'Mag. Stefan Hagmann'
 __version__ = '1.0.0'
 # without Extension
-__pyfile__ = "O365Admin"
+__pyfile__ = "O365Create"
 
 # use relative paths
-include_files = ["PythonAzure.pdf", "Informationen.txt", "PowerShell-O365.odt"]
+include_files = []
 include_dirs = []
 includes = []
-excludes = ["test.bat", "build.bat", "PythonAzure.odt", "psDebugging.ps1"]
+excludes = []
 packages = []
 # add other dirs to search for custom modules
 path = ["libs"] + sys.path
@@ -32,7 +32,7 @@ base = None
 
 setup(
     name=__pyfile__,
-    description='manage WLAN Keys for Windows (encrypted)',
+    description='O365 Accounts for Students Helper',
     version=__version__,
     executables=[Executable(__pyfile__ + '.py', base=base, icon='App.ico')],
     options={'build_exe': {
