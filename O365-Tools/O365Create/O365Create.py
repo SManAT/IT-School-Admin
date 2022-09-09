@@ -25,8 +25,19 @@ class O365():
         self.filesPath = os.path.join(self.rootDir, 'files')
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
         self.config = self.load_yml()
-
         self.console = MyConsole()
+
+        # check dir files and Email.txt File
+        self.createDir(self.filesPath)
+        if os.path.exists(os.path.join(self.filesPath, self.emailFile)) is False:
+            with open(os.path.join(self.filesPath, self.emailFile), 'w') as fp:
+                pass
+            fp.close()
+
+    def createDir(self, path):
+        """ create dir if it not exists """
+        if os.path.isdir(path) is False:
+            os.mkdir(path)
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
