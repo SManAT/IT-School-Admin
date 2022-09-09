@@ -31,3 +31,6 @@ O365-Tools/O365-Sync/config/key.key
 O365-Tools/O365-Sync/config/config.yaml
 O365-Tools/O365-Create/files/*.csv
 O365-Tools/O365-Sync/db/*.db
+O365-Tools/O365-Sync/files/**
+
+

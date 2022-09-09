@@ -133,6 +133,7 @@ src/libs/o365_token.txt
 config/**
 db/**
 /config
+/files/**
 /db
 o365_token.txt
 

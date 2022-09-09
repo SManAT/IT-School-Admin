@@ -1,4 +1,3 @@
-import atexit
 import os
 from pathlib import Path
 import re
@@ -19,6 +18,7 @@ from libs.Questions import Questions
 # cross-plattform os.startfile
 class O365():
     finishFile = "O365Created-Users-Finished.csv"
+    emailFile = "Email.txt"
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
@@ -27,13 +27,6 @@ class O365():
         self.config = self.load_yml()
 
         self.console = MyConsole()
-
-        # catch terminating Signal
-        atexit.register(self.exit_handler)
-
-    def exit_handler(self):
-        """ do something on sys.exit() """
-        pass
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
@@ -102,21 +95,24 @@ class O365():
         # Massenimport erstellen
         csv.writeO365Export(os.path.join(
             self.filesPath, "O365-Import-File.csv"), accounts)
-        print("Importfile für O365 esrtellt (O365-Import-File.csv)")
+        print("Importfile für O365 erstellt (O365-Import-File.csv)")
         print("Mit dieser Datei den Massenimport bei O365 durchführen und auf das Email warten ...")
         self.openFileManager(self.filesPath)
 
     def printTable(self, data):
+        # see https://rich.readthedocs.io/en/stable/appendix/colors.html
         table = Table(title="Users that may deleted")
-        table.add_column("Nr", style="cyan", no_wrap=True)
+        table.add_column("Nr", style="yellow", no_wrap=True)
         table.add_column("Vorname", style="magenta")
-        table.add_column("Nachname", style="green")
-        table.add_column("Klasse", style="yellow")
+        table.add_column("Nachname", style="magenta")
+        table.add_column("Klasse", style="green")
+        table.add_column("O365", style="yellow2")
+        table.add_column("Pwd", style="yellow2")
 
         i = 1
         for item in data:
             table.add_row(str(i), str(item.vorname), str(
-                item.nachname), str(item.klasse))
+                item.nachname), str(item.klasse), str(item.benutzername), str(item.password))
             i += 1
 
         console = Console()
@@ -124,27 +120,11 @@ class O365():
 
     def email(self):
         """ Import Email Text and create Serienbriefdokument"""
-        emailLines = """   
- 
-Ein Benutzerkonto wurde erstellt oder geändert.
- 
-Benutzername: Hannah.Burger@frauengasse.eu
-Kennwort: Wob17361
- 
- 
-Nächste Schritte:
 
-    Teilen Sie diese Informationen mit ihren Benutzern.
-Ein Benutzerkonto wurde erstellt oder geändert.
- 
-Benutzername: Sepp.Forcher@frauengasse.eu
-Kennwort: xcdfdfdf
- 
- 
-Nächste Schritte:
+        f = open(os.path.join(self.filesPath, self.emailFile),
+                 "r", encoding="utf-8")
+        emailLines = f.read()
 
-    Teilen Sie diese Informationen mit ihren Benutzern.
-"""
         lines = emailLines.splitlines()
         nextIsPassword = False
         userData = []
@@ -161,24 +141,35 @@ Nächste Schritte:
 
                 if nextIsPassword is True:
                     # Detect Kennwort:
-                    match = re.match(r'Kennwort\:(.*)', line)
+                    match = re.match(r'.*Kennwort\:(.*)', line)
                     if match:
                         pwd = match.group(1).strip()
                         nextIsPassword = False
                         userData.append(pwd)
                         allUsers.append(userData)
                         userData = []
-        # Passwörter in Serienbrief Dokument setzen
-        print(allUsers)
 
+        # -------------------------------------------------------------------------------
+        # Passwörter in Serienbrief Dokument setzen
         csvFile = os.path.join(self.filesPath, self.finishFile)
         if (os.path.exists(csvFile) is True):
             csv = CSVTool(self.config)
             accounts = csv.readFinishFile(csvFile)
-
             # Abgleichen
+            for account in accounts:
+                for email in allUsers:
+                    if account.benutzername == email[0]:
+                        # Passwd setzen
+                        account.password = email[1].strip()
+                        break
 
         self.printTable(accounts)
+
+        csv.writeSerienbrief(os.path.join(
+            self.filesPath, self.finishFile), accounts)
+        print("Serienbrief CSV Datei erstellt (%s)" % self.finishFile)
+        print("Damit bitte Infoblatt für die Schüler ausdrucken oder zukommen lassen ...")
+        self.openFileManager(self.filesPath)
 
 
 def start():

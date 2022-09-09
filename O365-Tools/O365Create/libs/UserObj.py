@@ -39,6 +39,7 @@ class UserObj:
             'ô': 'o',
             'š': 's',
             'ć': 'c',
+            'ň': 'n',
         }
         thestr = str(thestr)
         for key, val in patterns.items():
@@ -48,11 +49,19 @@ class UserObj:
     def setDomain(self, domain):
         self.domain = domain
 
+    def getAnzeigename(self):
+        return "%s %s" % (self.getVorname(), self.getNachname())
+
     def getBenutzername(self):
         v = self.getVorname(True)
         n = self.getNachname()
-
         return "%s.%s@%s" % (self.normalize(v), self.normalize(n), self.domain)
+
+    def setBenutzername(self):
+        v = self.getVorname(True)
+        n = self.getNachname()
+        self.benutzername = "%s.%s@%s" % (
+            self.normalize(v), self.normalize(n), self.domain)
 
     def getVorname(self, reduce=False):
         """

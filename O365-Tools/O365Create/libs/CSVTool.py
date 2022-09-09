@@ -32,6 +32,7 @@ class CSVTool():
                     user.vorname = str(row['Vorname']).strip()
                     user.nachname = str(row['Familienname']).strip()
                     user.klasse = str(row['Klasse']).strip()
+                    user.setBenutzername()
 
                     self.userList.append(user)
             except Exception:
@@ -70,11 +71,11 @@ class CSVTool():
     def writeO365Export(self, filename, data):
         """ Write data to a CSV File """
         file1 = open(filename, "w", encoding="utf-8")
-        header = "Benutzername,Vorname,Nachname,Anzeigename,Position,Abteilung,Büronummer,Telefon (geschäftlich),Mobiltelefon,Faxnummer,Adresse,Ort,Bundesland/Kanton,Postleitzahl,Land oder Region"
+        header = "Benutzername,Vorname,Nachname,Anzeigename,Position,Abteilung,Telefon – Geschäftlich,Telefon (geschäftlich),Mobiltelefon,Fax,Alternative E-Mail-Adresse,Adresse,Ort,Bundesstaat,Postleitzahl,Land oder Region"
         file1.write("%s\n" % header)
         for d in data:
-            file1.write("%s,%s,%s,,,,,,,,,,,,%s\n" % (
-                d.getBenutzername(), d.getVorname(), d.getNachname(), "Österreich"))
+            file1.write("%s,%s,%s,%s,,,,,,,,,,,,%s\n" % (
+                d.getBenutzername(), d.getVorname(), d.getNachname(), d.getAnzeigename(), "Österreich"))
         file1.close()
 
     def writeSerienbrief(self, filename, data):
