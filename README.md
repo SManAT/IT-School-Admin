@@ -11,7 +11,7 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 - [Usfull scripts](Windows-Server/README.md)
 
 # Backup Tools
-- [restic](Backup-Tools/restic/README.md)
+- [Restic](Backup-Tools/restic/README.md)
 
 # Linux
 - [ActiveDomain with Samba4](Linux/ActiveDomain-Samba4/README.md)
