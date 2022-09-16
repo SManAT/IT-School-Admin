@@ -1,4 +1,7 @@
-# exclude go-files
-*.go
-# exclude foo/x/y/z/bar foo/x/bar foo/bar
-foo/**/bar
+# Use Globs here
+Thumbs.db
+*.iso
+*.log
+/root/.cpan/**
+/root/.composer/**
+/root/.symfony/**
