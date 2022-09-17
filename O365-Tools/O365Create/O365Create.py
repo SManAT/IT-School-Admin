@@ -180,6 +180,7 @@ class O365():
             self.filesPath, self.finishFile), accounts)
         print("Serienbrief CSV Datei erstellt (%s)" % self.finishFile)
         print("Damit bitte Infoblatt für die Schüler ausdrucken oder zukommen lassen ...")
+        print("Fertige Datei auch am Sharepoint ablegen für die KV's ...")
         self.openFileManager(self.filesPath)
 
 
