@@ -25,7 +25,7 @@ Cloning-Stuff/setHostname/.settings/org.eclipse.core.resources.prefs
 
 Windows-Server/Active-Domain/Usermanagement/tmp/**
 Windows-Server/Active-Domain/Usermanagement/*.csv
-
+Windows-Server/Usermanagement/Import.csv
 
 Cloning-Stuff/setHostname/.classpath
 O365-Tools/O365-Sync/*.csv
@@ -35,5 +35,6 @@ O365-Tools/O365-Sync/config/config.yaml
 O365-Tools/O365-Create/files/*.csv
 O365-Tools/O365-Sync/db/*.db
 O365-Tools/O365-Sync/files/**
+
 
 

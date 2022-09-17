@@ -91,7 +91,7 @@ class UsermanagementAD():
 
     def Export(self):
       """ Export Users to CSV File """
-      pass
+      print("Not implemented yet")
 
 
 @click.command()
