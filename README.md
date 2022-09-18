@@ -11,7 +11,7 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 - [Usfull scripts](Windows-Server/README.md)
 
 # Backup Tools
-- [Restic](Backup-Tools/restic/README.md)
+- [Restic](Backup-Tools/Restic-Backup/README.md)
 - [MySQL Backup Tool](Backup-Tools/MySQL-Backup/README.md)
 
 # Linux
