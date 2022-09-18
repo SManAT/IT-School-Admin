@@ -2,3 +2,4 @@
 /etc/
 /backup/
 /home/
+/rescue/
