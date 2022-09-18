@@ -9,7 +9,7 @@ restic -r sftp:sshUser@$REPOSITORY unlock -p $PWDFILE
 restic -r sftp:sshUser@$REPOSITORY backup --files-from include.txt --exclude-file exclude.txt -p $PWDFILE -v
 
 # keep n snapshots
-restic -r sftp:sshUser@$REPOSITORY forget --keep-last 4 -p $PWDFILE -v
+restic -r sftp:sshUser@$REPOSITORY forget --keep-last 4 -p $PWDFILE
 
 # free space
-restic -r sftp:sshUser@$REPOSITORY prune -p $PWDFILE -v
+restic -r sftp:sshUser@$REPOSITORY prune -p $PWDFILE

@@ -1,0 +1,7 @@
+#!/bin/sh
+REPOSITORY=10.0.10.5:/Backups/Webhost
+PWDFILE=/root/.ssh/restic.pwd
+
+# remove locks
+restic -r sftp:sshUser@$REPOSITORY snapshots -p $PWDFILE
+
