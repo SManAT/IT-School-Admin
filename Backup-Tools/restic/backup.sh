@@ -2,8 +2,10 @@
 REPOSITORY=10.0.10.5:/Backups/Webhost
 PWDFILE=/root/.ssh/restic.pwd
 
+# remove locks
 restic -r sftp:sshUser@$REPOSITORY unlock -p $PWDFILE
 
+# backup
 restic -r sftp:sshUser@$REPOSITORY backup --files-from include.txt --exclude-file exclude.txt -p $PWDFILE -v
 
 # keep n snapshots
