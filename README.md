@@ -12,12 +12,12 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 
 # Backup Tools
 - [Restic](Backup-Tools/restic/README.md)
+- [MySQL Backup Tool](Backup-Tools/MySQL-Backup/README.md)
 
 # Linux
 - [ActiveDomain with Samba4](Linux/ActiveDomain-Samba4/README.md)
 - [Ansible](Ansible/README.md)
 - [Common system stuff](System/README.md)
-- [MySQL stuff](MySQL/README.md)
 
 # Other usefull Stuff
 - [Cloning stuff](Cloning-Stuff/README.md)
