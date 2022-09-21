@@ -33,7 +33,7 @@ from libs.ScriptTool import ScriptTool
 
 
 class UsermanagementAD():
-    debug = False
+    debug = True
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
@@ -44,7 +44,7 @@ class UsermanagementAD():
         self.tmpPath = os.path.join(self.rootDir, 'tmp/')
 
         self.config = self.load_yml()
-        self.debug = False
+
         if self.config['config']['DEBUG'] == 1:
             self.debug = True
 

@@ -18,6 +18,7 @@ $ADSplat = @{
     HomeDrive             = '%HOMEDRIVE%'
     HomeDirectory         = '%HOMEDIR%%USERNAME_SHORT%'
     ProfilePath           = '%PROFILEDIR%%USERNAME_SHORT%'
+    EmailAddress          = '%EMAIL%'
 }
 
 New-ADUser @ADSplat
