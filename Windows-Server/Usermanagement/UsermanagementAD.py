@@ -33,7 +33,7 @@ from libs.ScriptTool import ScriptTool
 
 
 class UsermanagementAD():
-    debug = True
+    debug = False
 
     def __init__(self):
         self.rootDir = Path(__file__).parent
