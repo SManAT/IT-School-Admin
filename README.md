@@ -10,6 +10,7 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 - [Active-Domain Usermanagement](Windows-Server/Usermanagement/README.md)
 - [Usfull scripts](Windows-Server/README.md)
 - [Powershell Scripts](Windows-Server/Powershell-Stuff/README.md)
+- [Backups mit Restic](Windows-Server/Restic-Backups/README.md)
 
 # Backup Tools
 - [Restic](Backup-Tools/Restic-Backup/README.md)
