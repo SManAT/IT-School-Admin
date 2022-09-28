@@ -5,5 +5,6 @@ starting with installing, preparing a new repository, and making the first backu
 ```
 see [Restic Documentation](https://restic.readthedocs.io/en/stable/)
 
-In this scripts we use public/private SSH Keys for the SFTP Connection.  
-You had to modify your system in this way!  
+- In this scripts we use public/private SSH Keys for the SFTP Connection.  
+  You had to modify your system in this way!  
+- You also had to place restic.exe file somewhere onto your system! download at [Restic Website](https://restic.net/)
