@@ -1,0 +1,5 @@
+version: 1
+config:
+  # if set, then the PATH is realtive to Python script
+  RELATIVE: 1
+  PATH: "wallpapers"
