@@ -55,3 +55,25 @@ def start():
 if __name__ == "__main__":
     start()  # noqa
 
+
+
+
+
+
+
+
+backup_storage_available = os.path.isdir(BACKUP_REPOSITORY_PATH)
+
+if backup_storage_available:
+    logger.info("Backup storage already connected.")
+else:
+    logger.info("Connecting to backup storage.")
+
+    mount_command = "net use /user:" + BACKUP_REPOSITORY_USER_NAME + " " + BACKUP_REPOSITORY_PATH + " " + BACKUP_REPOSITORY_USER_PASSWORD
+    os.system(mount_command)
+    backup_storage_available = os.path.isdir(BACKUP_REPOSITORY_PATH)
+
+    if backup_storage_available:
+        logger.fine("Connection success.")
+    else:
+        raise Exception("Failed to find storage directory.")
