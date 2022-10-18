@@ -21,6 +21,10 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 - [Ansible](Ansible/README.md)
 - [Common system stuff](System/README.md)
 
+# Tools
+- [restrictLocalUser](restrictLocalUser/README.md)
+- [changeWallpaper](changeWallpaper/README.md)
+- [VirtualBox-HyperV](VirtualBox-HyperV/README.md)
+
 # Other usefull Stuff
 - [Cloning stuff](Cloning-Stuff/README.md)
-- [Tools](Tools/README.md)
