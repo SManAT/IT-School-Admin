@@ -1,5 +1,6 @@
 # restrictLocalUser
-written in Powershell and Batch
+written in Powershell and Batch.
+Config ist hardcoded in Powershell Script.
 
-- setzt das Passwort und verbietet eine Änderung des Passwortes
-- kopiert das changeWallpaper Tool (Python)
+- sets the passwort and locks the password
+- will copy the changeWallpaper Tool to harddisk

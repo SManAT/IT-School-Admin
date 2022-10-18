@@ -17,6 +17,7 @@ if __name__ == '__main__':
         install_requires=[
             'pyyaml',
             'cx_Freeze',
+            'click'
         ],
         python_requires='>=3.8',
     )

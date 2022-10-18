@@ -24,42 +24,55 @@ import struct
 
 # https://stackoverflow.com/questions/53878508/change-windows-10-background-in-python-3
 class Wallpaper():
-
-    def __init__(self):
-        pass
-    
     PATH = 'C:\\Users\\Patrick\\Desktop\\0200200220.jpg'
     SPI_SETDESKWALLPAPER = 20
-    
-    def is_64bit_windows(self): 
+
+    def __init__(self):
+        self.rootDir = Path(__file__).parent
+        self.configFile = os.path.join(self.rootDir, 'config.yaml')
+        self.config = self.load_yml()
+
+    def is_64bit_windows(self):
         """Check if 64 bit Windows OS"""
         return struct.calcsize('P') * 8 == 64
-    
+
     def changeBG(self, path):
         """Change background depending on bit size"""
         if is_64bit_windows():
           # use Unicode string
           # path = 'C:\\Users\\Patrick\\Desktop\\0200200220.jpg'
-            ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, PATH, 3)
+            ctypes.windll.user32.SystemParametersInfoW(
+                SPI_SETDESKWALLPAPER, 0, PATH, 3)
         else:
           # use ANSI string
           # path = b'C:\\Users\\Patrick\\Desktop\\0200200220.jpg'
-            ctypes.windll.user32.SystemParametersInfoA(SPI_SETDESKWALLPAPER, 0, PATH, 3)
-    
+            ctypes.windll.user32.SystemParametersInfoA(
+                SPI_SETDESKWALLPAPER, 0, PATH, 3)
 
+    def load_yml(self):
+        """ Load the yaml file config.yaml """
+        with open(self.configFile, 'rt') as f:
+            yml = yaml.safe_load(f.read())
+        return yml
+
+    def list(self):
+        """ list all wallpapers """
+        print('2Do: list all wallpapers')
+
+
+@click.command(no_args_is_help=True)
+@click.option('-l', '--list', 'listing', is_flag=True, help='list all wallpapers')
 def start():
     paper = Wallpaper()
-    paper.start()
+    if listing is True:
+        paper.list()
+    else:
+        # change wallpaper
+        paper.start()
 
 
 if __name__ == "__main__":
     start()  # noqa
-
-
-
-
-
-
 
 
 backup_storage_available = os.path.isdir(BACKUP_REPOSITORY_PATH)
@@ -69,7 +82,8 @@ if backup_storage_available:
 else:
     logger.info("Connecting to backup storage.")
 
-    mount_command = "net use /user:" + BACKUP_REPOSITORY_USER_NAME + " " + BACKUP_REPOSITORY_PATH + " " + BACKUP_REPOSITORY_USER_PASSWORD
+    mount_command = "net use /user:" + BACKUP_REPOSITORY_USER_NAME + " " + \
+        BACKUP_REPOSITORY_PATH + " " + BACKUP_REPOSITORY_USER_PASSWORD
     os.system(mount_command)
     backup_storage_available = os.path.isdir(BACKUP_REPOSITORY_PATH)
 

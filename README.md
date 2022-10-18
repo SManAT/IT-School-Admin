@@ -22,9 +22,9 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 - [Common system stuff](System/README.md)
 
 # Tools
-- [restrictLocalUser](restrictLocalUser/README.md)
-- [changeWallpaper](changeWallpaper/README.md)
-- [VirtualBox-HyperV](VirtualBox-HyperV/README.md)
+- [restrictLocalUser](Tools/restrictLocalUser/README.md)
+- [changeWallpaper](Tools/changeWallpaper/README.md)
+- [VirtualBox-HyperV](Tools/VirtualBox-HyperV/README.md)
 
 # Other usefull Stuff
 - [Cloning stuff](Cloning-Stuff/README.md)
