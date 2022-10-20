@@ -4,4 +4,4 @@ config:
   # otherwise, we use a path relative to script dir
   USE_SHARE: 0
   SHARE: \\daddy\wallpapers
-  PATH: "wallpapers\"
+  PATH: wallpapers\

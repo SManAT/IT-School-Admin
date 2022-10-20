@@ -1,1 +1,1 @@
-python UsermanagementAD.py -f Import.csv -i
+python changeWallpaper.py -l
