@@ -19,6 +19,7 @@ if __name__ == '__main__':
             'cx_Freeze',
             'click',
             'rich',
+            'cryptography'
         ],
         python_requires='>=3.8',
     )

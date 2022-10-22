@@ -22,13 +22,17 @@ import ctypes
 import os
 from pathlib import Path
 import random
+import shutil
 import struct
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
+from cryptography.fernet import Fernet
 from rich.console import Console
 from rich.table import Table
 import yaml
+
+from libs import Cryptor
 
 
 # https://stackoverflow.com/questions/53878508/change-windows-10-background-in-python-3
@@ -46,33 +50,49 @@ class Wallpaper():
         self.configFile = os.path.join(self.rootDir, 'config.yaml')
         self.config = self.load_yml()
 
-        self.share = self.config['config']['SHARE']
+        self.console = Console()
+
+        self.share = self.config['config']['share']['PATH']
         self.isrealtive = False
         if self.config['config']['USE_SHARE'] == 0:
             self.isrealtive = True
         self.wallpaperPath = os.path.join(
-            self.rootDir, self.config['config']['PATH'])
+            self.rootDir, self.config['config']['LOCAL_PATH'])
 
-        self.loadWallpapers()
+        self.TMP_WALLPAPER_PATH = os.path.join(
+            self.rootDir, self.config['config']['LOCAL_STORAGE'])
+
+        if os.path.isdir(self.TMP_WALLPAPER_PATH) is False:
+            os.mkdir(self.TMP_WALLPAPER_PATH)
 
     def start(self):
         """ will change the wallpaper """
+        if self.isrealtive is False:
+            # use net Share
+            self.connect_network_share(self.share)
+            self.wallpaperPath = self.share
+
+        self.loadWallpapers()
 
         rand_index = random.randint(0, len(self.wallpapers))
         path = self.wallpapers[rand_index]
         self.changeWallpaper(path)
 
-        print(self.wallpapers[rand_index])
-
     def loadWallpapers(self):
         """ 
         load all Wallpapers from PATH/SHARE
-        if from SHARE, store them in relative PATH wallpapers/
+        store them into TMP_WALLPAPER_PATH
         """
         self.wallpapers = []
-        if self.isrealtive is True:
-            self.wallpapers = self.search_files_in_dir(
-                self.wallpaperPath, '*.jp[e]?g')
+        self.wallpapers = self.search_files_in_dir(
+            self.wallpaperPath, '*.jp[e]?g')
+
+        # copy the new once to TMP_WALLPAPER_PATH
+        for file in self.wallpapers:
+            target = os.path.join(self.TMP_WALLPAPER_PATH,
+                                  os.path.basename(file))
+            if os.path.exists(target) is False:
+                shutil.copy(file, self.TMP_WALLPAPER_PATH)
 
     def search_files_in_dir(self, directory='.', pattern=''):
         """
@@ -135,25 +155,30 @@ class Wallpaper():
         CloseKey(key)
 
     # NET SHARE Section ------------------------------------------------------
-    """
-    def network_share(self):
-        backup_storage_available = os.path.isdir(BACKUP_REPOSITORY_PATH)
+
+    def connect_network_share(self, path, username="", pwd=""):
+        """ 
+        connect to a Network share
+        :param path: the unc path to the share
+        :param username: the username to connect with
+        :param pwd: the password for the user
+        """
+        backup_storage_available = os.path.isdir(path)
 
         if backup_storage_available:
-            logger.info("Backup storage already connected.")
+            print("Already connected with SHARE %s ..." % path)
         else:
-            logger.info("Connecting to backup storage.")
+            print("Connecting to backup storage.")
+            mount_command = 'net use "%s" /persistent:no /user:"%s" "%s"' % (
+                path, username, pwd)
 
-            mount_command = "net use /user:" + BACKUP_REPOSITORY_USER_NAME + " " + \
-                BACKUP_REPOSITORY_PATH + " " + BACKUP_REPOSITORY_USER_PASSWORD
             os.system(mount_command)
-            backup_storage_available = os.path.isdir(BACKUP_REPOSITORY_PATH)
+            backup_storage_available = os.path.isdir(path)
 
             if backup_storage_available:
-                logger.fine("Connection success.")
+                print("Connection to SHARE success...")
             else:
-                raise Exception("Failed to find storage directory.")
-    """
+                raise Exception("Failed to connect to SHARE %S ..." % path)
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
@@ -164,9 +189,12 @@ class Wallpaper():
     def list(self):
         """ list all wallpapers """
         # see https://rich.readthedocs.io/en/stable/appendix/colors.html
-        console = Console()
-        console.print("\nWallpapers in path:")
-        console.print(self.wallpaperPath, style="green")
+        self.wallpapers = []
+        self.wallpapers = self.search_files_in_dir(
+            self.TMP_WALLPAPER_PATH, '*.jp[e]?g')
+
+        self.console.print("\nWallpapers in path:")
+        self.console.print(self.TMP_WALLPAPER_PATH, style="green")
         table = Table()
         table.add_column("Nr", style="yellow", no_wrap=True)
         table.add_column("Filename", style="magenta")
@@ -175,19 +203,51 @@ class Wallpaper():
             table.add_row(str(i), str(os.path.basename(item)))
             i += 1
 
-        console.print(table)
+        self.console.print(table)
+
+    def clear(self):
+        """ delete all local stored wallpapers """
+        for root, dirs, files in os.walk(self.TMP_WALLPAPER_PATH):
+            for file in files:
+                os.remove(os.path.join(root, file))
+        self.console.print("All wallpapers deleted!", style="red")
 
 
 @click.command(no_args_is_help=False)
 @click.option('-l', '--list', 'listing', is_flag=True, help='list all wallpapers')
-def start(listing):
+@click.option('--clear', 'clear', is_flag=True, help='delete all local stored wallpapers')
+@click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
+def start(listing, clear, encrypt):
     paper = Wallpaper()
     if listing is True:
         paper.list()
-    else:
-        # change wallpaper
-        paper.start()
+        exit()
+    if clear is True:
+        paper.clear()
+        exit()
+
+    if encrypt is not None:
+        cryptor = Cryptor()
+        chiper = cryptor.encrypt(encrypt)
+        print("\n%s: %s" % (encrypt, chiper.decode()))
+        print("Use this hash in your config File for sensible data, e.g. passwords")
+
+    # change wallpaper
+    paper.start()
+
+
+def checkKeyFile():
+    """ will create an encrypr Key if no one exists """
+    rootDir = Path(__file__).parent
+    keyFile = os.path.join(rootDir, 'libs', 'key.key')
+    if (os.path.exists(keyFile) is False):
+        key = Fernet.generate_key()
+        file = open(keyFile, 'wb')
+        file.write(key)
+        file.close()
+        print("KeyFile created in %s" % keyFile)
 
 
 if __name__ == "__main__":
+    checkKeyFile()
     start()  # noqa
