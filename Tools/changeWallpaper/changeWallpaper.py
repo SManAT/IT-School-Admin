@@ -53,6 +53,7 @@ class Wallpaper():
         self.console = Console()
 
         self.share = self.config['config']['share']['PATH']
+        self.last = self.config['config']['LAST']
         self.isrealtive = False
         if self.config['config']['USE_SHARE'] == 0:
             self.isrealtive = True
@@ -71,28 +72,59 @@ class Wallpaper():
             # use net Share
             self.connect_network_share(self.share)
             self.wallpaperPath = self.share
-
-        self.loadWallpapers()
+            self.loadWallpapers(True)
+        else:
+            self.loadWallpapers()
 
         rand_index = random.randint(0, len(self.wallpapers))
         path = self.wallpapers[rand_index]
+
+        while self.last == os.path.basename(path):
+            rand_index = random.randint(0, len(self.wallpapers))
+            path = self.wallpapers[rand_index]
+
         self.changeWallpaper(path)
 
-    def loadWallpapers(self):
+        self.storeLastOne(path)
+
+    def storeLastOne(self, filename):
+        """ stores the last used wallpaer in config.yaml """
+        data = dict(
+            config=dict(
+                USE_SHARE=self.config['config']['USE_SHARE'],
+                LOCAL_PATH=self.config['config']['LOCAL_PATH'],
+                LOCAL_STORAGE=self.config['config']['LOCAL_STORAGE'],
+                LAST=os.path.basename(filename),
+
+                share=dict(
+                    PATH=self.config['config']['share']['PATH'],
+                    USER=self.config['config']['share']['USER'],
+                    PWD=self.config['config']['share']['PWD']
+                )
+            )
+        )
+        with open(self.configFile, 'w', encoding="UTF-8") as f:
+            yaml.dump(data, f, sort_keys=False, default_flow_style=False)
+
+    def loadWallpapers(self, copy=False):
         """ 
         load all Wallpapers from PATH/SHARE
-        store them into TMP_WALLPAPER_PATH
+        :param copy: copy wallpapers from Share to host into TMP_WALLPAPER_PATH
         """
         self.wallpapers = []
         self.wallpapers = self.search_files_in_dir(
             self.wallpaperPath, '*.jp[e]?g')
 
-        # copy the new once to TMP_WALLPAPER_PATH
-        for file in self.wallpapers:
-            target = os.path.join(self.TMP_WALLPAPER_PATH,
-                                  os.path.basename(file))
-            if os.path.exists(target) is False:
-                shutil.copy(file, self.TMP_WALLPAPER_PATH)
+        if copy is True:
+            newwallpapers = []
+            # copy the new once to TMP_WALLPAPER_PATH
+            for file in self.wallpapers:
+                target = os.path.join(self.TMP_WALLPAPER_PATH,
+                                      os.path.basename(file))
+                if os.path.exists(target) is False:
+                    shutil.copy(file, self.TMP_WALLPAPER_PATH)
+                newwallpapers.append(target)
+            self.wallpapers = newwallpapers
 
     def search_files_in_dir(self, directory='.', pattern=''):
         """
@@ -129,6 +161,9 @@ class Wallpaper():
         # Default value
         if STYLE is None:
             STYLE = self.STYLE['STRECH']
+        STYLE = self.STYLE['SPAN']
+        # 16:9 STRECH
+        # 4:3 FILL
 
         SPI_SETDESKWALLPAPER = 20
         SPIF_UPDATEINIFILE = 0x01     # forces instant update
