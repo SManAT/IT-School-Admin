@@ -26,6 +26,7 @@ import shutil
 import struct
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
+from PIL import Image
 import click
 from cryptography.fernet import Fernet
 from rich.console import Console
@@ -158,12 +159,16 @@ class Wallpaper():
         10: Fill
         22: Span
         """
+        # load dimensions of file
+        with Image.open(filepath) as img:
+            width, height = img.size
         # Default value
         if STYLE is None:
             STYLE = self.STYLE['STRECH']
-        STYLE = self.STYLE['SPAN']
-        # 16:9 STRECH
-        # 4:3 FILL
+            if width / height == 16 / 9:
+                STYLE = self.STYLE['STRECH']
+            if width / height == 4 / 3:
+                STYLE = self.STYLE['SPAN']
 
         SPI_SETDESKWALLPAPER = 20
         SPIF_UPDATEINIFILE = 0x01     # forces instant update
@@ -171,8 +176,8 @@ class Wallpaper():
         TILEWALLPAPER = 0
 
         if self.is_64bit_windows():
-            # use Unicode string
-            # path = 'C:\\Users\\...\\Desktop\\0200200220.jpg'
+                # use Unicode string
+                # path = 'C:\\Users\\...\\Desktop\\0200200220.jpg'
             ctypes.windll.user32.SystemParametersInfoW(
                 SPI_SETDESKWALLPAPER, STYLE, filepath, SPIF_UPDATEINIFILE)
         else:
@@ -242,7 +247,7 @@ class Wallpaper():
 
     def clear(self):
         """ delete all local stored wallpapers """
-        for root, dirs, files in os.walk(self.TMP_WALLPAPER_PATH):
+        for root, dirs, files in os.walk(self.TMP_WALLPAPER_PATH):  # noqa
             for file in files:
                 os.remove(os.path.join(root, file))
         self.console.print("All wallpapers deleted!", style="red")

@@ -26,3 +26,6 @@ If using a Share, an offline Copy from all wallpapers will be saved to the host.
       PWD: None
   ```
 
+# Create Standalone Application
+
+You can pack Python to the Application if you build it with `python setup_cx.py build_exe`.
