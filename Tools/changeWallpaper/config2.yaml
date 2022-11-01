@@ -2,7 +2,7 @@ config:
   USE_SHARE: 1
   LOCAL_PATH: wallpapers\
   LOCAL_STORAGE: tmp\
-  LAST: 21086_1280x1024-wallpaper-cb1275934550.jpg
+  LAST: 35662_1600x1200-wallpaper-cb1306355061.jpg
   share:
     PATH: \\192.168.1.10\Public\wallpapers
     USER: testuser

@@ -26,14 +26,15 @@ import shutil
 import struct
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
-from PIL import Image
 import click
 from cryptography.fernet import Fernet
+import cv2
 from rich.console import Console
 from rich.table import Table
 import yaml
 
-from libs import Cryptor
+from libs.Cryptor import Cryptor
+from libs.OpenCV import OpenCV
 
 
 # https://stackoverflow.com/questions/53878508/change-windows-10-background-in-python-3
@@ -52,6 +53,7 @@ class Wallpaper():
         self.config = self.load_yml()
 
         self.console = Console()
+        self.opencv = OpenCV()
 
         self.share = self.config['config']['share']['PATH']
         self.last = self.config['config']['LAST']
@@ -67,11 +69,22 @@ class Wallpaper():
         if os.path.isdir(self.TMP_WALLPAPER_PATH) is False:
             os.mkdir(self.TMP_WALLPAPER_PATH)
 
+        self.share_user = self.config['config']['share']['USER']
+        self.share_pwd = self.config['config']['share']['PWD']
+        if self.share_pwd is not None:
+            keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
+            cryptor = Cryptor(keyFile)
+            self.share_pwd = cryptor.decrypt(self.share_pwd)
+
     def start(self):
         """ will change the wallpaper """
         if self.isrealtive is False:
             # use net Share
-            self.connect_network_share(self.share)
+            if self.share_user is not None:
+                self.connect_network_share(
+                    self.share, self.share_user, self.share_pwd)
+            else:
+                self.connect_network_share(self.share)
             self.wallpaperPath = self.share
             self.loadWallpapers(True)
         else:
@@ -84,7 +97,9 @@ class Wallpaper():
             rand_index = random.randint(0, len(self.wallpapers))
             path = self.wallpapers[rand_index]
 
-        self.changeWallpaper(path)
+        self.opencv.createVignette(path)
+
+        # self.changeWallpaper(path)
 
         self.storeLastOne(path)
 
@@ -160,8 +175,10 @@ class Wallpaper():
         22: Span
         """
         # load dimensions of file
-        with Image.open(filepath) as img:
-            width, height = img.size
+        data = self.opencv.getSize(filepath)
+        width = data[0]
+        height = data[1]
+
         # Default value
         if STYLE is None:
             STYLE = self.STYLE['STRECH']
@@ -203,14 +220,21 @@ class Wallpaper():
         :param username: the username to connect with
         :param pwd: the password for the user
         """
+        # 2DO #################################################################
+        # debug, close all connections
+        os.system("net use * /delete")
+
         backup_storage_available = os.path.isdir(path)
 
         if backup_storage_available:
             print("Already connected with SHARE %s ..." % path)
         else:
             print("Connecting to backup storage.")
-            mount_command = 'net use "%s" /persistent:no /user:"%s" "%s"' % (
-                path, username, pwd)
+            if self.share_user is not None:
+                mount_command = 'net use "%s" /persistent:no /user:"%s" "%s"' % (
+                    path, username, pwd)
+            else:
+                mount_command = 'net use "%s" /persistent:no' % (path)
 
             os.system(mount_command)
             backup_storage_available = os.path.isdir(path)
@@ -267,7 +291,9 @@ def start(listing, clear, encrypt):
         exit()
 
     if encrypt is not None:
-        cryptor = Cryptor()
+        rootDir = Path(__file__).parent
+        keyFile = os.path.join(rootDir, 'libs', 'key.key')
+        cryptor = Cryptor(keyFile)
         chiper = cryptor.encrypt(encrypt)
         print("\n%s: %s" % (encrypt, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
