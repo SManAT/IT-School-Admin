@@ -136,10 +136,10 @@ db/**
 /db
 o365_token.txt
 
-scripts/**
 *.odt\#
 *.csv
 psDebugging.ps1
+debug/**
 
 *.csv#
 *.ods
