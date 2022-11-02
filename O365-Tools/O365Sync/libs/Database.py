@@ -1,7 +1,10 @@
-import sqlite3
-from sqlite3 import Error
 import datetime
+from sqlite3 import Error
+import sqlite3
+
 from rich.progress import Progress
+
+from libs.Cryptor import Cryptor
 from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
 
@@ -9,9 +12,10 @@ from libs.UserSokrates import UserSokrates
 class Database():
     """ a class to manage SQLite Database """
 
-    def __init__(self, dbPath):
+    def __init__(self, dbPath, cryptor):
         self.dbPath = dbPath
         self.connect()
+        self.cryptor = cryptor
 
     def connect(self):
         """ connect to a SQLite database """
@@ -21,8 +25,8 @@ class Database():
             # Datensatz-Cursor erzeugen
             self.cursor = self.conn.cursor()
         except Error as e:
-          print("SQlite: %s" % sqlite3.version)
-          print(e)
+            print("SQlite: %s" % sqlite3.version)
+            print(e)
 
     def close(self):
         """ close an open SQLite Connection """
@@ -30,13 +34,13 @@ class Database():
             self.conn.close()
 
     def query(self, sql):
-      """ execute a sql query """
-      if self.conn:
-        self.cursor.execute(sql)
-        # sofortiges Ausführen gegen die db
-        self.conn.commit()
+        """ execute a sql query """
+        if self.conn:
+            self.cursor.execute(sql)
+            # sofortiges Ausführen gegen die db
+            self.conn.commit()
 
-# QUERYS =================================================================================
+# QUERYS =================================================================
     def Update_Last_Update_Date(self, table):
         """ Azure DB was updated """
         # search for entry
@@ -51,11 +55,13 @@ class Database():
         today = datetime.datetime.now()
         now = today.strftime("%Y-%m-%d %H:%M:%S")
         if data is None:
-            self.cursor.execute("INSERT INTO dates ('id','name','date') VALUES (?,?,?)", (None, table, now))
+            self.cursor.execute(
+                "INSERT INTO dates ('id','name','date') VALUES (?,?,?)", (None, table, now))
         else:
             # update
             theid = data[0]
-            self.cursor.execute("UPDATE dates SET name=?, date=? WHERE id=?", (table, now, theid))
+            self.cursor.execute(
+                "UPDATE dates SET name=?, date=? WHERE id=?", (table, now, theid))
         self.conn.commit()
         self.close()
 
@@ -67,32 +73,46 @@ class Database():
         self.conn.commit()
         self.close()
 
-    def Insert_Azure(self, accounts, vips):
-        """ insert User Accounts Object into DB """
+    def Insert_Azure(self, accounts, vips, encrypt):
+        """ 
+        insert User Accounts Object into DB
+        :param encrypt: schould data be encrypted? 
+        """
         # nicht so oft den Progressbar updaten
         delta = 10
         index = 0
 
         with Progress() as progress:
-          task = progress.add_task("[green]Updating Database...", total=len(accounts))
+            task = progress.add_task(
+                "[green]Updating Database...", total=len(accounts))
 
-          self.connect()
-          for account in accounts:
-            licence = account.getLicenses(vips)
-            if licence is not None:
-              data = (None,
-                      account.getVorname(),
-                      account.getNachname(),
-                      account.getMail(),
-                      licence,
-                      )
-              self.cursor.execute("INSERT INTO azure ('id','vorname','nachname', 'email', 'licenses') VALUES (?,?,?,?,?)", data)
-              self.conn.commit()
+            self.connect()
+            for account in accounts:
+                licence = account.getLicenses(vips)
+                if licence is not None:
+                    if encrypt is False:
+                        data = (None,
+                                account.getVorname(),
+                                account.getNachname(),
+                                account.getMail(),
+                                licence,
+                                )
+                    else:
+                        data = (None,
+                                self.cryptor.encrypt(account.getVorname()),
+                                self.cryptor.encrypt(account.getNachname()),
+                                self.cryptor.encrypt(account.getMail()),
+                                licence,
+                                )
 
-            index += 1
-            if index == delta:
-              progress.update(task, advance=delta)
-              index = 0
+                    self.cursor.execute(
+                        "INSERT INTO azure ('id','vorname','nachname', 'email', 'licenses') VALUES (?,?,?,?,?)", data)
+                    self.conn.commit()
+
+                index += 1
+                if index == delta:
+                    progress.update(task, advance=delta)
+                    index = 0
         self.close()
 
     def Insert_Sokrates(self, accounts):
@@ -102,94 +122,100 @@ class Database():
         index = 0
 
         with Progress() as progress:
-          task = progress.add_task("[green]Updating Database...", total=len(accounts))
+            task = progress.add_task(
+                "[green]Updating Database...", total=len(accounts))
 
-          self.connect()
-          for account in accounts:
-            data = (None,
-                    account.getVorname(),
-                    account.getNachname(),
-                    )
-            self.cursor.execute("INSERT INTO sokrates ('id','vorname','nachname') VALUES (?,?,?)", data)
-            self.conn.commit()
+            self.connect()
+            for account in accounts:
+                data = (None,
+                        account.getVorname(),
+                        account.getNachname(),
+                        )
+                self.cursor.execute(
+                    "INSERT INTO sokrates ('id','vorname','nachname') VALUES (?,?,?)", data)
+                self.conn.commit()
 
-            index += 1
-            if index == delta:
-              progress.update(task, advance=delta)
-              index = 0
+                index += 1
+                if index == delta:
+                    progress.update(task, advance=delta)
+                    index = 0
         self.close()
 
     def countLehrer(self):
-      self.connect()
-      result = self.cursor.execute("SELECT COUNT(*) FROM azure WHERE licenses = 'L'")
-      data = result.fetchone()
-      self.close()
-      return data[0]
+        self.connect()
+        result = self.cursor.execute(
+            "SELECT COUNT(*) FROM azure WHERE licenses = 'L'")
+        data = result.fetchone()
+        self.close()
+        return data[0]
 
     def countStudents(self):
-      self.connect()
-      result = self.cursor.execute("SELECT COUNT(*) FROM azure WHERE licenses = 'S'")
-      data = result.fetchone()
-      self.close()
-      return data[0]
+        self.connect()
+        result = self.cursor.execute(
+            "SELECT COUNT(*) FROM azure WHERE licenses = 'S'")
+        data = result.fetchone()
+        self.close()
+        return data[0]
 
     def countVips(self):
-      self.connect()
-      result = self.cursor.execute("SELECT COUNT(*) FROM azure WHERE licenses = 'V'")
-      data = result.fetchone()
-      self.close()
-      return data[0]
+        self.connect()
+        result = self.cursor.execute(
+            "SELECT COUNT(*) FROM azure WHERE licenses = 'V'")
+        data = result.fetchone()
+        self.close()
+        return data[0]
 
     def countSokrates(self):
-      self.connect()
-      result = self.cursor.execute("SELECT COUNT(*) FROM sokrates")
-      data = result.fetchone()
-      self.close()
-      return data[0]
+        self.connect()
+        result = self.cursor.execute("SELECT COUNT(*) FROM sokrates")
+        data = result.fetchone()
+        self.close()
+        return data[0]
 
     def getLastDBUpdate(self, table):
-      self.connect()
-      cmd = "SELECT * FROM dates WHERE name='%s' LIMIT 1" % table
-      result = self.cursor.execute(cmd)
-      data = result.fetchone()
-      self.close()
+        self.connect()
+        cmd = "SELECT * FROM dates WHERE name='%s' LIMIT 1" % table
+        result = self.cursor.execute(cmd)
+        data = result.fetchone()
+        self.close()
 
-      if data is not None:
-        dt_object = datetime.datetime.strptime(data[2], "%Y-%m-%d %H:%M:%S")
-        return dt_object.strftime("%d.%m.%Y")
-      else:
-        return None
+        if data is not None:
+            dt_object = datetime.datetime.strptime(
+                data[2], "%Y-%m-%d %H:%M:%S")
+            return dt_object.strftime("%d.%m.%Y")
+        else:
+            return None
 
     def loadAzureTable(self):
-      self.connect()
-      cmd = "SELECT * FROM azure"
-      result = self.cursor.execute(cmd)
-      data = result.fetchall()
-      self.close()
+        self.connect()
+        cmd = "SELECT * FROM azure"
+        result = self.cursor.execute(cmd)
+        data = result.fetchall()
+        self.close()
 
-      erg = []
-      for o in data:
-        user = UserObj()
-        user.vorname = o[1]
-        user.nachname = o[2]
-        user.mail = o[3]
-        user.licenses = o[4]
+        erg = []
+        for o in data:
+            user = UserObj()
+            user.vorname = o[1]
+            user.nachname = o[2]
+            user.mail = o[3]
+            user.licenses = o[4]
 
-        erg.append(user)
-      return erg
+            erg.append(user)
+        return erg
 
     def loadSokratesTable(self):
-      self.connect()
-      cmd = "SELECT * FROM sokrates"
-      result = self.cursor.execute(cmd)
-      data = result.fetchall()
-      self.close()
+        self.connect()
+        cmd = "SELECT * FROM sokrates"
+        result = self.cursor.execute(cmd)
+        data = result.fetchall()
+        self.close()
 
-      erg = []
-      for o in data:
-        user = UserSokrates()
-        user.vorname = o[1]
-        user.nachname = o[2]
+        erg = []
+        for o in data:
+            user = UserSokrates()
+            user.vorname = o[1]
+            user.nachname = o[2]
 
-        erg.append(user)
-      return erg
+            erg.append(user)
+        return erg

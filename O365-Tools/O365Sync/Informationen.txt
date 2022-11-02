@@ -9,7 +9,7 @@ Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen
    Das Passwort muss verschlüsselt abgelegt werden. Verwende dazu
    O365Admin.py um einen Passwort-Hash zu erstellen.
    
-3. Lehrer Accounts werden anhand der A3 Lizenz 
+3. Lehrer Accounts werden anhand der A3 Lizenz identifiziert
 
 4. Für Spezialkonten gibt es im Ordner config/ die Datei vip.yaml
    Spezialkonten sind z.B. für Sekretariat, Testkonten, etc.

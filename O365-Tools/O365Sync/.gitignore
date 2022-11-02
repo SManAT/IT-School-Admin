@@ -133,14 +133,13 @@ src/libs/o365_token.txt
 config/key.key
 config/config.yaml
 db/**
-/config
-/db
+debug/**
 o365_token.txt
 
 *.odt\#
 *.csv
 psDebugging.ps1
-debug/**
+
 
 *.csv#
 *.ods

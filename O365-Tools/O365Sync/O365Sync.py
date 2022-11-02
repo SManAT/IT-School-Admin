@@ -1,6 +1,7 @@
 import atexit
 import os
 from pathlib import Path
+import shutil
 import sys
 
 import questionary
@@ -30,8 +31,10 @@ class O365():
         self.debugPath = os.path.join(self.rootDir, 'debug')
         if self.debug:
             self.createDir(self.debugPath)
+            self.encrypt = False
         else:
             self.deleteDir(self.debugPath)
+            self.encrypt = True
 
         self.createDir(os.path.join(self.rootDir, 'config'))
         self.createDir(os.path.join(self.rootDir, 'db'))
@@ -109,14 +112,14 @@ class O365():
                 "nachname"  STRING(100),
                 PRIMARY KEY("id" AUTOINCREMENT)
               )"""
-            self.db = Database(self.dbPath)
+            self.db = Database(self.dbPath, self.cryptor)
             self.db.query(sql_azure)
             self.db.query(sql_dates)
             self.db.query(sql_sokrates)
             self.db.close()
         else:
             # just connect to DB
-            self.db = Database(self.dbPath)
+            self.db = Database(self.dbPath, self.cryptor)
 
     def createEmptyConfigFile(self):
         """ will create an Empty Config File """
@@ -211,7 +214,7 @@ class O365():
         self.db.Update_Last_Update_Date('azure')
         self.db.Truncate('azure')
         # insert data
-        self.db.Insert_Azure(accounts, self.vips)
+        self.db.Insert_Azure(accounts, self.vips, self.encrypt)
         self.console.info("%s Lehrer, %s Schüler, %s Specials in Datenbank übernommen" % (
             self.db.countLehrer(), self.db.countStudents(), self.db.countVips()))
 
@@ -288,8 +291,12 @@ def start():
         questions = Questions()
         a = questions.MainMenue(lastdates)
 
+    console = MyConsole()
     if debug is True:
         a = 'getazure'
+        console.error("Debugging ... NOT encrypting data! ... \n")
+    else:
+        console.warning("Data is ENCRYPTED! ... \n")
 
     if a == 'getazure':
         o365.azureUpdate()
