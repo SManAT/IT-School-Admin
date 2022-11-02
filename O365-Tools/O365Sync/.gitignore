@@ -130,7 +130,8 @@ dmypy.json
 src/libs/o365_token.txt
 
 *.secret
-config/**
+config/key.key
+config/config.yaml
 db/**
 /config
 /db

@@ -27,8 +27,11 @@ class O365():
         self.rootDir = Path(__file__).parent
 
         self.debug = debug
-        self.createDir(os.path.join(self.rootDir, 'debug'))
         self.debugPath = os.path.join(self.rootDir, 'debug')
+        if self.debug:
+            self.createDir(self.debugPath)
+        else:
+            self.deleteDir(self.debugPath)
 
         self.createDir(os.path.join(self.rootDir, 'config'))
         self.createDir(os.path.join(self.rootDir, 'db'))
@@ -68,6 +71,13 @@ class O365():
         """ create dir if it not exists """
         if os.path.isdir(path) is False:
             os.mkdir(path)
+
+    def deleteDir(self, path):
+        """ delete a directory, even if it is not empty """
+        try:
+            shutil.rmtree(path)
+        except OSError as e:
+            print("Error: %s : %s" % (path, e.strerror))
 
     def showInformations(self):
         """ give an overview """
@@ -180,9 +190,9 @@ class O365():
         loader = Loader("Loading from Azure ... pls wait ... ",
                         "", 0.1).start()
 
-        csvFilename = os.path.join(self.filesDir, self.csvFilename)
+        csvFilePath = os.path.join(self.filesDir, self.csvFilename)
         self.azure = AzurePS(self.config, self.scriptPath,
-                             self.console, self.keyFile, csvFilename, self.debug, self.debugPath)
+                             self.console, self.keyFile, csvFilePath, self.debug, self.debugPath)
         self.azure.start()
         # block until finished
         self.azure.getThread().join()
@@ -195,7 +205,7 @@ class O365():
         self.console.info("CSV File saved to %s" % self.csvFilename)
         # Finished process CSV File -----------------------------------
         csv = CSVTool()
-        accounts = csv.read(os.path.join(self.rootDir, self.csvFilename))
+        accounts = csv.read(os.path.join(self.rootDir, csvFilePath))
 
         # Update Dates
         self.db.Update_Last_Update_Date('azure')

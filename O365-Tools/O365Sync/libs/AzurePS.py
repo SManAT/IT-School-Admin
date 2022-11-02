@@ -127,6 +127,11 @@ class AzurePS():
                     # nach { |  darf kein ; sein
                     if line[-1:] == "{" or line[-1:] == "|":
                         erg += "%s" % line
+
+                    # vor @ darf kein ; sein
+                    elif line[:1] == "@":
+                        if erg[-1:] == ";":
+                            erg = "%s%s" % (erg[:-1], line)
                     else:
                         erg += "%s;" % line
 
