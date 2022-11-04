@@ -31,10 +31,8 @@ class O365():
         self.debugPath = os.path.join(self.rootDir, 'debug')
         if self.debug:
             self.createDir(self.debugPath)
-            self.encrypt = False
         else:
             self.deleteDir(self.debugPath)
-            self.encrypt = True
 
         self.createDir(os.path.join(self.rootDir, 'config'))
         self.createDir(os.path.join(self.rootDir, 'db'))
@@ -55,6 +53,13 @@ class O365():
         self.config = self.load_yml()
 
         self.vipFile = os.path.join(self.rootDir, 'config', 'vip.yaml')
+
+        self.encrypt = False
+        if self.config['data']['encrypt'] == 1:
+            self.encrypt = True
+            self.console.warning("Data is ENCRYPTED! ... \n")
+        else:
+            self.console.error("Debugging ... NOT encrypting data! ... \n")
 
         if (os.path.exists(self.vipFile) is False):
             self.createEmptyVipFile()
@@ -112,14 +117,14 @@ class O365():
                 "nachname"  STRING(100),
                 PRIMARY KEY("id" AUTOINCREMENT)
               )"""
-            self.db = Database(self.dbPath, self.cryptor)
+            self.db = Database(self.dbPath, self.cryptor, self.encrypt)
             self.db.query(sql_azure)
             self.db.query(sql_dates)
             self.db.query(sql_sokrates)
             self.db.close()
         else:
             # just connect to DB
-            self.db = Database(self.dbPath, self.cryptor)
+            self.db = Database(self.dbPath, self.cryptor, self.encrypt)
 
     def createEmptyConfigFile(self):
         """ will create an Empty Config File """
@@ -214,14 +219,14 @@ class O365():
         self.db.Update_Last_Update_Date('azure')
         self.db.Truncate('azure')
         # insert data
-        self.db.Insert_Azure(accounts, self.vips, self.encrypt)
+        self.db.Insert_Azure(accounts, self.vips)
         self.console.info("%s Lehrer, %s Schüler, %s Specials in Datenbank übernommen" % (
             self.db.countLehrer(), self.db.countStudents(), self.db.countVips()))
 
     def importSokrates(self):
         """ Import Sokrates Liste """
-        csvFiles = self.search_files_in_dir(self.rootDir, '.csv')
-        print(csvFiles)
+        csvFiles = self.search_files_in_dir(self.filesDir, '.csv')
+        # print(csvFiles)
         flist = []
         for f in csvFiles:
             flist.append(os.path.basename(f))
@@ -231,7 +236,7 @@ class O365():
         ).ask()
 
         # check CSV Datei
-        csvFile = os.path.join(self.rootDir, a)
+        csvFile = os.path.join(self.filesDir, a)
         if (os.path.exists(csvFile) is True):
             csv = CSVTool()
             accounts = csv.readSokrates(csvFile)
@@ -242,16 +247,15 @@ class O365():
 
             # insert data
             self.db.Insert_Sokrates(accounts)
-            self.console.info("%s Schüler in Datenbank übernommen" %
+            self.console.info("%s Datensätze in die Datenbank übernommen" %
                               (self.db.countSokrates()))
 
     def sync(self):
         """ Azure und Sokrates abgleichen """
-        delete = []
         azure = self.db.loadAzureTable()
         sokrates = self.db.loadSokratesTable()
 
-        compare = Compare(azure, sokrates)
+        compare = Compare(azure, sokrates, self.cryptor, self.encrypt)
         compare.start()
         # block until finished
         compare.getThread().join()
@@ -261,7 +265,7 @@ class O365():
         self.printTable(delete)
         # save it
         csv = CSVTool()
-        path = os.path.join(self.rootDir, "deleteUsers.csv")
+        path = os.path.join(self.filesDir, "deleteUsers.csv")
         csv.save(path, delete)
 
     def printTable(self, data):
@@ -291,12 +295,8 @@ def start():
         questions = Questions()
         a = questions.MainMenue(lastdates)
 
-    console = MyConsole()
     if debug is True:
-        a = 'getazure'
-        console.error("Debugging ... NOT encrypting data! ... \n")
-    else:
-        console.warning("Data is ENCRYPTED! ... \n")
+        a = 'sync'
 
     if a == 'getazure':
         o365.azureUpdate()
@@ -316,6 +316,10 @@ def start():
         chiper = o365.cryptor.encrypt(text)
         print("\n%s: %s" % (text, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
+
+    console = MyConsole()
+    console.error("\nBeachte den Datenschutz!")
+    console.warning("Lösche alle Daten aus dem Verzeichnis ./files ...")
 
 
 if __name__ == "__main__":

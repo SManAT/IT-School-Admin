@@ -1,5 +1,7 @@
 
-Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen
+Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen.  
+
+Alle Dateien werden im Ordner ./files abgespeichert bzw. aus diesem Ordner importiert.  
 
 1. Alle User werden via Powershell aus Azure geladen. 
    Dazu auf einer PS Admin CLI installieren:
@@ -15,7 +17,7 @@ Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen
    Spezialkonten sind z.B. für Sekretariat, Testkonten, etc.
 
 -- Lehrer und Spezialkonten werden niemals gelöscht --
--- Alle Daten werden verschlüsselt in der SQLite DB abgelegt (vergl. config/key.key) --
+-- Alle Daten werden verschlüsselt in der SQLite DB abgelegt (vergl. config/config.yaml) --
 
 3. Die Schüler Accounts werden aus Sokrates via CSV Datei importiert.
    Auswertungen > Dynamische Suche > 100 Aktive Schüler > Exportieren als CSV
@@ -23,3 +25,4 @@ Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen
    
 5. Starte das Tool
    python O365Admin.py
+  

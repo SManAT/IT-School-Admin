@@ -4,7 +4,6 @@ import sqlite3
 
 from rich.progress import Progress
 
-from libs.Cryptor import Cryptor
 from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
 
@@ -12,10 +11,11 @@ from libs.UserSokrates import UserSokrates
 class Database():
     """ a class to manage SQLite Database """
 
-    def __init__(self, dbPath, cryptor):
+    def __init__(self, dbPath, cryptor, encrypt):
         self.dbPath = dbPath
         self.connect()
         self.cryptor = cryptor
+        self.encrypt = encrypt
 
     def connect(self):
         """ connect to a SQLite database """
@@ -73,11 +73,8 @@ class Database():
         self.conn.commit()
         self.close()
 
-    def Insert_Azure(self, accounts, vips, encrypt):
-        """ 
-        insert User Accounts Object into DB
-        :param encrypt: schould data be encrypted? 
-        """
+    def Insert_Azure(self, accounts, vips):
+        """ insert User Accounts Object into DB """
         # nicht so oft den Progressbar updaten
         delta = 10
         index = 0
@@ -90,7 +87,7 @@ class Database():
             for account in accounts:
                 licence = account.getLicenses(vips)
                 if licence is not None:
-                    if encrypt is False:
+                    if self.encrypt is False:
                         data = (None,
                                 account.getVorname(),
                                 account.getNachname(),
@@ -127,10 +124,16 @@ class Database():
 
             self.connect()
             for account in accounts:
-                data = (None,
-                        account.getVorname(),
-                        account.getNachname(),
-                        )
+                if self.encrypt is False:
+                    data = (None,
+                            account.getVorname(),
+                            account.getNachname(),
+                            )
+                else:
+                    data = (None,
+                            self.cryptor.encrypt(account.getVorname()),
+                            self.cryptor.encrypt(account.getNachname()),
+                            )
                 self.cursor.execute(
                     "INSERT INTO sokrates ('id','vorname','nachname') VALUES (?,?,?)", data)
                 self.conn.commit()

@@ -1,27 +1,28 @@
 #!!!!!!!!!!!! ó = o
 from multiprocessing import Lock
-from pickle import TRUE
 import re
 import sys
 import threading
-import time
+
+from requests_oauthlib.compliance_fixes.mailchimp import mailchimp_compliance_fix
 
 from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
+
 
 # VIPS fehlen# H.Dietl-L  Johannes  STANDARDWOFFPACK_IW_FACULTY
 # Odegaard      Doppelnamen
 # Paulina Lara  Doppelnamen
 # Zalan > Zalán
-
-
 class Compare():
   # needed for printing
     lock = Lock()
 
-    def __init__(self, azure, sokrates):
+    def __init__(self, azure, sokrates, cryptor, encrypt):
         self.azure = azure
         self.sokrates = sokrates
+        self.cryptor = cryptor
+        self.encrypt = encrypt
         self.delete = []
 
         self.thread = threading.Thread(target=self.run, args=())
@@ -136,11 +137,19 @@ class Compare():
                 found = True
             else:
                 for sUser in self.sokrates:
-
-                    avorname = aUser.vorname
-                    anachname = aUser.nachname
-                    svorname = sUser.vorname
-                    snachname = sUser.nachname
+                    if self.encrypt:
+                        # print(type(aUser.vorname.decode()))
+                        avorname = self.cryptor.decrypt(aUser.vorname.decode())
+                        anachname = self.cryptor.decrypt(
+                            aUser.nachname.decode())
+                        svorname = self.cryptor.decrypt(sUser.vorname.decode())
+                        snachname = self.cryptor.decrypt(
+                            sUser.nachname.decode())
+                    else:
+                        avorname = aUser.vorname
+                        anachname = aUser.nachname
+                        svorname = sUser.vorname
+                        snachname = sUser.nachname
                     if self.compareNames(avorname, anachname, svorname, snachname):
                         found = True
                         break
@@ -156,6 +165,15 @@ class Compare():
 
             if found is False:
                 # gibt es nicht mehr
-                self.delete.append(aUser)
+                if self.encrypt:
+                    user = UserObj()
+                    user.nachname = self.cryptor.decrypt(
+                        aUser.nachname.decode())
+                    user.vorname = self.cryptor.decrypt(aUser.vorname.decode())
+                    user.mail = self.cryptor.decrypt(aUser.mail.decode())
+
+                    self.delete.append(user)
+                else:
+                    self.delete.append(aUser)
 
         return False

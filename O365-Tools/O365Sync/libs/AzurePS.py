@@ -158,7 +158,6 @@ class AzurePS():
         cmd = self.createCmd(cmdarray)
 
         if self.debug:
-            self.debugOutput(cmdarray)
             self.debugSave(cmd)
 
         self.runner.runCmd(cmd)
@@ -168,5 +167,5 @@ class AzurePS():
 
 
 # Test
-#a = Azure()
+# a = Azure()
 # a.getAccounts()

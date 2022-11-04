@@ -16,7 +16,7 @@ Mit diesem Tool werden die Office365 Benutzer der Schule abgeglichen
    Spezialkonten sind z.B. für Sekretariat, Testkonten, etc.
   
 -- Lehrer und Spezialkonten werden niemals gelöscht --  
--- Alle Daten werden verschlüsselt in der SQLite DB abgelegt (vergl. *config/key.key*) --  
+-- Alle Daten werden verschlüsselt in der SQLite DB abgelegt (vergl. config/config.yaml) --
   
 3. Die Schüler Accounts werden aus Sokrates via CSV Datei importiert.
    Auswertungen > Dynamische Suche > 100 Aktive Schüler > Exportieren als CSV
