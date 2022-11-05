@@ -90,9 +90,17 @@ class Compare():
           Steiner Pérez
           Schönfelder-Kickinger
         """
-        if "diego" == avorname.lower():
-            if "diego" == svorname.lower():
+        # Debugging --------------------------------
+        testname = "diego"
+        # print(type(avorname))
+        if testname == avorname.lower():
+            if testname == svorname.lower():
                 k = 0
+        testname = "lentschig"
+        if testname == anachname.lower():
+            if testname == snachname.lower():
+                k = 0
+        # Debugging --------------------------------
 
         if avorname.lower() in svorname.lower() and anachname.lower() in snachname.lower():
             return True
@@ -155,10 +163,22 @@ class Compare():
                         break
 
                     # Sonderzeichen herausnehmen ....
-                    avorname = self.normalize(aUser.vorname)
-                    anachname = self.normalize(aUser.nachname)
-                    svorname = self.normalize(sUser.vorname)
-                    snachname = self.normalize(sUser.nachname)
+                    if self.encrypt:
+                        # print(type(aUser.vorname.decode()))
+                        avorname = self.normalize(
+                            self.cryptor.decrypt(aUser.vorname.decode()))
+                        anachname = self.normalize(self.cryptor.decrypt(
+                            aUser.nachname.decode()))
+                        svorname = self.normalize(
+                            self.cryptor.decrypt(sUser.vorname.decode()))
+                        snachname = self.normalize(self.cryptor.decrypt(
+                            sUser.nachname.decode()))
+                    else:
+                        avorname = self.normalize(aUser.vorname)
+                        anachname = self.normalize(aUser.nachname)
+                        svorname = self.normalize(sUser.vorname)
+                        snachname = self.normalize(sUser.nachname)
+
                     if self.compareDoubleNames(avorname, anachname, svorname, snachname):
                         found = True
                         break

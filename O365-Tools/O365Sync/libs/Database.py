@@ -71,7 +71,18 @@ class Database():
         cmd = "DELETE FROM %s" % table
         self.cursor.execute(cmd)
         self.conn.commit()
+
+        # reset autoincrement
+        cmd = "UPDATE SQLITE_SEQUENCE SET seq = 0 WHERE name = '%s'" % table
+        self.cursor.execute(cmd)
+        self.conn.commit()
+
+        cmd = "VACUUM"
+        self.cursor.execute(cmd)
+        self.conn.commit()
+
         self.close()
+        print("%s from Database truncated ..." % table)
 
     def Insert_Azure(self, accounts, vips):
         """ insert User Accounts Object into DB """
