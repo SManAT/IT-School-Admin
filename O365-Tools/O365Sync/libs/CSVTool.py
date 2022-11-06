@@ -81,4 +81,6 @@ class CSVTool():
     def save(self, filename, data):
         """ Write data to a CSV File """
         df = pandas.DataFrame([vars(c) for c in data])
+        # replace nan to ''
+        df = df.replace("nan", '', regex=True)
         df.to_csv(filename, sep=";")

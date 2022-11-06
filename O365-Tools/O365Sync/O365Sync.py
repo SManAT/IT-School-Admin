@@ -1,6 +1,7 @@
 import atexit
 import os
 from pathlib import Path
+import re
 import shutil
 import sys
 
@@ -199,6 +200,7 @@ class O365():
                         "", 0.1).start()
 
         csvFilePath = os.path.join(self.filesDir, self.csvFilename)
+
         self.azure = AzurePS(self.config, self.scriptPath,
                              self.console, self.keyFile, csvFilePath, self.debug, self.debugPath)
         self.azure.start()
@@ -255,7 +257,8 @@ class O365():
         azure = self.db.loadAzureTable()
         sokrates = self.db.loadSokratesTable()
 
-        compare = Compare(azure, sokrates, self.cryptor, self.encrypt)
+        compare = Compare(azure, sokrates, self.cryptor,
+                          self.encrypt, self.vips)
         compare.start()
         # block until finished
         compare.getThread().join()

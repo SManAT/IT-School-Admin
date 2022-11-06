@@ -3,6 +3,7 @@ from multiprocessing import Lock
 import re
 import sys
 import threading
+import time
 
 from requests_oauthlib.compliance_fixes.mailchimp import mailchimp_compliance_fix
 
@@ -18,11 +19,13 @@ class Compare():
   # needed for printing
     lock = Lock()
 
-    def __init__(self, azure, sokrates, cryptor, encrypt):
+    def __init__(self, azure, sokrates, cryptor, encrypt, vips):
         self.azure = azure
         self.sokrates = sokrates
         self.cryptor = cryptor
         self.encrypt = encrypt
+        self.vips = vips
+
         self.delete = []
 
         self.thread = threading.Thread(target=self.run, args=())
@@ -84,11 +87,37 @@ class Compare():
             return True
         return False
 
+    def getNameParts(self, name):
+        """ Doppelnamen aufbrechen """
+        parts = re.split(r'[\ _\-]', name)
+        return parts
+
+    def compareDoppelnamen(self, name1, name2):
+        p1 = self.getNameParts(name1)
+        p2 = self.getNameParts(name2)
+
+        # bool array, nur wenn alle flags = True passt der Name
+        size = len(p1)
+        if len(p2) > size:
+            size = len(p2)
+        flags = [False] * size
+
+        index = 0
+        for n1 in p1:
+            for n2 in p2:
+                if n1.lower() in n2.lower():
+                    flags[index] = True
+            index += 1
+
+        erg = True
+        for f in flags:
+            if f is False:
+                erg = False
+        return erg
+
     def compareDoubleNames(self, avorname, anachname, svorname, snachname):
-        """ vergl, Vor und Nachnamen auf Doppelname und auch mit tauschen 
-        # Nachname Doppelname
-          Steiner Pérez
-          Schönfelder-Kickinger
+        """ 
+        vergl, Vor und Nachnamen auf Doppelname und auch mit tauschen 
         """
         # Debugging --------------------------------
         testname = "diego"
@@ -96,40 +125,71 @@ class Compare():
         if testname == avorname.lower():
             if testname == svorname.lower():
                 k = 0
-        testname = "lentschig"
+        testname = "Yousefzadeh".lower()
         if testname == anachname.lower():
             if testname == snachname.lower():
                 k = 0
+
+        #avorname = "Anna"
+        #svorname = "Anna-Patricia"
+
         # Debugging --------------------------------
 
+        # Vor- Nachname vertauscht
         if avorname.lower() in svorname.lower() and anachname.lower() in snachname.lower():
             return True
         if avorname.lower() in snachname.lower() and anachname.lower() in svorname.lower():
             return True
-        # split Doppelname
-        nachnamepart = False
-        parts = re.split(' |-', anachname)
-        if len(parts) > 1:
-            for p in parts:
-                # check in Nachname Sokrates
-                if p.lower() in snachname.lower():
-                    nachnamepart = True
-                    break
+
+        # split Doppelname -----
+        nachnamepart = self.compareDoppelnamen(anachname, snachname)
+        if nachnamepart is False:
+            # teste Azure > Sokrates und Sokrates -> Azure
+            if anachname.lower() in snachname.lower() or snachname.lower() in anachname.lower():
+                nachnamepart = True
+
         # Vorname -----
-        parts = re.split(' |-', avorname)
-        vornameepart = False
-        if len(parts) > 1:
-            for p in parts:
-                # check in Nachname Sokrates
-                if p.lower() in svorname.lower():
-                    vornameepart = True
-                    break
+        vornameepart = self.compareDoppelnamen(avorname, svorname)
+        if vornameepart is False:
+            # teste Azure > Sokrates und Sokrates -> Azure
+            if avorname.lower() in svorname.lower() or svorname.lower() in avorname.lower():
+                vornameepart = True
 
         # Falls Vor und Nachname passen dann treffer
         if vornameepart is True and nachnamepart is True:
             return True
 
         return False
+
+    def getName(self, what):
+        if self.encrypt:
+            return self.cryptor.decrypt(what.decode())
+        else:
+            return what
+
+    def searchVIP(self, aUser):
+        found = False
+        for vip in self.vips['vips']:
+            avorname = self.getName(aUser.vorname)
+            anachname = self.getName(aUser.nachname)
+
+            parts = vip.split(" ")
+            svorname = parts[0].strip()
+            snachname = parts[1].strip()
+
+            if self.compareNames(avorname, anachname, svorname, snachname):
+                found = True
+                break
+
+            avorname = self.normalize(self.getName(aUser.vorname))
+            anachname = self.normalize(self.getName(aUser.nachname))
+            svorname = self.normalize(parts[0])
+            snachname = self.normalize(parts[1])
+            if self.compareDoubleNames(avorname, anachname, svorname, snachname):
+                found = True
+                break
+
+        return found
 
     def run(self):
         """ compare Azure User against Sokrates User """
@@ -138,46 +198,32 @@ class Compare():
             print(".", end="")
             sys.stdout.flush()
 
-            found = False
+            # CPU breath
+            time.sleep(0.01)
 
-            # keine Lehrer keine Vips
-            if aUser.licenses == 'L' or aUser.licenses == 'V':
+            found = False
+            # keine Lehrer keine Vips aus DB
+            # oder keine Vips falls nur config verändert
+            if aUser.licenses == 'L' or aUser.licenses == 'V' or self.searchVIP(aUser):
                 found = True
             else:
                 for sUser in self.sokrates:
-                    if self.encrypt:
-                        # print(type(aUser.vorname.decode()))
-                        avorname = self.cryptor.decrypt(aUser.vorname.decode())
-                        anachname = self.cryptor.decrypt(
-                            aUser.nachname.decode())
-                        svorname = self.cryptor.decrypt(sUser.vorname.decode())
-                        snachname = self.cryptor.decrypt(
-                            sUser.nachname.decode())
-                    else:
-                        avorname = aUser.vorname
-                        anachname = aUser.nachname
-                        svorname = sUser.vorname
-                        snachname = sUser.nachname
+                    # print(type(aUser.vorname.decode()))
+                    avorname = self.getName(aUser.vorname)
+                    anachname = self.getName(aUser.nachname)
+                    svorname = self.getName(sUser.vorname)
+                    snachname = self.getName(sUser.nachname)
+
                     if self.compareNames(avorname, anachname, svorname, snachname):
                         found = True
                         break
 
                     # Sonderzeichen herausnehmen ....
-                    if self.encrypt:
-                        # print(type(aUser.vorname.decode()))
-                        avorname = self.normalize(
-                            self.cryptor.decrypt(aUser.vorname.decode()))
-                        anachname = self.normalize(self.cryptor.decrypt(
-                            aUser.nachname.decode()))
-                        svorname = self.normalize(
-                            self.cryptor.decrypt(sUser.vorname.decode()))
-                        snachname = self.normalize(self.cryptor.decrypt(
-                            sUser.nachname.decode()))
-                    else:
-                        avorname = self.normalize(aUser.vorname)
-                        anachname = self.normalize(aUser.nachname)
-                        svorname = self.normalize(sUser.vorname)
-                        snachname = self.normalize(sUser.nachname)
+                    # print(type(aUser.vorname.decode()))
+                    avorname = self.normalize(self.getName(aUser.vorname))
+                    anachname = self.normalize(self.getName(aUser.nachname))
+                    svorname = self.normalize(self.getName(sUser.vorname))
+                    snachname = self.normalize(self.getName(sUser.nachname))
 
                     if self.compareDoubleNames(avorname, anachname, svorname, snachname):
                         found = True
