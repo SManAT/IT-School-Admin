@@ -1,9 +1,0 @@
-config:
-  USE_SHARE: 1
-  LOCAL_PATH: wallpapers\
-  LOCAL_STORAGE: tmp\
-  LAST: 35662_1600x1200-wallpaper-cb1306355061.jpg
-  share:
-    PATH: \\192.168.1.10\Public\wallpapers
-    USER: testuser
-    PWD: gAAAAABjW_JlC48Oqv5YAc447Y9VYJ13vBLo7Draiqk7pC0iyh26a8atxEAnbVuyNTb_poXTHPcAKI5eNx69c_VYnpXfAoyEQQ==

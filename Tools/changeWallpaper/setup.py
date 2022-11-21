@@ -16,6 +16,7 @@ if __name__ == '__main__':
         license="GPLv3",
         install_requires=[
             'pyyaml',
+            'ruamel.yaml',
             'cx_Freeze',
             'click',
             'rich',

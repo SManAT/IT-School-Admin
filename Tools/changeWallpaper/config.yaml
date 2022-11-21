@@ -4,6 +4,6 @@ config:
   LOCAL_STORAGE: tmp\
   LAST: 21086_1280x1024-wallpaper-cb1275934550.jpg
   share:
-    PATH: \\192.168.1.10\Public\wallpapers
-    USER: testuser
+    PATH: \\toolbox\common\wallpapers
+    USER: common
     PWD: gAAAAABjW_JlC48Oqv5YAc447Y9VYJ13vBLo7Draiqk7pC0iyh26a8atxEAnbVuyNTb_poXTHPcAKI5eNx69c_VYnpXfAoyEQQ==

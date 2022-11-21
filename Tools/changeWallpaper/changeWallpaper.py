@@ -19,6 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
+import cv2
 import os
 from pathlib import Path
 import random
@@ -28,7 +29,6 @@ from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
 from cryptography.fernet import Fernet
-import cv2
 from rich.console import Console
 from rich.table import Table
 import yaml
@@ -188,7 +188,7 @@ class Wallpaper():
                 STYLE = self.STYLE['SPAN']
 
         SPI_SETDESKWALLPAPER = 20
-        SPIF_UPDATEINIFILE = 0x01     # forces instant update
+        SPIF_UPDATEINIFILE = 0x01  # forces instant update
         SPIF_SENDWININICHANGE = 0x02  # noqa
         TILEWALLPAPER = 0
 
@@ -246,6 +246,11 @@ class Wallpaper():
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
+        
+        doc = ruamel.yaml.load(self.configFile, Loader=ruamel.yaml.RoundTripLoader)
+        doc['ParentTest']['test']['new_key'] = 'new value'
+        print(ruamel.yaml.dump(doc, Dumper=ruamel.yaml.RoundTripDumper))
+        
         with open(self.configFile, 'rt') as f:
             yml = yaml.safe_load(f.read())
         return yml
