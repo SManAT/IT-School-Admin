@@ -19,24 +19,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import ctypes
-import cv2
 import os
 from pathlib import Path
 import random
 import shutil
 import struct
+import subprocess
+import sys
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
 from cryptography.fernet import Fernet
+import cv2
 from rich.console import Console
 from rich.table import Table
+from ruamel.yaml import YAML
+import ruamel.yaml
 import yaml
 
 from libs.Cryptor import Cryptor
 from libs.OpenCV import OpenCV
-from ruamel.yaml import YAML
-import sys
 
 
 # https://stackoverflow.com/questions/53878508/change-windows-10-background-in-python-3
@@ -62,11 +64,9 @@ class Wallpaper():
         self.isrealtive = False
         if self.config['config']['USE_SHARE'] == 0:
             self.isrealtive = True
-        self.wallpaperPath = os.path.join(
-            self.rootDir, self.config['config']['LOCAL_PATH'])
 
-        self.TMP_WALLPAPER_PATH = os.path.join(
-            self.rootDir, self.config['config']['LOCAL_STORAGE'])
+        self.wallpaperPath = os.path.join(self.rootDir, self.config['config']['LOCAL_PATH'])
+        self.TMP_WALLPAPER_PATH = os.path.join(self.rootDir, self.config['config']['LOCAL_STORAGE'])
 
         if os.path.isdir(self.TMP_WALLPAPER_PATH) is False:
             os.mkdir(self.TMP_WALLPAPER_PATH)
@@ -99,7 +99,7 @@ class Wallpaper():
             rand_index = random.randint(0, len(self.wallpapers))
             path = self.wallpapers[rand_index]
 
-        self.opencv.createVignette(path)
+        # self.opencv.createVignette(path)
 
         # self.changeWallpaper(path)
 
@@ -107,25 +107,12 @@ class Wallpaper():
 
     def storeLastOne(self, filename):
         """ stores the last used wallpaer in config.yaml """
-        data = dict(
-            config=dict(
-                USE_SHARE=self.config['config']['USE_SHARE'],
-                LOCAL_PATH=self.config['config']['LOCAL_PATH'],
-                LOCAL_STORAGE=self.config['config']['LOCAL_STORAGE'],
-                LAST=os.path.basename(filename),
-
-                share=dict(
-                    PATH=self.config['config']['share']['PATH'],
-                    USER=self.config['config']['share']['USER'],
-                    PWD=self.config['config']['share']['PWD']
-                )
-            )
-        )
+        self.config['config']['LAST'] = os.path.basename(filename)
         with open(self.configFile, 'w', encoding="UTF-8") as f:
-            yaml.dump(data, f, sort_keys=False, default_flow_style=False)
+            yaml.dump(self.config, f, sort_keys=False, default_flow_style=False)
 
     def loadWallpapers(self, copy=False):
-        """ 
+        """
         load all Wallpapers from PATH/SHARE
         :param copy: copy wallpapers from Share to host into TMP_WALLPAPER_PATH
         """
@@ -216,15 +203,14 @@ class Wallpaper():
     # NET SHARE Section ------------------------------------------------------
 
     def connect_network_share(self, path, username="", pwd=""):
-        """ 
+        """
         connect to a Network share
         :param path: the unc path to the share
         :param username: the username to connect with
         :param pwd: the password for the user
         """
-        # 2DO #################################################################
         # debug, close all connections
-        os.system("net use * /delete")
+        subprocess.run(['net', 'use', '*', '/delete'], capture_output=True)
 
         backup_storage_available = os.path.isdir(path)
 
@@ -233,12 +219,11 @@ class Wallpaper():
         else:
             print("Connecting to backup storage.")
             if self.share_user is not None:
-                mount_command = 'net use "%s" /persistent:no /user:"%s" "%s"' % (
-                    path, username, pwd)
+                command = f'net use {path} /persistent:no /user:{username} {pwd}'.split(' ')
             else:
-                mount_command = 'net use "%s" /persistent:no' % (path)
+                command = f'net use {path} /persistent:no'.split(' ')
+            subprocess.run([command], capture_output=True)
 
-            os.system(mount_command)
             backup_storage_available = os.path.isdir(path)
 
             if backup_storage_available:
@@ -248,11 +233,9 @@ class Wallpaper():
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
-        fp = open(self.configFile, "r")
-        yaml = YAML(typ='safe')
-        data = yaml.load(fp)
-        yaml.dump(data, sys.stdout)
-        return data
+        with open(self.configFile, 'rt') as f:
+            yml = yaml.safe_load(f.read())
+        return yml
 
     def list(self):
         """ list all wallpapers """

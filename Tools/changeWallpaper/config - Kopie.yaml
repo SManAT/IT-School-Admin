@@ -11,9 +11,9 @@ config:
   LAST: None
   
   share:
-     PATH: \\192.168.1.10\Public\wallpapers
-     # if USER and PWS is set to NONE, no credidentials will be used
-     USER: None
-     # hash the password with --encrypt Parameter
-     PWD: None
+    PATH: \\192.168.1.10\Public\wallpapers
+    # if USER and PWS is empty, no credidentials will be used
+    USER: 
+    # hash the password with --encrypt Parameter
+    PWD: 
   
