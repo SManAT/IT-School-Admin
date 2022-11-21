@@ -35,6 +35,8 @@ import yaml
 
 from libs.Cryptor import Cryptor
 from libs.OpenCV import OpenCV
+from ruamel.yaml import YAML
+import sys
 
 
 # https://stackoverflow.com/questions/53878508/change-windows-10-background-in-python-3
@@ -246,14 +248,11 @@ class Wallpaper():
 
     def load_yml(self):
         """ Load the yaml file config.yaml """
-        
-        doc = ruamel.yaml.load(self.configFile, Loader=ruamel.yaml.RoundTripLoader)
-        doc['ParentTest']['test']['new_key'] = 'new value'
-        print(ruamel.yaml.dump(doc, Dumper=ruamel.yaml.RoundTripDumper))
-        
-        with open(self.configFile, 'rt') as f:
-            yml = yaml.safe_load(f.read())
-        return yml
+        fp = open(self.configFile, "r")
+        yaml = YAML(typ='safe')
+        data = yaml.load(fp)
+        yaml.dump(data, sys.stdout)
+        return data
 
     def list(self):
         """ list all wallpapers """
