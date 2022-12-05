@@ -1,0 +1,4 @@
+S:\Backups
+S:\KMS
+S:\PDC
+S:\Usermanagement

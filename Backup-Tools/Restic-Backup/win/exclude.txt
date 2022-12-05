@@ -1,0 +1,4 @@
+# Use Globs here
+Thumbs.db
+*.iso
+*.log
