@@ -7,6 +7,8 @@ see [Restic Documentation](https://restic.readthedocs.io/en/stable/)
 
 # Example
 
+Be sure to have an *SSH key pair* for an User, that will use restic for *sftp* operations.
+
 ## Linux
 see `backup.sh` for an example. The Restic password is hardcoded in `restic.pwd` with root:root 400.
 
