@@ -21,6 +21,7 @@ if __name__ == '__main__':
             'rich',
             'cryptography',
             'opencv-python',
+            'pysftp',
         ],
         python_requires='>=3.8',
     )
