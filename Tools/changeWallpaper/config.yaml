@@ -1,10 +1,21 @@
 version: 1
 config:
-  USE_SHARE: 1
+  # if set, then we use SFTP for loading wallpapers
+  # otherwise, we use a path relative to script dir
+  USE_SFTP: 1
+  # local path to wallpapers
   LOCAL_PATH: wallpapers\
+  # where to store the wallpapers
   LOCAL_STORAGE: tmp\
-  LAST: 10775_1600x1200-wallpaper-cb1268088745.jpg
-  share:
-    PATH: \\toolbox\Common
-    USER: schule\common
-    PWD: gAAAAABjfJ6BteZYzJtB_w4mwwvEUciu6uddhUqnGP92G3fJAEPNXEWGLUBKOC8_dnrIs8HuefKp8acKMAlABM0Z1Nc3ZtmOhw==
+  # last wallpaper
+  LAST: None
+  
+  sftp:
+    HOSTNAME: toolbox
+    PATH: wallpapers
+    # if USER and PWS is empty, no credidentials will be used
+    USER: common-mount
+    # hash the password with --encrypt Parameter
+    PWD: gAAAAABjlvlH4jX7OqlRvStofeB8uiQ1-egQRFWNUj_iE8WIZGeX_PX192CuPDRyKkdatAJy2QKV2lo0Q0GbpI-qmXR24S8iL8b4JOJQ3UQIQI40W8lOvK0=
+  
+    

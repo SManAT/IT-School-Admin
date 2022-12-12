@@ -39,6 +39,8 @@ import yaml
 
 from libs.Cryptor import Cryptor
 from libs.OpenCV import OpenCV
+from pickle import FALSE
+from libs.sftp import SFTP
 
 
 # https://stackoverflow.com/questions/53878508/change-windows-10-background-in-python-3
@@ -59,10 +61,11 @@ class Wallpaper():
         self.console = Console()
         self.opencv = OpenCV()
 
-        self.share = self.config['config']['share']['PATH']
+        self.sftp_server = self.config['config']['sftp']['HOSTNAME']
+        self.sftp_path = self.config['config']['sftp']['PATH']
         self.last = self.config['config']['LAST']
         self.isrealtive = False
-        if self.config['config']['USE_SHARE'] == 0:
+        if self.config['config']['USE_SFTP'] == 0:
             self.isrealtive = True
 
         self.wallpaperPath = os.path.join(self.rootDir, self.config['config']['LOCAL_PATH'])
@@ -71,20 +74,19 @@ class Wallpaper():
         if os.path.isdir(self.TMP_WALLPAPER_PATH) is False:
             os.mkdir(self.TMP_WALLPAPER_PATH)
 
-        self.share_user = self.config['config']['share']['USER']
-        self.share_pwd = self.config['config']['share']['PWD']
-        if self.share_pwd is not None:
+        self.sftp_user = self.config['config']['sftp']['USER']
+        self.sftp_pwd = self.config['config']['sftp']['PWD']
+        if self.sftp_pwd is not None:
             keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
             cryptor = Cryptor(keyFile)
-            self.share_pwd = cryptor.decrypt(self.share_pwd)
+            self.sftp_pwd = cryptor.decrypt(self.sftp_pwd)
 
     def start(self):
         """ will change the wallpaper """
         if self.isrealtive is False:
             # use net Share
-            if self.share_user is not None:
-                self.connect_network_share(
-                    self.share, self.share_user, self.share_pwd)
+            if self.sftp_user is not None:
+                self.connect_sftp(self.sftp_server, self.sftp_user, self.sftp_pwd)
             else:
                 self.connect_network_share(self.share)
             self.wallpaperPath = self.share
@@ -202,18 +204,32 @@ class Wallpaper():
 
     # NET SHARE Section ------------------------------------------------------
 
-    def connect_network_share(self, path, username="", pwd=""):
+    def connect_sftp(self, server, username="", pwd=""):
         """
-        connect to a Network share
-        :param path: the unc path to the share
+        connect to a SFTP Server
+        :param server: hostname or IP of the server
         :param username: the username to connect with
         :param pwd: the password for the user
         """
+        sftp = SFTP(self.rootDir, server, username, pwd)
+        
+        
+        
+        
+        
         # debug, close all connections
-        subprocess.run(['net', 'use', '*', '/delete'], capture_output=True)
+        result = subprocess.run(['net', 'use', '/delete', path], capture_output=True, text=True)
+        
+        print("stdout: ", result.stdout)
+        print("stderr: ", result.stderr)
 
+        #????
         backup_storage_available = os.path.isdir(path)
-
+        #debug
+        backup_storage_available = False
+        
+        
+        
         if backup_storage_available:
             print("Already connected with SHARE %s ..." % path)
         else:
@@ -222,7 +238,12 @@ class Wallpaper():
                 command = f'net use {path} /persistent:no /user:{username} {pwd}'.split(' ')
             else:
                 command = f'net use {path} /persistent:no'.split(' ')
-            subprocess.run([command], capture_output=True)
+                
+            print(command)
+            result = subprocess.run([command], capture_output=True, text=True)
+            
+            print("stdout: ", result.stdout)
+            print("stderr: ", result.stderr)
 
             backup_storage_available = os.path.isdir(path)
 

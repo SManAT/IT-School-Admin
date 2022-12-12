@@ -1,8 +1,8 @@
 version: 1
 config:
-  # if set, then we use a Network Share for loading wallpapers
+  # if set, then we use SFTP for loading wallpapers
   # otherwise, we use a path relative to script dir
-  USE_SHARE: 1
+  USE_SFTP: 1
   # local path to wallpapers
   LOCAL_PATH: wallpapers\
   # where to store the wallpapers
@@ -10,8 +10,10 @@ config:
   # last wallpaper
   LAST: None
   
-  share:
-    PATH: \\192.168.1.10\Public\wallpapers
+  sftp:
+    HOSTNAME: myServer
+    # the path onto the SFTP server
+    PATH: wallpapers
     # if USER and PWS is empty, no credidentials will be used
     USER: 
     # hash the password with --encrypt Parameter
