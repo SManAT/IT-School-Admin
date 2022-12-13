@@ -24,8 +24,6 @@ from pathlib import Path
 import random
 import shutil
 import struct
-import subprocess
-import sys
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
@@ -33,13 +31,10 @@ from cryptography.fernet import Fernet
 import cv2
 from rich.console import Console
 from rich.table import Table
-from ruamel.yaml import YAML
-import ruamel.yaml
 import yaml
 
 from libs.Cryptor import Cryptor
 from libs.OpenCV import OpenCV
-from pickle import FALSE
 from libs.sftp import SFTP
 
 
@@ -87,10 +82,6 @@ class Wallpaper():
             # use net Share
             if self.sftp_user is not None:
                 self.connect_sftp(self.sftp_server, self.sftp_user, self.sftp_pwd)
-            else:
-                self.connect_network_share(self.share)
-            self.wallpaperPath = self.share
-            self.loadWallpapers(True)
         else:
             self.loadWallpapers()
 
@@ -113,26 +104,14 @@ class Wallpaper():
         with open(self.configFile, 'w', encoding="UTF-8") as f:
             yaml.dump(self.config, f, sort_keys=False, default_flow_style=False)
 
-    def loadWallpapers(self, copy=False):
+    def loadWallpapers(self):
         """
-        load all Wallpapers from PATH/SHARE
-        :param copy: copy wallpapers from Share to host into TMP_WALLPAPER_PATH
+        load all Wallpapers from PATH
         """
         self.wallpapers = []
         self.wallpapers = self.search_files_in_dir(
             self.wallpaperPath, '*.jp[e]?g')
-
-        if copy is True:
-            newwallpapers = []
-            # copy the new once to TMP_WALLPAPER_PATH
-            for file in self.wallpapers:
-                target = os.path.join(self.TMP_WALLPAPER_PATH,
-                                      os.path.basename(file))
-                if os.path.exists(target) is False:
-                    shutil.copy(file, self.TMP_WALLPAPER_PATH)
-                newwallpapers.append(target)
-            self.wallpapers = newwallpapers
-
+        
     def search_files_in_dir(self, directory='.', pattern=''):
         """
         search for pattern in directory NOT recursive
@@ -212,46 +191,26 @@ class Wallpaper():
         :param pwd: the password for the user
         """
         sftp = SFTP(self.rootDir, server, username, pwd)
+        wallpapers = sftp.load_wallpapapers(self.sftp_path)
         
+        print(f"Found {len(wallpapers)} wallpapers...")
         
+        # Syncing Wallpapers ------------------
         
-        
-        
-        # debug, close all connections
-        result = subprocess.run(['net', 'use', '/delete', path], capture_output=True, text=True)
-        
-        print("stdout: ", result.stdout)
-        print("stderr: ", result.stderr)
-
-        #????
-        backup_storage_available = os.path.isdir(path)
-        #debug
-        backup_storage_available = False
-        
-        
-        
-        if backup_storage_available:
-            print("Already connected with SHARE %s ..." % path)
-        else:
-            print("Connecting to backup storage.")
-            if self.share_user is not None:
-                command = f'net use {path} /persistent:no /user:{username} {pwd}'.split(' ')
-            else:
-                command = f'net use {path} /persistent:no'.split(' ')
-                
-            print(command)
-            result = subprocess.run([command], capture_output=True, text=True)
+        newwallpapers = []
+        # copy the new once to TMP_WALLPAPER_PATH
+        for file in wallpapers:
+            target = os.path.join(self.TMP_WALLPAPER_PATH, os.path.basename(file))
+            if os.path.exists(target) is False:
+                # pull from SFTP
+                sourceFile = os.path.join(self.sftp_path, file)
+                # Backslashes to Forwardslashes and add Root /
+                sourceFile = "/" + sourceFile.replace('\\', '/')
+                sftp.get(sourceFile, target)
+            newwallpapers.append(target)
+        sftp.close()
+        self.wallpapers = newwallpapers
             
-            print("stdout: ", result.stdout)
-            print("stderr: ", result.stderr)
-
-            backup_storage_available = os.path.isdir(path)
-
-            if backup_storage_available:
-                print("Connection to SHARE success...")
-            else:
-                raise Exception("Failed to connect to SHARE %S ..." % path)
-
     def load_yml(self):
         """ Load the yaml file config.yaml """
         with open(self.configFile, 'rt') as f:
