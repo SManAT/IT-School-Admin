@@ -273,6 +273,9 @@ def start(listing, clear, encrypt, go):
 
     if go is True:
         paper.start()
+        
+    # debug
+    # paper.start()
 
 
 def checkKeyFile():

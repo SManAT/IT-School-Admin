@@ -18,7 +18,7 @@ class SFTP:
         try:
             cnopts = pysftp.CnOpts()
             cnopts.hostkeys = None
-            cnopts.log = self.sftplog
+            # cnopts.log = self.sftplog
             
             self.sftp = pysftp.Connection(
               self.hostname,

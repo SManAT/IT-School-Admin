@@ -18,9 +18,14 @@ __pyfile__ = "changeWallpaper"
 
 # use relative paths
 include_files = ['config.yaml', 'README.md']
-include_dirs = []
+
+# copy additional dirs, base = root folder
+include_dirs = dict()
+include_dirs['secrets'] = "./"
+# include_dirs['libs/secretes'] = "./libs/"
+
 includes = []
-excludes = []
+excludes = ['tcltk', 'tkinter']
 packages = []
 # add other dirs to search for custom modules
 path = ["libs"] + sys.path
@@ -59,7 +64,9 @@ for root, dirs, files in os.walk(searchPath):
     if root[len(searchPath):].count(os.sep) < depth:
         for dirpath in dirs:
             copyTo.append(os.path.join(searchPath, dirpath))
+
 # copy additional dirs to lib/ folder
 for dirpath in copyTo:
-    for incdir in include_dirs:
-        copy_tree(incdir, os.path.join(dirpath, "lib", incdir))
+    for fromdir, todir in include_dirs.items():
+        copy_tree(fromdir, os.path.join(dirpath, todir))
+
