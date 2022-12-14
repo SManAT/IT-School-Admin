@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2019 Stefan Hagmann
 
+import os
+
 import cv2
+
 import numpy as np
 
 
@@ -73,8 +76,8 @@ class OpenCV():
         rows, cols = input_image.shape[:2]
         # generating vignette mask using Gaussian
         # resultant_kernels
-        X_resultant_kernel = cv2.getGaussianKernel(cols, 200)
-        Y_resultant_kernel = cv2.getGaussianKernel(rows, 200)
+        X_resultant_kernel = cv2.getGaussianKernel(cols, 2000)
+        Y_resultant_kernel = cv2.getGaussianKernel(rows, 2000)
 
         # generating resultant_kernel matrix
         resultant_kernel = Y_resultant_kernel * X_resultant_kernel.T
@@ -86,8 +89,17 @@ class OpenCV():
 
         # applying the mask to each channel in the input image
         for i in range(3):
-            output[:, :, i] = output[:, :, i] * mask
+            output[:,:, i] = output[:,:, i] * mask
 
+        newfile = os.path.join(os.path.dirname(imgpath), "mod_" + os.path.basename(imgpath))
+        if not cv2.imwrite(newfile, output):
+            raise Exception("Could not write image")
+        
+        return newfile
+
+        # debug output
+        """
         cv2.imshow('vignette', output)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+        """

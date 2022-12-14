@@ -4,11 +4,12 @@ see https://cx-freeze.readthedocs.io/en/latest/distutils.html
 Build a executeable App for everything.
 Windows: python setup_cx.py build_exe
 """
-import sys
-import os
-from cx_Freeze import setup, Executable
 from distutils.dir_util import copy_tree
+import os
 from pathlib import Path
+import sys
+
+from cx_Freeze import setup, Executable
 
 __author__ = 'Mag. Stefan Hagmann'
 __version__ = '1.0.0'
@@ -16,7 +17,7 @@ __version__ = '1.0.0'
 __pyfile__ = "changeWallpaper"
 
 # use relative paths
-include_files = []
+include_files = ['config.yaml', 'README.md']
 include_dirs = []
 includes = []
 excludes = []
@@ -42,6 +43,7 @@ setup(
         'include_msvcr': True,
         'excludes': excludes,
         'path': path
+        # 'optimize': 2
     }},
 )
 

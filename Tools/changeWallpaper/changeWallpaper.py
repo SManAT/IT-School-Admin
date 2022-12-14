@@ -22,13 +22,11 @@ import ctypes
 import os
 from pathlib import Path
 import random
-import shutil
 import struct
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
 from cryptography.fernet import Fernet
-import cv2
 from rich.console import Console
 from rich.table import Table
 import yaml
@@ -72,7 +70,7 @@ class Wallpaper():
         self.sftp_user = self.config['config']['sftp']['USER']
         self.sftp_pwd = self.config['config']['sftp']['PWD']
         if self.sftp_pwd is not None:
-            keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
+            keyFile = os.path.abspath(os.path.join(self.rootDir, 'secret', 'key.key'))
             cryptor = Cryptor(keyFile)
             self.sftp_pwd = cryptor.decrypt(self.sftp_pwd)
 
@@ -85,16 +83,20 @@ class Wallpaper():
         else:
             self.loadWallpapers()
 
-        rand_index = random.randint(0, len(self.wallpapers))
+        rand_index = random.randint(0, len(self.wallpapers) - 1)
         path = self.wallpapers[rand_index]
 
         while self.last == os.path.basename(path):
             rand_index = random.randint(0, len(self.wallpapers))
             path = self.wallpapers[rand_index]
-
-        # self.opencv.createVignette(path)
-
-        # self.changeWallpaper(path)
+            
+        modified_picture = None
+        # modified_picture = self.opencv.createVignette(path)
+        
+        if modified_picture != None:
+            self.changeWallpaper(modified_picture)
+        else:
+            self.changeWallpaper(path)
 
         self.storeLastOne(path)
 
@@ -198,6 +200,7 @@ class Wallpaper():
         # Syncing Wallpapers ------------------
         
         newwallpapers = []
+        synced = 0
         # copy the new once to TMP_WALLPAPER_PATH
         for file in wallpapers:
             target = os.path.join(self.TMP_WALLPAPER_PATH, os.path.basename(file))
@@ -207,9 +210,11 @@ class Wallpaper():
                 # Backslashes to Forwardslashes and add Root /
                 sourceFile = "/" + sourceFile.replace('\\', '/')
                 sftp.get(sourceFile, target)
+                synced += 1
             newwallpapers.append(target)
         sftp.close()
         self.wallpapers = newwallpapers
+        print(f"Synchronized {synced} wallpapers from server ...")
             
     def load_yml(self):
         """ Load the yaml file config.yaml """
@@ -244,11 +249,12 @@ class Wallpaper():
         self.console.print("All wallpapers deleted!", style="red")
 
 
-@click.command(no_args_is_help=False)
+@click.command(no_args_is_help=True)
+@click.option('-g', '--go', 'go', is_flag=True, help='go ahead, change wallpaper')
 @click.option('-l', '--list', 'listing', is_flag=True, help='list all wallpapers')
 @click.option('--clear', 'clear', is_flag=True, help='delete all local stored wallpapers')
 @click.option('-e', '--encrypt', required=False, default=None, help='Will encrypt the TEXT')
-def start(listing, clear, encrypt):
+def start(listing, clear, encrypt, go):
     paper = Wallpaper()
     if listing is True:
         paper.list()
@@ -265,14 +271,19 @@ def start(listing, clear, encrypt):
         print("\n%s: %s" % (encrypt, chiper.decode()))
         print("Use this hash in your config File for sensible data, e.g. passwords")
 
-    # change wallpaper
-    paper.start()
+    if go is True:
+        paper.start()
 
 
 def checkKeyFile():
     """ will create an encrypr Key if no one exists """
     rootDir = Path(__file__).parent
-    keyFile = os.path.join(rootDir, 'libs', 'key.key')
+    
+    keyFilePath = os.path.abspath(os.path.join(rootDir, 'secret'))
+    if os.path.isdir(keyFilePath) is False:
+            os.mkdir(keyFilePath)
+    
+    keyFile = os.path.abspath(os.path.join(rootDir, 'secret', 'key.key'))
     if (os.path.exists(keyFile) is False):
         key = Fernet.generate_key()
         file = open(keyFile, 'wb')

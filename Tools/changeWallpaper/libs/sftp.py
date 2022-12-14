@@ -12,7 +12,7 @@ class SFTP:
         self.sftp = None
         
         self.knownhosts = os.path.join(rootDir, ".knownhosts")
-        self.sftplog = os.path.join(rootDir, "sftp_log.txt")
+        # self.sftplog = os.path.join(rootDir, "sftp_log.txt")
     
         # Connection
         try:
