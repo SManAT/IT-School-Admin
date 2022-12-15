@@ -27,12 +27,12 @@ from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
 from cryptography.fernet import Fernet
+import cv2
 from rich.console import Console
 from rich.table import Table
 import yaml
 
 from libs.Cryptor import Cryptor
-from libs.OpenCV import OpenCV
 from libs.sftp import SFTP
 
 
@@ -52,7 +52,6 @@ class Wallpaper():
         self.config = self.load_yml()
 
         self.console = Console()
-        self.opencv = OpenCV()
 
         self.sftp_server = self.config['config']['sftp']['HOSTNAME']
         self.sftp_path = self.config['config']['sftp']['PATH']
@@ -90,14 +89,10 @@ class Wallpaper():
             rand_index = random.randint(0, len(self.wallpapers))
             path = self.wallpapers[rand_index]
             
-        modified_picture = None
-        # modified_picture = self.opencv.createVignette(path)
+        path = os.path.abspath(path)
         
-        if modified_picture != None:
-            self.changeWallpaper(modified_picture)
-        else:
-            self.changeWallpaper(path)
-
+        self.changeWallpaper(path)
+            
         self.storeLastOne(path)
 
     def storeLastOne(self, filename):
@@ -136,6 +131,15 @@ class Wallpaper():
     def is_64bit_windows(self):
         """Check if 64 bit Windows OS"""
         return struct.calcsize('P') * 8 == 64
+    
+    def getSize(self, imgpath):
+        """ 
+        get the size of an image
+        :param imgpath: full path to the image
+        """
+        im = cv2.imread(imgpath)
+        height, width = im.shape[:2]
+        return [width, height]
 
     def changeWallpaper(self, filepath, STYLE=None):
         """
@@ -147,7 +151,7 @@ class Wallpaper():
         22: Span
         """
         # load dimensions of file
-        data = self.opencv.getSize(filepath)
+        data = self.getSize(filepath)
         width = data[0]
         height = data[1]
 
@@ -275,6 +279,7 @@ def start(listing, clear, encrypt, go):
         paper.start()
         
     # debug
+    # print("DEBUGGING ======================")
     # paper.start()
 
 

@@ -19,10 +19,8 @@ __pyfile__ = "changeWallpaper"
 # use relative paths
 include_files = ['config.yaml', 'README.md']
 
-# copy additional dirs, base = root folder
-include_dirs = dict()
-include_dirs['secrets'] = "./"
-# include_dirs['libs/secretes'] = "./libs/"
+# copy additional dirs, from root folder to build dir
+include_dirs = ['secret']
 
 includes = []
 excludes = ['tcltk', 'tkinter']
@@ -54,7 +52,7 @@ setup(
 
 # Copy needed directories ------------------------
 
-# search all build subdirs
+# search for all build dirs, eg. exe.win-amd64-3.10 and store them
 depth = 1
 rootPath = Path(__file__).parent
 searchPath = os.path.abspath(os.path.join(rootPath, "build/"))
@@ -65,8 +63,8 @@ for root, dirs, files in os.walk(searchPath):
         for dirpath in dirs:
             copyTo.append(os.path.join(searchPath, dirpath))
 
-# copy additional dirs to lib/ folder
+# copy additional dirs to build dirs
 for dirpath in copyTo:
-    for fromdir, todir in include_dirs.items():
-        copy_tree(fromdir, os.path.join(dirpath, todir))
+    for target in include_dirs:
+        copy_tree(os.path.join(rootPath, target), os.path.join(dirpath, target))
 
