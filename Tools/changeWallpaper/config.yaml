@@ -3,7 +3,7 @@ config:
   USE_SFTP: 1
   LOCAL_PATH: wallpapers\
   LOCAL_STORAGE: tmp\
-  LAST: 48.jpg
+  LAST: 26.jpg
   sftp:
     HOSTNAME: toolbox
     PATH: wallpapers

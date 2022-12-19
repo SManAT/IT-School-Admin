@@ -24,20 +24,25 @@ Go to *Apps und Features* > *Optionale Features* …. and install the OpenSSH Se
   config:
     # if set, then we use a Network Share for loading wallpapers
     # otherwise, we use a path relative to script dir
-    USE_SHARE: 1
+    USE_SFTP: 1
     # local path to wallpapers
     LOCAL_PATH: wallpapers\
-    # where to store the wallpapers
+    # where to store the wallpapers from sftp
     LOCAL_STORAGE: tmp\
-    
-    share:
-      PATH: \\<server>\Public\wallpapers
-      # if USER and PWS is set to NONE, no credidentials will be used
-      USER: None
+    LAST: 26.jpg
+    sftp:
+      # sftp hostname from server
+      HOSTNAME: toolbox
+      # path on sftp server
+      PATH: wallpapers
+      # sftp User
+      USER: 
       # hash the password with --encrypt Parameter
-      PWD: None
+      PWD: 
   ```
 
 # Create Standalone Application
-
 You can pack Python to the Application if you build it with `python setup_cx.py build_exe`.
+
+# Start inside Active Domain
+Create a GPO to start the file `startWallpaperChanger.bat`
