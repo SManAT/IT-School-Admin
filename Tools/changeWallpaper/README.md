@@ -7,7 +7,7 @@ Why SFTP?
 Because i had massive problem to get network share working right on windows.  
 I'm a Linux nerd, so take SFTP ...
 
-## Installin OpenSSH Server on Windows Server
+## Installing OpenSSH Server on Windows Server
 Go to *Apps und Features* > *Optionale Features* …. and install the OpenSSH Server.
 - Create a User to connect with to SSH
 - Create a chrooted directory somewhere. The user above, must have read rights (no need to write)
