@@ -22,7 +22,6 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 - [Common system stuff](System/README.md)
 
 # Tools
-- [restrictLocalUser](Tools/restrictLocalUser/README.md)
 - [changeWallpaper](Tools/changeWallpaper/README.md)
 - [VirtualBox-HyperV](Tools/VirtualBox-HyperV/README.md)
 
