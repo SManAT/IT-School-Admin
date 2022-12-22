@@ -23,6 +23,7 @@ Provides some (that is what i think) usefull scripts for managing Linux&Windows 
 
 # Tools
 - [changeWallpaper](Tools/changeWallpaper/README.md)
+- [restrictLocalUser](Tools/restrictLocalUser/README.md)
 - [VirtualBox-HyperV](Tools/VirtualBox-HyperV/README.md)
 
 # Other usefull Stuff
