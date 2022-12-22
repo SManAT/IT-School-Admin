@@ -26,7 +26,7 @@ import struct
 from winreg import CloseKey, SetValueEx, CreateKey, HKEY_CURRENT_USER, REG_SZ
 
 import click
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 import cv2
 from rich.console import Console
 from rich.table import Table
@@ -71,7 +71,13 @@ class Wallpaper():
         if self.sftp_pwd is not None:
             keyFile = os.path.abspath(os.path.join(self.rootDir, 'secret', 'key.key'))
             cryptor = Cryptor(keyFile)
-            self.sftp_pwd = cryptor.decrypt(self.sftp_pwd)
+            try:
+                self.sftp_pwd = cryptor.decrypt(self.sftp_pwd)
+            except InvalidToken:
+                print("You have a wrong Key in ./secret/ ... must exit now ...")
+                print("Have you copied the Key to this new location?")
+                print("You can also use the new created Key, to hash your passwords in config.yaml again ...")
+                exit(-1)
 
     def start(self):
         """ will change the wallpaper """
