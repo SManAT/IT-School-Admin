@@ -1,20 +1,22 @@
 @echo off
 
 rem Run only once ====
-IF EXIST wallpaper_init.txt GOTO END
-  date /t >> C:\Users\%USER%\AppData\wallpaper_init.txt       
+SET LOCK=wallpaper_init.lock
+IF EXIST %APPDATA%\%LOCK% GOTO NORMAL
+  date /t > %APPDATA%\%LOCK%
   pip install . 
-:END
 
-rem only for this User
-IF /i "%username%"=="Student" goto start
-echo "Not User Student ..."
-goto commonexit
+:NORMAL
+  rem only for this User
+  IF /i "%username%"=="Student" goto START
+  echo "Not User Student ..."
+  GOTO COMMONEXIT
 
-:start
+:START
     rem Start Wallpaper Changer
     python changeWallpaper.py -g
-
-    goto commonexit
-:commonexit
+    
+:COMMONEXIT
     rem bye
+
+pause
