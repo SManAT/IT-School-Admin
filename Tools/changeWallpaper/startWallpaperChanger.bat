@@ -18,5 +18,3 @@ IF EXIST %APPDATA%\%LOCK% GOTO NORMAL
     
 :COMMONEXIT
     rem bye
-
-pause
