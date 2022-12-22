@@ -14,6 +14,7 @@ if __name__ == '__main__':
         author=__author__,
         maintainer=__author__,
         license="GPLv3",
+        py_modules=[],
         install_requires=[
             'pyyaml',
             'cx_Freeze',
