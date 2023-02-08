@@ -22,3 +22,6 @@ The plain xml File will be encrypted on disk. Not even safe, but saver anyway ..
 
 ## Clonezialla
 self explaining for the linux sensei
+
+## scripts
+Some usefull scripts to handle most the time Windows Clients.
