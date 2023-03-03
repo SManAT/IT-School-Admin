@@ -1,4 +1,6 @@
-# Usage: pip install -e .
+# Usage: 
+#   pip install -e .
+#   python -m build
 [project]
 name = "changeWallpaper"
 version = "1.0.0"
@@ -11,7 +13,6 @@ license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.8"
 dependencies = [
     'pyyaml',
-    'cx_Freeze',
     'click',
     'rich',
     'cryptography',
