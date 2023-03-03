@@ -1,0 +1,19 @@
+[project]
+name = "changeWallpaper"
+version = "1.0.0"
+authors = [
+    {name = "Mag. Stefan Hagmann"},
+]
+description = "change Wallpaper inside Windows"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.8"
+dependencies = [
+    'pyyaml',
+    'cx_Freeze',
+    'click',
+    'rich',
+    'cryptography',
+    'opencv-python',
+    'pysftp',
+]

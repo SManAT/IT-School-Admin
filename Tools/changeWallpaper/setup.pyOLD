@@ -5,6 +5,9 @@ see https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
 
 pip install --upgrade setuptools
 pip install --upgrade cx_Freeze
+
+pip -m build . --wheel
+pip install -e .
 """
 __author__ = 'Mag. Stefan Hagmann'
 
