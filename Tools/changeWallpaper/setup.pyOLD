@@ -1,6 +1,10 @@
 """
 setup.py setHostname
 Usage: sudo pip3 install .
+see https://setuptools.pypa.io/en/latest/userguide/package_discovery.html
+
+pip install --upgrade setuptools
+pip install --upgrade cx_Freeze
 """
 __author__ = 'Mag. Stefan Hagmann'
 
