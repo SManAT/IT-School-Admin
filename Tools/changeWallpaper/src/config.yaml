@@ -1,11 +1,11 @@
 version: 1
 config:
-  USE_SFTP: 1
+  USE_SFTP: 0
   LOCAL_PATH: wallpapers\
   LOCAL_STORAGE: tmp\
-  LAST: 45.jpg
+  LAST: 11.jpg
   sftp:
-    HOSTNAME: toolbox
+    HOSTNAME: myServer
     PATH: wallpapers
-    USER: common-mount
-    PWD: gAAAAABjlvlH4jX7OqlRvStofeB8uiQ1-egQRFWNUj_iE8WIZGeX_PX192CuPDRyKkdatAJy2QKV2lo0Q0GbpI-qmXR24S8iL8b4JOJQ3UQIQI40W8lOvK0=
+    USER: null
+    PWD: null

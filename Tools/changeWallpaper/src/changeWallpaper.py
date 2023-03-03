@@ -62,6 +62,9 @@ class Wallpaper():
 
         self.wallpaperPath = os.path.join(self.rootDir, self.config['config']['LOCAL_PATH'])
         self.TMP_WALLPAPER_PATH = os.path.join(self.rootDir, self.config['config']['LOCAL_STORAGE'])
+        # if local use wallpaper path
+        if self.isrealtive:
+          self.TMP_WALLPAPER_PATH = self.wallpaperPath
 
         if os.path.isdir(self.TMP_WALLPAPER_PATH) is False:
             os.mkdir(self.TMP_WALLPAPER_PATH)
@@ -175,8 +178,8 @@ class Wallpaper():
         TILEWALLPAPER = 0
 
         if self.is_64bit_windows():
-                # use Unicode string
-                # path = 'C:\\Users\\...\\Desktop\\0200200220.jpg'
+            # use Unicode string
+            # path = 'C:\\Users\\...\\Desktop\\0200200220.jpg'
             ctypes.windll.user32.SystemParametersInfoW(
                 SPI_SETDESKWALLPAPER, STYLE, filepath, SPIF_UPDATEINIFILE)
         else:
@@ -253,13 +256,15 @@ class Wallpaper():
 
     def clear(self):
         """ delete all local stored wallpapers """
-        for root, dirs, files in os.walk(self.TMP_WALLPAPER_PATH):  # noqa
-            for file in files:
-                os.remove(os.path.join(root, file))
+        # only delete tmp wallpapers
+        if self.isrealtive is False:
+          for root, dirs, files in os.walk(self.TMP_WALLPAPER_PATH):  # noqa
+              for file in files:
+                  os.remove(os.path.join(root, file))
         self.console.print("All wallpapers deleted!", style="red")
 
 
-@click.command(no_args_is_help=True)
+@click.command(no_args_is_help=False)
 @click.option('-g', '--go', 'go', is_flag=True, help='go ahead, change wallpaper')
 @click.option('-l', '--list', 'listing', is_flag=True, help='list all wallpapers')
 @click.option('--clear', 'clear', is_flag=True, help='delete all local stored wallpapers')
@@ -285,8 +290,8 @@ def start(listing, clear, encrypt, go):
         paper.start()
         
     # debug
-    # print("DEBUGGING ======================")
-    # paper.start()
+    print("DEBUGGING ======================")
+    paper.start()
 
 
 def checkKeyFile():
@@ -295,7 +300,7 @@ def checkKeyFile():
     
     keyFilePath = os.path.abspath(os.path.join(rootDir, 'secret'))
     if os.path.isdir(keyFilePath) is False:
-            os.mkdir(keyFilePath)
+      os.mkdir(keyFilePath)
     
     keyFile = os.path.abspath(os.path.join(rootDir, 'secret', 'key.key'))
     if (os.path.exists(keyFile) is False):
