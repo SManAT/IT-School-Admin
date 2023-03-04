@@ -1,6 +1,9 @@
 # Usage: 
-#   pip install -e .
-#   python -m build
+#   Normal Install: pip install -e .
+#   Build: python -m build
+# be sure setuptools and build are in latest version
+# pip install --upgrade setuptools build
+
 [project]
 name = "changeWallpaper"
 version = "1.0.0"

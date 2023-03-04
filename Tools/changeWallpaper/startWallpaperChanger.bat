@@ -1,20 +1,14 @@
 @echo off
 
-rem Run only once ====
+rem Run only once ===================
 SET LOCK=wallpaper_init.lock
-IF EXIST %APPDATA%\%LOCK% GOTO NORMAL
+IF EXIST %APPDATA%\%LOCK% GOTO START
   date /t > %APPDATA%\%LOCK%
-  pip install . 
-
-:NORMAL
-  rem only for this User
-  IF /i "%username%"=="Student" goto START
-  echo "Not User Student ..."
-  GOTO COMMONEXIT
+  pip install -e .
 
 :START
     rem Start Wallpaper Changer
-    python changeWallpaper.py -g
+    python src/changeWallpaper.py -g
     
 :COMMONEXIT
     rem bye
