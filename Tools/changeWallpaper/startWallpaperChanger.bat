@@ -6,7 +6,7 @@ rem Run only once ===================
 SET LOCK=wallpaper_init.lock
 IF EXIST %APPDATA%\%LOCK% GOTO START
   date /t > %APPDATA%\%LOCK%
-  pip install -e .
+  pip install -e C:\ProgramData\Common-Software\changeWallpaper\
 
 :START
     rem Start Wallpaper Changer
