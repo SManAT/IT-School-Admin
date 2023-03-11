@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Using a Samba Share to clone
+
+# Begin of the scripts:
+#
+DRBL_SCRIPT_PATH="${DRBL_SCRIPT_PATH:-/usr/share/drbl}"
+
+. $DRBL_SCRIPT_PATH/sbin/drbl-conf-functions
+. /etc/drbl/drbl-ocs.conf
+. $DRBL_SCRIPT_PATH/sbin/ocs-functions
+
+# load the setting for clonezilla live.
+. /etc/ocs/ocs-live.conf
+# Load language files. For English, use "en_US.UTF-8". For Chinese, use "zh_TW.UTF-8"
+ask_and_load_lang_set en_US.UTF-8
+export LANG=de_DE.UTF-8
+
+# 1. Configure network
+dhclient -v eth0
+
+#Directory exists?
+mkdir -p /home/partimag/
+
+#Admin Netz, weil root user mit root auf thenode nicht passt, NFS kann nicht anderen User nehmen
+echo "ADMIN nur per Samba"
+mount -t cifs -o username="clonezilla",password="geheim" //10.0.10.5/Images/Clonezilla /home/partimag
+sleep 2
+
+#functions----------------------------------------------------------------------------------------------
+action_restore() {
+  #echo "Restore -----------------------------------------"
+  if mountpoint $ocsroot &>/dev/null; then
+    # -r -k1 grow partition to target size
+    ocs-sr -g auto -e1 auto -e2 -r -k1 -j2 -p reboot restoredisk "ask_user" "ask_user"
+  else
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "Fail to find the Clonezilla image home $ocsroot!"
+    echo "Program terminated!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+  fi
+  umount $ocsroot &>/dev/null
+}
+
+action_backup() {
+  echo "Sichere nun System /sda"
+  ocs-sr -q2 -j2 -z1 -i 2000 -sc -senc -p reboot savedisk "Backup-$(date "+%Y-%m-%d")" "sda"
+}
+
+action_Normal() {
+  ocs-sr -x
+}
+
+##################
+###### MAIN ######
+##################
+TMP=$(mktemp /tmp/menu.XXXXXX)
+trap "[ -f "$TMP" ] && rm -f $TMP" HUP INT QUIT TERM EXIT
+$DIA --backtitle "$msg_nchc_free_software_labs" --title  \
+"$msg_nchc_clonezilla" --menu "$msg_choose_mode:" \
+0 0 0 \
+"1." "   >> RESTORE <<" \
+"2." "Backup >> save" \
+"3." "Clonezilla normal starten" \
+2> $TMP
+mode="$(cat $TMP)"
+[ -f "$TMP" ] && rm -f $TMP
+
+#
+case "$mode" in
+  1.)
+    action_restore;;
+  2.)
+    action_backup;;
+  3.)
+    action_Normal;;
+  *)
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_FAILURE
+    echo "Unknown mode \"$mode\"!"
+    echo "Program terminated!"
+    [ "$BOOTUP" = "color" ] && $SETCOLOR_NORMAL
+    exit 1
+esac
