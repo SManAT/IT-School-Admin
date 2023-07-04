@@ -31,22 +31,22 @@ from libs.Worker import Worker
 
 class setWLAN():
 
-    def __init__(self):
-        self.rootDir = Path(__file__).parent
-        self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
-        self.logger = logging.getLogger('setWLAN')
+  def __init__(self):
+    self.rootDir = Path(__file__).parent
+    self.keyFile = os.path.join(self.rootDir, 'libs', 'key.key')
+    self.logger = logging.getLogger('setWLAN')
 
-        # catch terminating Signal
-        atexit.register(self.exit_handler)
-        self.cryptor = Cryptor(self.keyFile)
+    # catch terminating Signal
+    atexit.register(self.exit_handler)
+    self.cryptor = Cryptor(self.keyFile)
 
-        info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2022\n"
-                "------------------------------------------")
-        print(info)
+    info = ("\nsetWLAN.py, (c) Mag. Stefan Hagmann 2022\n"
+            "------------------------------------------")
+    print(info)
 
-    def exit_handler(self):
-        """ do something on sys.exit() """
-        pass
+  def exit_handler(self):
+    """ do something on sys.exit() """
+    pass
 
 
 @click.command(no_args_is_help=True)
@@ -58,38 +58,38 @@ class setWLAN():
 @click.option('-s', '--show', required=False, is_flag=True, help='Show stored WLAN profiles')
 @click.option('-r', '--restore', required=False, is_flag=True, help='Import all stored WLAN profiles to the client')
 def start(createkey, encrypt, listing, delete, add, show, restore):
-    """
-    Will manage WLAN Configurations for Windows
-    """
-    setwlan = setWLAN()
-    if createkey is True:
-        setwlan.cryptor.createKeyFile()
-    elif encrypt is not None:
-        chiper = setwlan.cryptor.encrypt(encrypt)
-        print("\n%s: %s" % (encrypt, chiper.decode()))
-        print("Use this hash in your config File for sensible data, e.g. passwords")
+  """
+  Will manage WLAN Configurations for Windows
+  """
+  setwlan = setWLAN()
+  if createkey is True:
+    setwlan.cryptor.createKeyFile()
+  elif encrypt is not None:
+    chiper = setwlan.cryptor.encrypt(encrypt)
+    print("\n%s: %s" % (encrypt, chiper.decode()))
+    print("Use this hash in your config File for sensible data, e.g. passwords")
 
-    worker = Worker(setwlan.rootDir, setwlan.cryptor)
+  worker = Worker(setwlan.rootDir, setwlan.cryptor)
 
-    # DEBUG
-    # worker.importStoredWLan()
-    if listing is True:
-        worker.listWlan()
+  # DEBUG
+  # worker.importStoredWLan()
+  if listing is True:
+    worker.listWlan()
 
-    if add is True:
-        worker.addWlan()
+  if add is True:
+    worker.addWlan()
 
-    if show is True:
-        worker.showStoredWLan()
+  if show is True:
+    worker.showStoredWLan()
 
-    if delete is True:
-        print("Just delete the corresponding xml file in directory ./xml/ ...")
+  if delete is True:
+    print("Just delete the corresponding xml file in directory ./xml/ ...")
 
-    if restore is True:
-        worker.importStoredWLan()
+  if restore is True:
+    worker.importStoredWLan()
 
 
 if __name__ == "__main__":
-    # load logging Config
-    configure_logging()
-    start()
+  # load logging Config
+  configure_logging()
+  start()

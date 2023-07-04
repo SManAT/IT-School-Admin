@@ -1,0 +1,27 @@
+# Usage: 
+#   Normal Install: pip install -e .
+#   Build: python -m build
+# be sure setuptools and build are in latest version
+# pip install --upgrade setuptools build
+
+[project]
+name = "setWLAN"
+version = "1.0.0"
+authors = [
+    {name = "Mag. Stefan Hagmann"},
+]
+description = "manage WLAN Keys for Windows (encrypted)"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.8"
+dependencies = [
+    'cryptography',
+    'click',
+    'PyYAML',
+    'lxml',
+    'wheel',
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

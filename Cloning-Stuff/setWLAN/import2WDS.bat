@@ -1,5 +1,6 @@
-rem WDS connects this way
-rem net use Z: \\<wds>\REMINST /user:... ...
+rem Common is mounted unde X:
 
-pip install Z:\setWLAN\.
-python Z:\setWLAN\setWLAN.py --restore
+pip install -e X:\setWLAN\.
+python X:\setWLAN\src\setWLAN.py --restore
+
+exit
