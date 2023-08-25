@@ -6,6 +6,8 @@ Alle Dateien werden im Ordner ./files abgespeichert bzw. aus diesem Ordner impor
 1. Alle User werden via Powershell aus Azure geladen. 
    Dazu auf einer PS Admin CLI installieren:
    Install-Module -Name AzureAD
+   Einen System User in https://portal.azure.com anlegen.  
+   AzureAD > Benutzer anlegen und in die Rolle Benutzeradministrator aufnehmen
    
 2. Die Zugangsdaten werden in config/config.yaml abgelegt.
    Das Passwort muss verschlüsselt abgelegt werden. Verwende dazu

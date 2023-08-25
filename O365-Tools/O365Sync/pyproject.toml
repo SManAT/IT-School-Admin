@@ -1,0 +1,29 @@
+# Usage: 
+#   Normal Install: pip install -e .
+#   Build: python -m build
+# be sure setuptools and build are in latest version
+# pip install --upgrade setuptools build
+
+[project]
+name = "O365-Sync"
+version = "1.0.0"
+authors = [
+    {name = "Mag. Stefan Hagmann"},
+]
+description = "Manage O365 Accounts in school"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.8"
+dependencies = [
+    # 'O365', 'msal', 'pyjwt == 1.7.1', 'requests',
+    'datetime',
+    'fsspec',
+    'rich',
+    'pandas',
+    'questionary',
+    'colorama',
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

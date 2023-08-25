@@ -1,1 +1,1 @@
-python O365Sync.py
+python src/O365Sync.py
