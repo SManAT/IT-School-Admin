@@ -29,11 +29,12 @@ Windows-Server/Active-Domain/Usermanagement/*.csv
 Windows-Server/Usermanagement/Import.csv
 
 Cloning-Stuff/setHostname/.classpath
-O365-Tools/O365-Sync/src/*.csv
-O365-Tools/O365-Sync/src/config/**
-O365-Tools/O365-Sync/src/db/*.db
-O365-Tools/O365-Sync/src/files/**
-O365-Tools/O365-Sync/src/debug/**
+O365-Tools/O365Sync/src/*.csv
+O365-Tools/O365Sync/src/config/**
+O365-Tools/O365Sync/src/db/*.db
+O365-Tools/O365Sync/src/files/**
+O365-Tools/O365Sync/src/debug/**
+
 
 O365-Tools/O365-Create/files/*.csv
 
@@ -42,3 +43,4 @@ O365-Tools/O365-Create/files/*.csv
 Tools/changeWallpaper/tmp/**
 Tools/changeWallpaper/secret/**
 Cloning-Stuff/setWLAN/libs/key.key
+
