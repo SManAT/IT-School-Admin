@@ -22,6 +22,8 @@ dependencies = [
     'pandas',
     'questionary',
     'colorama',
+    'pyyaml',
+    'cryptography',
 ]
 
 [build-system]
