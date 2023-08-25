@@ -29,14 +29,13 @@ Windows-Server/Active-Domain/Usermanagement/*.csv
 Windows-Server/Usermanagement/Import.csv
 
 Cloning-Stuff/setHostname/.classpath
-O365-Tools/O365-Sync/*.csv
-O365-Tools/O365-Sync/config/vip.yaml
-O365-Tools/O365-Sync/config/key.key
-O365-Tools/O365-Sync/config/config.yaml
-O365-Tools/O365-Create/files/*.csv
-O365-Tools/O365-Sync/db/*.db
-O365-Tools/O365-Sync/files/**
+O365-Tools/O365-Sync/src/*.csv
+O365-Tools/O365-Sync/src/config/**
+O365-Tools/O365-Sync/src/db/*.db
+O365-Tools/O365-Sync/src/files/**
+O365-Tools/O365-Sync/src/debug/**
 
+O365-Tools/O365-Create/files/*.csv
 
 
 **/Thumbs.db
