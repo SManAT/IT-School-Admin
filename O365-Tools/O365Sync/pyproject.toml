@@ -29,3 +29,40 @@ dependencies = [
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 120
+ignore=migrations,test,__init__.py,ui/ui_main.py
+extension-pkg-whitelist=PyQt5, cv2, numpy, PyQt6, PySide6
+bad-names=foo,bar,baz,toto,tutu,tata
+disable = """
+    locally-disabled,
+    too-many-branches,
+    too-many-locals,
+    invalid-name,
+    singleton-comparison,
+    line-too-long,
+    missing-module-docstring,
+    logging-not-lazy,
+    pointless-string-statement,
+    inconsistent-return-statements,
+    no-self-use,
+    missing-function-docstring,
+    broad-except,
+    unnecessary-lambda,
+    too-many-instance-attributes,
+    wrong-import-order,
+    too-many-public-methods,
+    no-else-return,
+    too-many-statements,
+    too-few-public-methods,
+    too-many-arguments,
+    wrong-import-position,
+    attribute-defined-outside-init,
+    anomalous-backslash-in-string,
+    unused-wildcard-import,
+    wildcard-import,
+    no-member,
+    bare-except
+"""
+    

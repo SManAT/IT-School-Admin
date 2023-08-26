@@ -4,7 +4,6 @@ from questionary import Style
 
 
 class Questions():
-
   dict = {
       'Q1': "O365 Benutzer von Azure laden (kann etwas dauern...)",
       'Q2': "Hash erstellen ...",
@@ -30,6 +29,11 @@ class Questions():
 
   def Ask(self, question):
     return questionary.text("Klartext: ", style=self.custom_style_fancy).ask()
+
+  def AskSokrates(self, flist):
+    return questionary.select("Welche CSV Datei?",
+                              choices=flist, style=self.custom_style_fancy
+                              ).ask()
 
   def MainMenue(self, lastupdates):
     print("\nO365Sync.py, (c) Mag. Stefan Hagmann 2022")

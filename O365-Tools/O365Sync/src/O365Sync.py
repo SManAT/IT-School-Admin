@@ -4,11 +4,8 @@ from pathlib import Path
 import shutil
 import sys
 
-import questionary
 from rich.table import Table
 import yaml
-
-from rich.console import Console
 
 from libs.AzurePS import AzurePS
 from libs.CSVTool import CSVTool
@@ -16,8 +13,9 @@ from libs.Compare import Compare
 from libs.Cryptor import Cryptor
 from libs.Database import Database
 from libs.Loader import Loader
-from libs.MyConsole import MyConsole
 from libs.Questions import Questions
+
+from libs.GlobalConsole import console
 
 
 class O365():
@@ -45,8 +43,6 @@ class O365():
     # will create Key if not exists
     self.cryptor = Cryptor(self.keyFile)
 
-    self.console = MyConsole()
-
     self.dbPath = os.path.join(self.rootDir, "db", "database.db")
     self.configFile = os.path.join(self.rootDir, 'config', 'config.yaml')
     self.infoFile = os.path.join(self.rootDir, 'Informationen.txt')
@@ -59,11 +55,11 @@ class O365():
     try:
       if self.config['o365']['encrypt'] == 1:
         self.encrypt = True
-        self.console.warning("Data is ENCRYPTED! ... \n")
+        console.print("[warning]Data is ENCRYPTED! ... [/]\n")
       else:
-        self.console.error("Debugging ... NOT encrypting data! ... \n")
+        console.print("[error]Debugging ... NOT encrypting data! ... [/]\n")
     except:
-      self.console.error("Debugging ... NOT encrypting data! ... \n")
+      console.print("[error]Debugging ... NOT encrypting data! ... [/]\n")
 
     if (os.path.exists(self.vipFile) is False):
       self.createEmptyVipFile()
@@ -96,7 +92,7 @@ class O365():
     with open(self.infoFile, 'r', encoding="utf-8") as f:
       lines = f.readlines()
     for line in lines:
-      self.console.print(line.replace('\n', ''))
+      console.print(line.replace('\n', ''))
 
   def DBSetup(self):
     """ check if DB exists, or create it """
@@ -164,9 +160,9 @@ class O365():
     """ Load the yaml file config.yaml """
     if os.path.exists(self.configFile) is False:
       self.createEmptyConfigFile()
-      self.console.error("\nNew config.yml File created ...")
-      self.console.error("Please edit config/config.yml as needed ...")
-      self.console.error("Use O365Admin.py to encrypt your password ...")
+      self.console.print("\n[error]New config.yml File created ...[/]")
+      self.console.print("[error]Please edit config/config.yml as needed ...[/]")
+      self.console.print("[error]Use O365Admin.py to encrypt your password ...[/]")
       sys.exit(-1)
     with open(self.configFile, 'rt', encoding="utf-8") as f:
       yml = yaml.safe_load(f.read())
@@ -206,7 +202,7 @@ class O365():
     csvFilePath = os.path.join(self.filesDir, self.csvFilename)
 
     self.azure = AzurePS(self.config, self.scriptPath,
-                         self.console, self.keyFile, csvFilePath, self.debug, self.debugPath)
+                         self.keyFile, csvFilePath, self.debug, self.debugPath)
     self.azure.start()
     # block until finished
     self.azure.getThread().join()
@@ -216,7 +212,7 @@ class O365():
     if self.azure.hasErrors():
       exit()
 
-    self.console.info("CSV File saved to %s" % self.csvFilename)
+    console.print("[info]CSV File saved to %s[/]" % self.csvFilename)
     # Finished process CSV File -----------------------------------
     csv = CSVTool()
     accounts = csv.read(os.path.join(self.rootDir, csvFilePath))
@@ -226,20 +222,17 @@ class O365():
     self.db.Truncate('azure')
     # insert data
     self.db.Insert_Azure(accounts, self.vips)
-    self.console.info("%s Lehrer, %s Schüler, %s Specials in Datenbank übernommen" % (
+    console.print("[info]%s Lehrer, %s Schüler, %s Specials in Datenbank übernommen[/]" % (
         self.db.countLehrer(), self.db.countStudents(), self.db.countVips()))
 
-  def importSokrates(self):
+  def importSokrates(self, questions):
     """ Import Sokrates Liste """
     csvFiles = self.search_files_in_dir(self.filesDir, '.csv')
     # print(csvFiles)
     flist = []
     for f in csvFiles:
       flist.append(os.path.basename(f))
-    a = questionary.select(
-        "Welche CSV Datei?",
-        choices=flist,
-    ).ask()
+    a = questions.AskSokrates(flist)
 
     # check CSV Datei
     csvFile = os.path.join(self.filesDir, a)
@@ -253,13 +246,16 @@ class O365():
 
       # insert data
       self.db.Insert_Sokrates(accounts)
-      self.console.info("%s Datensätze in die Datenbank übernommen" %
-                        (self.db.countSokrates()))
+      console.print("[info]%s Datensätze in die Datenbank übernommen[/]" %
+                    (self.db.countSokrates()))
 
   def sync(self):
     """ Azure und Sokrates abgleichen """
     azure = self.db.loadAzureTable()
     sokrates = self.db.loadSokratesTable()
+
+    console.print("[info]Abgleich der Datensätze ...[/]")
+    console.print("[info]Sokrates > Azure < VIP's[/]")
 
     compare = Compare(azure, sokrates, self.cryptor,
                       self.encrypt, self.vips)
@@ -274,6 +270,8 @@ class O365():
     csv = CSVTool()
     path = os.path.join(self.filesDir, "deleteUsers.csv")
     csv.save(path, delete)
+    console.print(
+        "[info]Datensätze diegelöscht werden können liegen in ./files/deleteUsers.csv[/]")
 
   def printTable(self, data):
     table = Table(title="Users that may deleted")
@@ -286,14 +284,12 @@ class O365():
       table.add_row(str(i), str(item.vorname), str(item.nachname))
       i += 1
 
-    console = Console()
     console.print(table)
 
 
 def start():
   debug = True
 
-  console = MyConsole()
   o365 = O365(debug)
   lastdates = []
   lastdates.append(o365.db.getLastDBUpdate('azure'))
@@ -305,9 +301,9 @@ def start():
     a = questions.MainMenue(lastdates)
 
   if debug is True:
-    console.info("DEBUGGING :::")
-    console.info("Sync Data O365 <> Local DB")
-    a = 'getazure'
+    console.print("[info]DEBUGGING :::[/]")
+    console.print("[info]Sync Data O365 <> Local DB[/]")
+    a = 'sync'
 
   if a == 'getazure':
     o365.azureUpdate()
@@ -316,7 +312,7 @@ def start():
     o365.showInformations()
 
   if a == 'sokrates':
-    o365.importSokrates()
+    o365.importSokrates(questions)
 
   if a == 'sync':
     o365.sync()
@@ -328,8 +324,8 @@ def start():
     console.print("\n%s: %s" % (text, chiper.decode()))
     console.print("Use this hash in your config File for sensible data, e.g. passwords")
 
-  console.error("\nBeachte den Datenschutz!")
-  console.warning("Lösche alle CSV Daten aus dem Verzeichnis ./files ...")
+  console.print("\n[error]Beachte den Datenschutz![/]")
+  console.print("[warning]Lösche alle CSV Daten aus dem Verzeichnis ./files ...[/]")
 
 
 if __name__ == "__main__":

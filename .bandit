@@ -1,3 +1,0 @@
-[bandit]
-exclude: /test
-tests: B101,B102,B301
