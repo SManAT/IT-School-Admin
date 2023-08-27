@@ -53,7 +53,7 @@ class O365():
 
     self.encrypt = False
     try:
-      if self.config['o365']['encrypt'] == 1:
+      if self.config['DB']['encrypt'] == 1:
         self.encrypt = True
         console.print("[warning]Data is ENCRYPTED! ... [/]\n")
       else:
