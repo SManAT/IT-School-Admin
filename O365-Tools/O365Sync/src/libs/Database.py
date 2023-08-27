@@ -93,7 +93,7 @@ class Database():
 
     with Progress() as progress:
       task = progress.add_task(
-          "[green]Updating Database...", total=len(accounts))
+          "[green]Updating Database...[/]", total=len(accounts))
 
       self.connect()
       for account in accounts:
