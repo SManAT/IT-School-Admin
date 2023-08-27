@@ -288,7 +288,7 @@ class O365():
 
 
 def start():
-  debug = True
+  debug = False
 
   o365 = O365(debug)
   lastdates = []
