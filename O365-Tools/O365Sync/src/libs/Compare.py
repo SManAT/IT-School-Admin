@@ -1,4 +1,3 @@
-#!!!!!!!!!!!! ó = o
 from multiprocessing import Lock
 import re
 import sys
@@ -9,10 +8,6 @@ from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
 
 
-# VIPS fehlen# H.Dietl-L  Johannes  STANDARDWOFFPACK_IW_FACULTY
-# Odegaard      Doppelnamen
-# Paulina Lara  Doppelnamen
-# Zalan > Zalán
 class Compare():
   # needed for printing
   lock = Lock()

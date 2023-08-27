@@ -5,28 +5,25 @@
 # pip install --upgrade setuptools build
 
 [project]
-name = "O365Sync"
+name = "O365Create"
 version = "1.0.0"
 authors = [
     {name = "Mag. Stefan Hagmann"},
 ]
-description = "Manage O365 Accounts in school"
+description = "Create O365 Accounts Helper"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
 requires-python = ">=3.8"
 dependencies = [
-    # 'O365', 'msal', 'pyjwt == 1.7.1', 'requests',
     'datetime',
     'fsspec',
     'rich',
     'pandas',
     'questionary',
-    'colorama',
+    'universal-startfile',
     'pyyaml',
-    'cryptography',
 ]
 
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
-

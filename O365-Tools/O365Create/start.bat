@@ -1,1 +1,1 @@
-python O365Create.py
+python src/O365Create.py
