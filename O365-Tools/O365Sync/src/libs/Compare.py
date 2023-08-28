@@ -7,6 +7,9 @@ import time
 from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
 
+# Amalie Loderer
+# Ginic
+
 
 class Compare():
   # needed for printing
