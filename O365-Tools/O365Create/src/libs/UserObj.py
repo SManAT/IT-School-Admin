@@ -1,3 +1,5 @@
+from libs.NameTools import NameTools
+
 
 class UserObj:
     domain = ""
@@ -7,6 +9,9 @@ class UserObj:
     benutzername = ""
     password = ""
 
+    def __init__(self):
+      self.nameTools = NameTools()
+
     def __str__(self):
         return "%s %s %s %s %s" % (self.klasse,
                                    self.vorname,
@@ -15,75 +20,37 @@ class UserObj:
                                    self.password
                                    )
 
-    def normalize(self, thestr):
-        patterns = {
-            'ä': 'ae',
-            'ö': 'oe',
-            'ü': 'ue',
-            'ß': 'ss',
-            'é': 'e',
-            'è': 'e',
-            'ê': 'e',
-            'ë': 'e',
-            'á': 'a',
-            'à': 'a',
-            'â': 'a',
-            'î': 'i',
-            'ï': 'i',
-            'ç': 'c',
-            'ú': 'u',
-            'ù': 'u',
-            'û': 'u',
-            'ò': 'o',
-            'ó': 'o',
-            'ô': 'o',
-            'š': 's',
-            'ć': 'c',
-            'ň': 'n',
-        }
-        thestr = str(thestr)
-        for key, val in patterns.items():
-            thestr = thestr.replace(key, val)
-        return thestr
-
     def setDomain(self, domain):
         self.domain = domain
 
     def getAnzeigename(self):
-        return "%s %s" % (self.getVorname(), self.getNachname())
+        return "%s %s" % (self.nameTools.getVorname(self.vorname), self.nameTools.getNachname(self.nachname))
 
     def getBenutzername(self):
-        v = self.getVorname(True)
-        n = self.getNachname()
-        return "%s.%s@%s" % (self.normalize(v), self.normalize(n), self.domain)
+        v = self.nameTools.getVorname(self.vorname)
+        n = self.nameTools.getNachname(self.nachname)
+        return "%s.%s@%s" % (self.nameTools.normalize(v), self.nameTools.normalize(n), self.domain)
 
     def setBenutzername(self):
-        v = self.getVorname(True)
-        n = self.getNachname()
+        v = self.nameTools.getVorname(self.vorname)
+        n = self.nameTools.getNachname(self.nachname)
         self.benutzername = "%s.%s@%s" % (
-            self.normalize(v), self.normalize(n), self.domain)
+            self.nameTools.normalize(v), self.nameTools.normalize(n), self.domain)
 
-    def getVorname(self, reduce=False):
+    def getVorname(self, reduce=True):
         """
         get Vorname
         :param reduce: Von Doppelnamen nur den ersten Namen nehmen
         """
         # only 1 Vorname
-        v = self.vorname
-        if reduce:
-            parts = self.vorname.split(" ")
-            if len(parts) > 1:
-                # nimm nur den ersten Vornamen
-                v = parts[0]
-
-        # first Letter to uppercase
-        erg = v[0].upper() + v[1:]
-        return erg
+        return self.nameTools.getVorname(self.vorname, reduce)
 
     def getNachname(self):
-        # first Letter to uppercase
-        erg = self.nachname[0].upper() + self.nachname[1:]
-        return erg
+        """
+        get Vorname
+        Wenn Doppelnamen dann mit -, z.B. Huber Hansl > Huber-Hansel
+        """
+        return self.nameTools.getNachname(self.nachname)
 
     def getKlasse(self):
         return self.klasse

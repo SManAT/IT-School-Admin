@@ -6,9 +6,7 @@ Bitte in der Datei `config.yaml` die entsprechende Domain anpassen!
    Die Datei in das Verzeichnis files/ des Tools legen
 2. Starte das Tool
 
-   ```ps
    python src/O365Create.py
-   ```
 
    Es werden die Vor- und Nachnamen aus der CSV Datei verwendet, um eine
    CSV Datei für den Massenimport in O365 erzeugt (`./files/O365-Import-File.csv`).

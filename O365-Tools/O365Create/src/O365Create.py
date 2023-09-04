@@ -5,13 +5,12 @@ import subprocess
 import sys
 
 import questionary
-from rich.console import Console
 from rich.table import Table
 from startfile import startfile
 import yaml
 
 from libs.CSVTool import CSVTool
-from libs.MyConsole import MyConsole
+from libs.GlobalConsole import console
 from libs.Questions import Questions
 
 
@@ -24,8 +23,8 @@ class O365():
     self.rootDir = Path(__file__).parent
     self.filesPath = os.path.join(self.rootDir, 'files')
     self.configFile = os.path.join(self.rootDir, 'config.yaml')
+    self.infoFile = os.path.join(self.rootDir, 'Informationen.txt')
     self.config = self.load_yml()
-    self.console = MyConsole()
 
     # check dir files and Email.txt File
     self.createDir(self.filesPath)
@@ -59,7 +58,7 @@ class O365():
       pass
 
   def search_files_in_dir(self, directory='.', pattern=''):
-    """    
+    """
     search for pattern in directory NOT recursive
     :param directory: path where to search. relative or absolute
     :param pattern: a list e.g. ['.jpg', '.gif']
@@ -78,11 +77,19 @@ class O365():
 
   def vorlage(self):
     """ Open Vorlage File """
-    startfile(os.path.join(self.rootDir, "Vorlage.csv"))
+    startfile(os.path.join(self.filesPath, "Vorlage.csv"))
+    self.console.info("Verwenden Sie diese Datei als Vorlage für den Import neuer Schüler Accounts ...")
+
+  def showInformations(self):
+    """ give an overview """
+    with open(self.infoFile, 'r', encoding="utf-8") as f:
+      lines = f.readlines()
+    for line in lines:
+      self.console.print(line.replace('\n', ''))
 
   def importSokrates(self):
     """ Import Sokrates Liste """
-    csvFiles = self.search_files_in_dir(self.filesPath, '.csv')
+    csvFiles = self.search_files_in_dir(self.filesPath, ['.csv'])
     print("Bitte Nur Schüler aufnehmen, die einen Account bekommen sollen.")
     flist = []
     for f in csvFiles:
@@ -126,7 +133,6 @@ class O365():
           item.nachname), str(item.klasse), str(item.benutzername), str(item.password))
       i += 1
 
-    console = Console()
     console.print(table)
 
   def email(self):
@@ -185,9 +191,15 @@ class O365():
 
 
 def start():
+  debug = True
   o365 = O365()
+
   questions = Questions()
-  a = questions.MainMenue()
+  if debug is True:
+    console.print("[info]DEBUGGING :::[/]")
+    a = 'import'
+  else:
+    a = questions.MainMenue()
 
   if a == 'import':
     o365.importSokrates()
@@ -197,6 +209,9 @@ def start():
 
   if a == 'email':
     o365.email()
+
+  if a == 'info':
+    o365.showInformations()
 
 
 if __name__ == "__main__":

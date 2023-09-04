@@ -1,7 +1,7 @@
 import os
 import pandas
 
-from libs.MyConsole import MyConsole
+from libs.GlobalConsole import console
 from libs.UserObj import UserObj
 
 
@@ -10,7 +10,6 @@ class CSVTool():
     userList = []
 
     def __init__(self, config):
-        self.console = MyConsole()
         self.config = config
         self.domain = self.config['config']['domain']
 
@@ -36,7 +35,7 @@ class CSVTool():
 
                     self.userList.append(user)
             except Exception:
-                self.console.error(
+                console.error(
                     "Parsing csv File Error, is the seperator ',' ?")
                 exit()
         else:
@@ -60,7 +59,7 @@ class CSVTool():
 
                     self.userList.append(user)
             except Exception as ex:
-                self.console.error(
+                console.error(
                     "Parsing csv File Error, is the seperator ',' ?")
                 print(ex)
                 exit()

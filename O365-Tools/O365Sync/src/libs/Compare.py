@@ -67,6 +67,7 @@ class Compare():
         'ô': 'o',
         'š': 's',
         'ć': 'c',
+        'č': 'c',
         'ň': 'n',
     }
     thestr = str(thestr)
