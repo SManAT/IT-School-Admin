@@ -31,14 +31,16 @@ class UserObj:
     def getMail(self):
         return self.mail
 
-    def getLicenses(self, vips):
-        """ 
-        get Licences, check if ist vip user
-        M365EDU_A3_FACULTY = Lehrer
-        M365EDU_A3_STUUSEBNFT        = Student
-        STANDARDWOFFPACK_IW_FACULTY = A1 Lehrer
+    def getLicensesOLD(self, vips):
         """
-        parts = self.licenses.split(";")
+        get Licences, check if ist vip user
+        M365EDU_A3_FACULTY            > A3 Lehrer
+        M365EDU_A3_STUUSEBNFT         > A3 Schüler
+        STANDARDWOFFPACK_IW_FACULTY   > A1 Lehrer
+        """
+        print(self.licenses)
+        # MehrfachLizenzen sind durch SPACE getrennt
+        parts = self.licenses.split(" ")
         for p in parts:
             for key, value in self.lic.items():
                 if p.lower() == key.lower():
@@ -48,6 +50,27 @@ class UserObj:
                             if self.compareVip(v):
                                 return 'V'
                         return value
+        return None
+
+    def getLicenses(self, vips):
+        """
+        get Licences, check if ist vip user
+        M365EDU_A3_FACULTY            > A3 Lehrer
+        M365EDU_A3_STUUSEBNFT         > A3 Schüler
+        STANDARDWOFFPACK_IW_FACULTY   > A1 Lehrer
+        """
+        for key, value in self.lic.items():
+          search_index = self.licenses.find(key)
+          if search_index != -1:
+            # print(f"Search in {self.licenses} for {key} position {search_index}")
+
+            # check if VIP wenn keine A3 Lehrer Lizenz
+            if key != "M365EDU_A3_FACULTY":
+              for v in vips['vips']:
+                  if self.compareVip(v):
+                      return 'V'
+            # return Value S, L
+            return value
         return None
 
     def compareVip(self, vip):

@@ -83,7 +83,7 @@ class Database():
     self.conn.commit()
 
     self.close()
-    console.print("[default]Table %s deleted Database truncated ...[/]" % table)
+    console.print("[warning]Table %s deleted, Database truncated ...[/]" % table)
 
   def Insert_Azure(self, accounts, vips):
     """ insert User Accounts Object into DB """
@@ -92,8 +92,9 @@ class Database():
     index = 0
 
     with Progress() as progress:
+      size = len(accounts) + len(vips)
       task = progress.add_task(
-          "[green]Updating Database...[/]", total=len(accounts))
+          "[green]Updating Database...[/]", total=size)
 
       self.connect()
       for account in accounts:

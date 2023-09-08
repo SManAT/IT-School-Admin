@@ -57,9 +57,9 @@ class O365():
         self.encrypt = True
         console.print("[warning]Data is ENCRYPTED! ... [/]\n")
       else:
-        console.print("[error]Debugging ... NOT encrypting data! ... [/]\n")
+        console.print("[error]Debugging ... Database is NOT encrypting data! ... see config.yaml[/]\n")
     except:
-      console.print("[error]Debugging ... NOT encrypting data! ... [/]\n")
+      console.print("[error]Debugging ... Database is NOT encrypting data ... see config.yaml [/]\n")
 
     if (os.path.exists(self.vipFile) is False):
       self.createEmptyVipFile()
@@ -196,10 +196,10 @@ class O365():
 
   def azureUpdate(self):
     """ Update Users from Azure DB """
+    csvFilePath = os.path.join(self.filesDir, self.csvFilename)
+
     loader = Loader("Loading from Azure ... pls wait ... ",
                     "", 0.1).start()
-
-    csvFilePath = os.path.join(self.filesDir, self.csvFilename)
 
     self.azure = AzurePS(self.config, self.scriptPath,
                          self.keyFile, csvFilePath, self.debug, self.debugPath)
@@ -221,6 +221,7 @@ class O365():
     self.db.Update_Last_Update_Date('azure')
     self.db.Truncate('azure')
     # insert data
+    print(f"Datensätze: {len(accounts)+len(self.vips)}")
     self.db.Insert_Azure(accounts, self.vips)
     console.print("[info]%s Lehrer, %s Schüler, %s Specials in Datenbank übernommen[/]" % (
         self.db.countLehrer(), self.db.countStudents(), self.db.countVips()))
@@ -271,7 +272,7 @@ class O365():
     path = os.path.join(self.filesDir, "deleteUsers.csv")
     csv.save(path, delete)
     console.print(
-        "[info]Datensätze diegelöscht werden können liegen in ./files/deleteUsers.csv[/]")
+        "[info]Datensätze die gelöscht werden können liegen in ./files/deleteUsers.csv[/]")
 
   def printTable(self, data):
     table = Table(title="Users that may deleted")
