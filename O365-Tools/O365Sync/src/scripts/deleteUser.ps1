@@ -1,2 +1,2 @@
 Remove-AzureADUser -ObjectID {% principal %}
-Write-Host "Gelöscht {% principal %}"
+Write-Host "Deleted {% principal %} ..."

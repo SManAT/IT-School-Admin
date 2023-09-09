@@ -1,21 +1,20 @@
 import atexit
 import os
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
-from rich.table import Table
 import yaml
-
 from libs.AzurePS import AzurePS
-from libs.CSVTool import CSVTool
 from libs.Compare import Compare
 from libs.Cryptor import Cryptor
+from libs.CSVTool import CSVTool
 from libs.Database import Database
+from libs.GlobalConsole import console
 from libs.Loader import Loader
 from libs.Questions import Questions
-
-from libs.GlobalConsole import console
+from rich.table import Table
+from libs.CreatePSScript import CreatePSScript
 
 
 class O365():
@@ -47,6 +46,7 @@ class O365():
     self.configFile = os.path.join(self.rootDir, 'config', 'config.yaml')
     self.infoFile = os.path.join(self.rootDir, 'Informationen.txt')
     self.scriptPath = os.path.join(self.rootDir, 'scripts')
+    self.batchFile = os.path.join(self.scriptPath, 'deleteUsersStart.bat')
     self.config = self.load_yml()
 
     self.vipFile = os.path.join(self.rootDir, 'config', 'vip.yaml')
@@ -271,8 +271,17 @@ class O365():
     csv = CSVTool()
     path = os.path.join(self.filesDir, "deleteUsers.csv")
     csv.save(path, delete)
-    console.print(
-        "[info]Datensätze die gelöscht werden können liegen in ./files/deleteUsers.csv[/]")
+    console.print("[info]Datensätze die gelöscht werden können liegen in ./files/deleteUsers.csv[/]")
+
+    # PS Script erstellen
+    tool = CreatePSScript(self.config, self.rootDir, "deleteUsers.ps1", delete, self.keyFile)
+    tool.create()
+
+    # copy BatchFile
+    # shutil.copy2(self.batchFile, self.filesDir)
+
+    console.print("[info]Weiters gibt es eine Powershell Datei ./files/deleteUsers.ps1[/]")
+    console.print("[info]Diese Datei mit Rechter Maus oder CLI ausführen........[/]")
 
   def printTable(self, data):
     table = Table(title="Users that may deleted")
@@ -326,7 +335,7 @@ def start():
     console.print("Use this hash in your config File for sensible data, e.g. passwords")
 
   console.print("\n[error]Beachte den Datenschutz![/]")
-  console.print("[warning]Lösche alle CSV Daten aus dem Verzeichnis ./files ...[/]")
+  console.print("[warning]Wenn alles erledigt ist, LÖSCHE alle Daten aus dem Verzeichnis ./files ...[/]")
 
 
 if __name__ == "__main__":
