@@ -16,8 +16,6 @@ from libs.Questions import Questions
 
 # cross-plattform os.startfile
 class O365():
-  finishFile = "O365Created-Users-Finished.csv"
-  emailFile = "Email.txt"
 
   def __init__(self):
     self.rootDir = Path(__file__).parent
@@ -28,8 +26,8 @@ class O365():
 
     # check dir files and Email.txt File
     self.createDir(self.filesPath)
-    if os.path.exists(os.path.join(self.filesPath, self.emailFile)) is False:
-      with open(os.path.join(self.filesPath, self.emailFile), 'w') as fp:
+    if os.path.exists(os.path.join(self.filesPath, self.config['files']['emailFile'])) is False:
+      with open(os.path.join(self.filesPath, self.config['files']['emailFile']), 'w') as fp:
         pass
       fp.close()
 
@@ -67,25 +65,27 @@ class O365():
     for child in Path(directory).iterdir():
       if child.is_file():
         # print(f"{child.name}")
-        if pattern == '':
-          data.append(os.path.join(directory, child.name))
-        else:
-          for p in pattern:
-            if child.name.endswith(p):
-              data.append(os.path.join(directory, child.name))
+        # die Erzeugungsfiles ausblenden
+        if child.name != self.config['files']['importFile'] and child.name != self.config['files']['serienbriefFile']:
+          if pattern == '':
+            data.append(os.path.join(directory, child.name))
+          else:
+            for p in pattern:
+              if child.name.endswith(p):
+                data.append(os.path.join(directory, child.name))
     return data
 
   def vorlage(self):
     """ Open Vorlage File """
-    startfile(os.path.join(self.filesPath, "Vorlage.csv"))
-    self.console.info("Verwenden Sie diese Datei als Vorlage für den Import neuer Schüler Accounts ...")
+    startfile(os.path.join(self.rootDir, "Vorlage.csv"))
+    console.print("[info]Verwenden Sie diese Datei als Vorlage für den Import neuer Schüler Accounts ...[/]")
 
   def showInformations(self):
     """ give an overview """
     with open(self.infoFile, 'r', encoding="utf-8") as f:
       lines = f.readlines()
     for line in lines:
-      self.console.print(line.replace('\n', ''))
+      console.print(line.replace('\n', ''))
 
   def importSokrates(self):
     """ Import Sokrates Liste """
@@ -108,13 +108,15 @@ class O365():
 
     # Serienbrief Dokument gleich erstellen
     csv.writeSerienbrief(os.path.join(
-        self.filesPath, self.finishFile), accounts)
+        self.filesPath, self.config['files']['serienbriefFile'] ), accounts)
 
     # Massenimport erstellen
     csv.writeO365Export(os.path.join(
-        self.filesPath, "O365-Import-File.csv"), accounts)
-    print("Importfile für O365 erstellt (O365-Import-File.csv)")
-    print("Mit dieser Datei den Massenimport bei O365 durchführen und auf das Email warten ...")
+        self.filesPath, self.config['files']['importFile']), accounts)
+    console.print(f"Importfile für O365 erstellt ({self.config['files']['importFile']})")
+    console.print("Mit dieser Datei den Massenimport bei O365 durchführen und auf das Email warten ...")
+    console.print(f"Den Email Text in die Datei {self.config['files']['emailFile']} kopieren und das Tool erneut starten ...")
+    console.print(f"Die Datei {self.config['files']['serienbriefFile']} kann im Anschluss zum ertsellen der Serienbriefe verwendet werden ...")
     self.openFileManager(self.filesPath)
 
   def printTable(self, data):
@@ -135,10 +137,10 @@ class O365():
 
     console.print(table)
 
-  def email(self):
+  def serienbrief(self):
     """ Import Email Text and create Serienbriefdokument"""
 
-    f = open(os.path.join(self.filesPath, self.emailFile),
+    f = open(os.path.join(self.filesPath, self.config['files']['emailFile']),
              "r", encoding="utf-8")
     emailLines = f.read()
 
@@ -168,10 +170,10 @@ class O365():
 
     # -------------------------------------------------------------------------------
     # Passwörter in Serienbrief Dokument setzen
-    csvFile = os.path.join(self.filesPath, self.finishFile)
+    csvFile = os.path.join(self.filesPath, self.config['files']['serienbriefFile'] )
     if (os.path.exists(csvFile) is True):
       csv = CSVTool(self.config)
-      accounts = csv.readFinishFile(csvFile)
+      accounts = csv.readExportFile(csvFile)
       # Abgleichen
       for account in accounts:
         for email in allUsers:
@@ -183,15 +185,15 @@ class O365():
     self.printTable(accounts)
 
     csv.writeSerienbrief(os.path.join(
-        self.filesPath, self.finishFile), accounts)
-    print("Serienbrief CSV Datei erstellt (%s)" % self.finishFile)
-    print("Damit bitte Infoblatt für die Schüler ausdrucken oder zukommen lassen ...")
-    print("Fertige Datei auch am Sharepoint ablegen für die KV's ...")
+        self.filesPath, self.config['files']['serienbriefFile'] ), accounts)
+    console.print("Serienbrief CSV Datei erstellt (%s)" % self.config['files']['serienbriefFile'] )
+    console.print("Damit bitte Infoblatt für die Schüler ausdrucken oder zukommen lassen ...")
+    console.print("Fertige Datei auch am Sharepoint ablegen für die KV's ...")
     self.openFileManager(self.filesPath)
 
 
 def start():
-  debug = True
+  debug = False
   o365 = O365()
 
   questions = Questions()
@@ -207,8 +209,8 @@ def start():
   if a == 'vorlage':
     o365.vorlage()
 
-  if a == 'email':
-    o365.email()
+  if a == 'serienbrief':
+    o365.serienbrief()
 
   if a == 'info':
     o365.showInformations()

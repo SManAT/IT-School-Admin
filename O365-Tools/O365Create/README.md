@@ -15,6 +15,6 @@ Bitte in der Datei `config.yaml` die entsprechende Domain anpassen!
    Eine entsprechende Vorlagendatei kann man im Programm herunterladen.
 
 3. O365 sendet eine Email mit allen Zugangsdaten zu. Den Text dieser Email wird
-   in die Datei `./files/Email.txt` kopiert. Aus dem Email Text werden die zugesandeten Zugangsdaten extrahiert, und alle Daten in einer CSV Datei `./files/O365Created-Users-Finished.csv` exportiert.
+   in die Datei `./files/EmailZugangsdaten.txt` kopiert. Aus dem Email Text werden die zugesandeten Zugangsdaten extrahiert, und alle Daten in einer CSV Datei `./files/O365-CreatedUsers-Finished.csv` exportiert.
 
 4. Mit dieser CSV Datei kann man dann einen Serienbrief für die Schüler erstellen lassen.

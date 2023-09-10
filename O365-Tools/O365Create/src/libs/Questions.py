@@ -7,7 +7,7 @@ class Questions():
   dict = {
       'Q2': "Vorlagen Datei für Schüler öffnen ...",
       'Q3': "Schülerliste von CSV Datei laden ...",
-      'Q4': "AD mit neuen Schülern Synchronisieren ...",
+      'Q4': "Erstelle Serienbrief Datei (Benutzer und Passwörter) ...",
       'Q5': "Informationen anzeigen ...",
   }
 
@@ -33,10 +33,10 @@ class Questions():
       return "vorlage"
 
     if a == self.dict['Q3']:
-      return "load"
+      return "import"
 
-    if a == self.dict['Q3']:
-      return "sync"
+    if a == self.dict['Q4']:
+      return "serienbrief"
 
     if a == self.dict['Q5']:
       return "info"
