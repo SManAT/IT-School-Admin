@@ -8,6 +8,8 @@ from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
 
 # Amalie Loderer
+# Anisimov	Maksim Amir
+
 
 class Compare():
   # needed for printing
@@ -115,12 +117,12 @@ class Compare():
     vergl, Vor und Nachnamen auf Doppelname und auch mit tauschen
     """
     # Debugging --------------------------------
-    testname = "diego"
+    testname = "Anisimov"
     # print(type(avorname))
     if testname == avorname.lower():
       if testname == svorname.lower():
         k = 0
-    testname = "Yousefzadeh".lower()
+    testname = "Anisimov".lower()
     if testname == anachname.lower():
       if testname == snachname.lower():
         k = 0
