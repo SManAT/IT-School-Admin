@@ -36,11 +36,14 @@ O365-Tools/O365Sync/src/files/**
 O365-Tools/O365Sync/src/debug/**
 
 
-O365-Tools/O365-Create/files/*.csv
+O365-Tools/O365Create/src/files/**.txt
+O365-Tools/O365Create/src/files/**.csv
+O365-Tools/O365Create/src/files/**/*
 
 
 **/Thumbs.db
 Tools/changeWallpaper/tmp/**
 Tools/changeWallpaper/secret/**
 Cloning-Stuff/setWLAN/libs/key.key
+
 

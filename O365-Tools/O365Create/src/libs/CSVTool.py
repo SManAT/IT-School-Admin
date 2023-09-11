@@ -42,8 +42,8 @@ class CSVTool():
             print("File ./%s not found! - exit -" % filename)
         return self.userList
 
-    def readFinishFile(self, filename):
-        """ Read a CSV file """
+    def readExportFile(self, filename):
+        """ Read Users that has been Created via this CSV file """
         self.userList.clear()
 
         if os.path.exists(filename) is True:

@@ -1,3 +1,10 @@
 version: 1
 config:
   domain: frauengasse.eu
+files:
+  # CSV Datei zum erstellen der Serienbriefe
+  serienbriefFile: O365-CreatedUsers-Finished.csv
+  # Hier wird der zugesandte Email Text mit Benutzername/Passwort hineinkopiert
+  emailFile: EmailZugangsdaten.txt
+  # CSV Datei zum Import in O365
+  importFile: O365-Import-File.csv
