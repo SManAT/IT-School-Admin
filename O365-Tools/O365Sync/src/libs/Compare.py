@@ -7,8 +7,8 @@ import time
 from libs.UserObj import UserObj
 from libs.UserSokrates import UserSokrates
 
-# Amalie Loderer
-# Anisimov	Maksim Amir
+# Offene TEsts
+# Carmen.Kolar-ElBadry@frauengasse.eu
 
 
 class Compare():
